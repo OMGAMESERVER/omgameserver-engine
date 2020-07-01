@@ -10,7 +10,7 @@
         <version>9</version>
     </parent>
 
-    <groupId>com.crionuke.omgameserver</groupId>
+    <groupId>com.omgameserver</groupId>
     <artifactId>omgameserver-engine</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
