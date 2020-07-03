@@ -30,7 +30,7 @@ public class OmgsProperties {
                           @Value("${omgameserver.tickInterval:100}") int tickInterval,
                           @Value("${omgameserver.disconnectInterval:5000}") int disconnectInterval,
                           @Value("${omgameserver.pingInterval:1000}") int pingInterval,
-                          @Value("${omgameserver.pingInterval:1024}") int datagramSize,
+                          @Value("${omgameserver.datagramSize:1024}") int datagramSize,
                           @Value("${omgameserver.mainScript:main.lua}") String mainScript) throws UnknownHostException {
         this.host = InetAddress.getByName(host);
         this.port = port;
