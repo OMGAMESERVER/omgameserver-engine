@@ -16,7 +16,7 @@
     <packaging>jar</packaging>
 
     <name>omgameserver-engine</name>
-    <description>Online multiplayer game server engine based on java in core and lua as frontend for logic</description>
+    <description>Online multiplayer game server engine based on java in core and lua as frontend</description>
     <url>https://github.com/OMGAMESERVER/omgameserver-engine</url>
 
     <properties>
@@ -58,6 +58,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
             <version>2.3.0.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>6.1.5.Final</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
