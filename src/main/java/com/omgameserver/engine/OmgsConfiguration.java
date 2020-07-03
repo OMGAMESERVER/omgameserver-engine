@@ -12,7 +12,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  * @since 1.0.0
  */
 @Configuration
-public class OmgsConfiguration {
+class OmgsConfiguration {
     static private final Logger logger = LoggerFactory.getLogger(OmgsConfiguration.class);
 
     private final OmgsProperties properties;

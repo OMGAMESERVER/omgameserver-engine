@@ -23,7 +23,7 @@ public class OmgsProperties {
     private final int datagramSize;
     private final String mainScript;
 
-    public OmgsProperties(@Value("${omgameserver.host:0.0.0.0}") String host,
+    OmgsProperties(@Value("${omgameserver.host:0.0.0.0}") String host,
                           @Value("${omgameserver.port:12345}") int port,
                           @Value("${omgameserver.threadPoolSize:32}") int threadPoolSize,
                           @Value("${omgameserver.queueSize:128}") int queueSize,
