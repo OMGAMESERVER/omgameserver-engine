@@ -29,6 +29,11 @@ public final class ClientDisconnectedEvent extends Event<ClientDisconnectedEvent
         return socketAddress;
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(socketAddress=" + socketAddress + ")";
+    }
+
     public interface Handler {
         void handleClientDisconnected(ClientDisconnectedEvent event) throws InterruptedException;
     }

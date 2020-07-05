@@ -41,6 +41,12 @@ public final class OutgoingPayloadEvent extends Event<OutgoingPayloadEvent.Handl
         return ephemeral;
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(clientUid=" + clientUid + ", payload=" + payload +
+                ", ephemeral=" + ephemeral + ")";
+    }
+
     public interface Handler {
         void handleOutgoingPayload(OutgoingPayloadEvent event) throws InterruptedException;
     }

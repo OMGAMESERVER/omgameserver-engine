@@ -24,6 +24,11 @@ public final class DisconnectClientRequestEvent extends Event<DisconnectClientRe
         return clientUid;
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(clientUid=" + clientUid + ")";
+    }
+
     public interface Handler {
         void handleDisconnectClientRequest(DisconnectClientRequestEvent event) throws InterruptedException;
     }

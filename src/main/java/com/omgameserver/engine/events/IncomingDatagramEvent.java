@@ -39,6 +39,11 @@ public final class IncomingDatagramEvent extends Event<IncomingDatagramEvent.Han
         return byteBuffer;
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(socketAddress=" + socketAddress + ", byteBuffer=" + byteBuffer + ")";
+    }
+
     public interface Handler {
         void handleIncomingDatagram(IncomingDatagramEvent event) throws InterruptedException;
     }

@@ -35,6 +35,11 @@ public final class IncomingPayloadEvent extends Event<IncomingPayloadEvent.Handl
         return payload;
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(clientUid=" + clientUid + ", payload=" + payload + ")";
+    }
+
     public interface Handler {
         void handleIncomingPayload(IncomingPayloadEvent event) throws InterruptedException;
     }
