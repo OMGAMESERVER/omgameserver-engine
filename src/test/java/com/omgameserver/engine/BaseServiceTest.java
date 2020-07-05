@@ -20,7 +20,6 @@ public class BaseServiceTest extends Assert {
     protected final int PROPERTY_TICK_INTERVAL = 100;
     protected final int PROPERTY_DISCONNECT_INTERVAL = 5000;
     protected final int PROPERTY_PING_INTERVAL = 1000;
-    protected final int PROPERTY_DATAGRAM_MAX_SIZE = 1024;
     protected final String PROPERTY_MAIN_SCRIPT = "main.lua";
 
     protected OmgsProperties properties;
@@ -29,8 +28,7 @@ public class BaseServiceTest extends Assert {
 
     protected void createComponents() throws UnknownHostException {
         properties = new OmgsProperties(PROPERTY_HOST, PROPERTY_PORT, PROPERTY_THREAD_POOL_SIZE, PROPERTY_QUEUE_SIZE,
-                PROPERTY_TICK_INTERVAL, PROPERTY_DISCONNECT_INTERVAL, PROPERTY_PING_INTERVAL,
-                PROPERTY_DATAGRAM_MAX_SIZE, PROPERTY_MAIN_SCRIPT);
+                PROPERTY_TICK_INTERVAL, PROPERTY_DISCONNECT_INTERVAL, PROPERTY_PING_INTERVAL, PROPERTY_MAIN_SCRIPT);
         dispatcher = new Dispatcher();
         threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
         threadPoolTaskExecutor.setThreadNamePrefix("test-");

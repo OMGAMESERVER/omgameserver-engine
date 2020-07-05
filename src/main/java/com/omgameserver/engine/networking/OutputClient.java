@@ -137,13 +137,15 @@ class OutputClient implements Constants {
     }
 
     void ping() throws InterruptedException {
-        ByteBuffer datagram = writeHeader(ByteBuffer.allocate(HEADER_SIZE), HEADER_SYS_PINGREQ).flip();
+        ByteBuffer datagram = writeHeader(ByteBuffer.allocate(HEADER_SIZE), HEADER_SYS_PINGREQ);
+        datagram.flip();
         dispatcher.dispatch(new OutgoingDatagramEvent(socketAddress, datagram));
         lastPingRequest = System.currentTimeMillis();
     }
 
     private void pong() throws InterruptedException {
-        ByteBuffer datagram = writeHeader(ByteBuffer.allocate(HEADER_SIZE), HEADER_SYS_PONGRES).flip();
+        ByteBuffer datagram = writeHeader(ByteBuffer.allocate(HEADER_SIZE), HEADER_SYS_PONGRES);
+        datagram.flip();
         dispatcher.dispatch(new OutgoingDatagramEvent(socketAddress, datagram));
     }
 

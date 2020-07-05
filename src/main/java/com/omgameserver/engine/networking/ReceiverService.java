@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.ClosedByInterruptException;
 
 /**
@@ -43,7 +44,7 @@ class ReceiverService extends Worker {
                 IncomingDatagramEvent incomingDatagramEvent = receiver.receive();
                 dispatcher.dispatch(incomingDatagramEvent);
             }
-        } catch (InterruptedException | ClosedByInterruptException e) {
+        } catch (InterruptedException | AsynchronousCloseException e) {
             logger.debug("{} interrupted", this);
             looping = false;
         } catch (IOException ioe) {
