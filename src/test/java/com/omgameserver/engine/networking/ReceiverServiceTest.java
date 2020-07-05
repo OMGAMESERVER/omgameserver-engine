@@ -62,7 +62,7 @@ public class ReceiverServiceTest extends BaseServiceTest {
         byte[] bytes = new byte[incomingDatagram.remaining()];
         incomingDatagram.get(bytes);
         String incomingPayload = new String(bytes);
-        SocketAddress sourceAddress = incomingEvent.getSourceAddress();
+        SocketAddress sourceAddress = incomingEvent.getSocketAddress();
         logger.info("Server got '{}' from address {}", incomingPayload, sourceAddress);
         assertEquals(incomingPayload, outgoingPayload);
         assertEquals(sourceAddress, clientChannel.getLocalAddress());

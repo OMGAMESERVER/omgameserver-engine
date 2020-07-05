@@ -15,12 +15,9 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author Kirill Byvshev (k@byv.sh)
  * @since 1.0.0
  */
-class InputClient {
+class InputClient implements Constants {
     static private final Logger logger = LoggerFactory.getLogger(InputClient.class);
     static private final AtomicLong uidCounter = new AtomicLong();
-
-    // seq + ack + bit + sys
-    private final int HEADER_SIZE = 3 * Integer.BYTES + Byte.BYTES;
 
     private OmgsProperties properties;
     private Dispatcher dispatcher;

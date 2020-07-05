@@ -20,7 +20,6 @@ public class OmgsProperties {
     private final int tickInterval;
     private final int disconnectInterval;
     private final int pingInterval;
-    private final int datagramSize;
     private final String mainScript;
 
     OmgsProperties(@Value("${omgameserver.host:0.0.0.0}") String host,
@@ -30,7 +29,6 @@ public class OmgsProperties {
                    @Value("${omgameserver.tickInterval:100}") int tickInterval,
                    @Value("${omgameserver.disconnectInterval:5000}") int disconnectInterval,
                    @Value("${omgameserver.pingInterval:1000}") int pingInterval,
-                   @Value("${omgameserver.datagramSize:1024}") int datagramSize,
                    @Value("${omgameserver.mainScript:main.lua}") String mainScript) throws UnknownHostException {
         this.host = InetAddress.getByName(host);
         this.port = port;
@@ -39,7 +37,6 @@ public class OmgsProperties {
         this.tickInterval = tickInterval;
         this.disconnectInterval = disconnectInterval;
         this.pingInterval = pingInterval;
-        this.datagramSize = datagramSize;
         this.mainScript = mainScript;
     }
 
@@ -69,10 +66,6 @@ public class OmgsProperties {
 
     public int getPingInterval() {
         return pingInterval;
-    }
-
-    public int getDatagramSize() {
-        return datagramSize;
     }
 
     public String getMainScript() {

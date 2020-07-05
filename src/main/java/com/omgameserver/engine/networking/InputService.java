@@ -15,7 +15,9 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * @author Kirill Byvshev (k@byv.sh)
@@ -31,14 +33,16 @@ class InputService extends Bolt implements
     private final OmgsProperties properties;
     private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
     private final Dispatcher dispatcher;
-    private final State state;
+    private final Map<SocketAddress, InputClient> clientBySocket;
+    private final Map<Long, InputClient> clientByUid;
 
     InputService(OmgsProperties properties, ThreadPoolTaskExecutor threadPoolTaskExecutor, Dispatcher dispatcher) {
         super("input", properties.getQueueSize());
         this.properties = properties;
         this.threadPoolTaskExecutor = threadPoolTaskExecutor;
         this.dispatcher = dispatcher;
-        this.state = new State();
+        clientBySocket = new HashMap<>();
+        clientByUid = new HashMap<>();
     }
 
     @Override
@@ -46,9 +50,17 @@ class InputService extends Bolt implements
         if (logger.isTraceEnabled()) {
             logger.trace("Handle {}", event);
         }
-        SocketAddress sourceAddress = event.getSourceAddress();
+        SocketAddress socketAddress = event.getSocketAddress();
         ByteBuffer byteBuffer = event.getByteBuffer();
-        InputClient inputClient = state.getClientOrCreate(sourceAddress);
+        InputClient inputClient = clientBySocket.get(socketAddress);
+        if (inputClient == null) {
+            inputClient = new InputClient(properties, dispatcher, socketAddress);
+            clientBySocket.put(socketAddress, inputClient);
+            clientByUid.put(inputClient.getClientUid(), inputClient);
+            if (logger.isInfoEnabled()) {
+                logger.info("New input client from {} with uid={}", socketAddress, inputClient.getClientUid());
+            }
+        }
         inputClient.handleDatagram(byteBuffer);
     }
 
@@ -58,11 +70,13 @@ class InputService extends Bolt implements
             logger.trace("Handle {}", event);
         }
         long clientUid = event.getClientUid();
-        InputClient disconnectedClient = state.disconnectClient(clientUid);
-        if (disconnectedClient != null) {
-            dispatcher.dispatch(
-                    new ClientDisconnectedEvent(disconnectedClient.getSocketAddress(), clientUid));
-            logger.info("{} disconnected by server", disconnectedClient);
+        InputClient inputClient = clientByUid.get(clientUid);
+        if (inputClient != null) {
+            clientByUid.remove(clientUid);
+            SocketAddress socketAddress = inputClient.getSocketAddress();
+            clientBySocket.remove(socketAddress);
+            dispatcher.dispatch(new ClientDisconnectedEvent(inputClient.getSocketAddress()));
+            logger.info("{} disconnected by server", inputClient);
         } else {
             if (logger.isInfoEnabled()) {
                 logger.info("Client with uid={} to disconnect not found", clientUid);
@@ -75,11 +89,17 @@ class InputService extends Bolt implements
         if (logger.isTraceEnabled()) {
             logger.trace("Handle {}", event);
         }
-        List<InputClient> disconnectedClients = state.findDisconnectedClients();
-        for (InputClient diconnectedClient : disconnectedClients) {
-            dispatcher.dispatch(new ClientDisconnectedEvent(diconnectedClient.getSocketAddress(),
-                    diconnectedClient.getClientUid()));
-            logger.info("{} timed out", diconnectedClient);
+        long currentTimeMillis = System.currentTimeMillis();
+        Iterator<Map.Entry<SocketAddress, InputClient>> iterator = clientBySocket.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<SocketAddress, InputClient> entry = iterator.next();
+            InputClient inputClient = entry.getValue();
+            if (inputClient.isDisconnected(currentTimeMillis)) {
+                clientByUid.remove(inputClient.getClientUid());
+                iterator.remove();
+                dispatcher.dispatch(new ClientDisconnectedEvent(inputClient.getSocketAddress()));
+                logger.info("{} timed out", inputClient);
+            }
         }
     }
 
@@ -89,56 +109,5 @@ class InputService extends Bolt implements
         dispatcher.subscribe(this, IncomingDatagramEvent.class);
         dispatcher.subscribe(this, DisconnectClientRequestEvent.class);
         dispatcher.subscribe(this, TickEvent.class);
-    }
-
-    private class State {
-
-        private final Map<SocketAddress, InputClient> clientBySocket;
-        private final Map<Long, InputClient> clientByUid;
-
-        State() {
-            clientBySocket = new HashMap<>();
-            clientByUid = new HashMap<>();
-        }
-
-        InputClient getClientOrCreate(SocketAddress socketAddress) {
-            InputClient client = clientBySocket.get(socketAddress);
-            if (client == null) {
-                client = new InputClient(properties, dispatcher, socketAddress);
-                clientBySocket.put(socketAddress, client);
-                clientByUid.put(client.getClientUid(), client);
-                if (logger.isInfoEnabled()) {
-                    logger.info("New input client from {} with uid={}", socketAddress, client.getClientUid());
-                }
-            }
-            return client;
-        }
-
-        InputClient disconnectClient(long clientUid) {
-            InputClient client = clientByUid.get(clientUid);
-            if (client != null) {
-                clientByUid.remove(clientUid);
-                SocketAddress socketAddress = client.getSocketAddress();
-                clientBySocket.remove(socketAddress);
-            }
-
-            return client;
-        }
-
-        List<InputClient> findDisconnectedClients() {
-            List<InputClient> disconnectedClients = new ArrayList<>();
-            long currentTimeMillis = System.currentTimeMillis();
-            Iterator<Map.Entry<SocketAddress, InputClient>> iterator = clientBySocket.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<SocketAddress, InputClient> entry = iterator.next();
-                InputClient inputClient = entry.getValue();
-                if (inputClient.isDisconnected(currentTimeMillis)) {
-                    clientByUid.remove(inputClient.getClientUid());
-                    iterator.remove();
-                    disconnectedClients.add(inputClient);
-                }
-            }
-            return disconnectedClients;
-        }
     }
 }

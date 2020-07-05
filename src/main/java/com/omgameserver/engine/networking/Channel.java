@@ -18,7 +18,7 @@ import java.nio.channels.DatagramChannel;
  * @since 1.0.0
  */
 @Component
-class Channel {
+class Channel implements Constants {
     static private final Logger logger = LoggerFactory.getLogger(Channel.class);
 
     private final OmgsProperties properties;
@@ -63,7 +63,7 @@ class Channel {
         }
 
         IncomingDatagramEvent receive() throws IOException {
-            ByteBuffer byteBuffer = ByteBuffer.allocate(properties.getDatagramSize());
+            ByteBuffer byteBuffer = ByteBuffer.allocate(BUFFER_SIZE);
             SocketAddress sourceAddress = datagramChannel.receive(byteBuffer);
             byteBuffer.flip();
             return new IncomingDatagramEvent(sourceAddress, byteBuffer);
