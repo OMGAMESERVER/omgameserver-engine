@@ -51,6 +51,10 @@ class Channel {
         return ((InetSocketAddress) datagramChannel.getLocalAddress()).getPort();
     }
 
+    void close() throws IOException {
+        datagramChannel.close();
+    }
+
     class Receiver {
         private final DatagramChannel datagramChannel;
 
