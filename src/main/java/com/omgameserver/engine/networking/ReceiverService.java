@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.channels.AsynchronousCloseException;
-import java.nio.channels.ClosedByInterruptException;
 
 /**
  * @author Kirill Byvshev (k@byv.sh)
