@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author Kirill Byvshev (k@byv.sh)
@@ -18,7 +17,6 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 class OutputClient implements Constants {
     static private final Logger logger = LoggerFactory.getLogger(OutputClient.class);
-    static private final AtomicLong uidCounter = new AtomicLong();
 
     private OmgsProperties properties;
     private Dispatcher dispatcher;
@@ -34,12 +32,12 @@ class OutputClient implements Constants {
     private long lastPingRequest;
     private long lastLatency;
 
-    OutputClient(OmgsProperties properties, Dispatcher dispatcher, SocketAddress socketAddress) {
+    OutputClient(OmgsProperties properties, Dispatcher dispatcher, SocketAddress socketAddress, long clientUid) {
         super();
         this.properties = properties;
         this.dispatcher = dispatcher;
         this.socketAddress = socketAddress;
-        clientUid = uidCounter.incrementAndGet();
+        this.clientUid = clientUid;
         lastIncomingSeq = 0;
         lastOutgoingSeq = 0;
         lastIncomingBit = 0;

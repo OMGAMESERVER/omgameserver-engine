@@ -52,7 +52,7 @@ class OutputService extends Bolt implements
         long clientUid = event.getClientUid();
         OutputClient outputClient = clientBySocket.get(socketAddress);
         if (outputClient == null) {
-            outputClient = new OutputClient(properties, dispatcher, socketAddress);
+            outputClient = new OutputClient(properties, dispatcher, socketAddress, clientUid);
             clientBySocket.put(socketAddress, outputClient);
             clientByUid.put(clientUid, outputClient);
             logger.debug("New output client for {} with uid={}", socketAddress, clientUid);
