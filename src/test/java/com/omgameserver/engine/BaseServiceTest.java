@@ -14,7 +14,7 @@ public class BaseServiceTest extends Assert {
     protected final int POLL_TIMEOUT_MS = 1000;
 
     protected final String PROPERTY_HOST = "0.0.0.0";
-    protected final int PROPERTY_PORT = 12345;
+    protected final int PROPERTY_PORT = 0;
     protected final int PROPERTY_THREAD_POOL_SIZE = 32;
     protected final int PROPERTY_QUEUE_SIZE = 128;
     protected final int PROPERTY_TICK_INTERVAL = 100;
