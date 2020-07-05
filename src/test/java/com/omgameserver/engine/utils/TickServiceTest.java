@@ -17,9 +17,9 @@ import java.util.concurrent.TimeUnit;
 public class TickServiceTest extends BaseServiceTest {
     static private final Logger logger = LoggerFactory.getLogger(TickServiceTest.class);
 
-    TickService tickService;
-    BlockingQueue<TickEvent> tickEvents;
-    ConsumerStub consumerStub;
+    private TickService tickService;
+    private BlockingQueue<TickEvent> tickEvents;
+    private ConsumerStub consumerStub;
 
     @Before
     public void beforeTest() throws UnknownHostException {

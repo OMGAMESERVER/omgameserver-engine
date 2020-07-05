@@ -16,8 +16,8 @@ import java.nio.channels.DatagramChannel;
 public class SenderServiceTest extends BaseServiceTest {
     static private final Logger logger = LoggerFactory.getLogger(SenderServiceTest.class);
 
-    SenderService senderService;
-    Channel serverChannel;
+    private SenderService senderService;
+    private Channel serverChannel;
 
     @Before
     public void beforeTest() throws IOException {

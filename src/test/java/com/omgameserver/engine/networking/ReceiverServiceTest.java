@@ -20,9 +20,9 @@ import java.util.concurrent.TimeUnit;
 public class ReceiverServiceTest extends BaseServiceTest {
     static private final Logger logger = LoggerFactory.getLogger(ReceiverServiceTest.class);
 
-    Channel serverChannel;
-    ReceiverService receiverService;
-    ConsumerStub consumerStub;
+    private Channel serverChannel;
+    private ReceiverService receiverService;
+    private ConsumerStub consumerStub;
 
     private BlockingQueue<IncomingDatagramEvent> incomingDatagramEvents;
 
