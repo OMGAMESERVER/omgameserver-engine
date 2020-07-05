@@ -1,10 +1,10 @@
-package com.omgameserver.engine.networking;
+package com.omgameserver.engine;
 
 /**
  * @author Kirill Byvshev (k@byv.sh)
  * @since 1.0.0
  */
-public interface Constants {
+public interface OmgsConstants {
     // Datagram buffer size
     int BUFFER_SIZE = 1024;
     // Header size = seq + ack + bit + sys

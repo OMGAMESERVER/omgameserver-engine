@@ -1,6 +1,7 @@
 package com.omgameserver.engine.networking;
 
 import com.crionuke.bolts.Dispatcher;
+import com.omgameserver.engine.OmgsConstants;
 import com.omgameserver.engine.OmgsProperties;
 import com.omgameserver.engine.events.OutgoingDatagramEvent;
 import com.omgameserver.engine.events.OutgoingPayloadEvent;
@@ -15,7 +16,7 @@ import java.util.*;
  * @author Kirill Byvshev (k@byv.sh)
  * @since 1.0.0
  */
-class OutputClient implements Constants {
+class OutputClient implements OmgsConstants {
     static private final Logger logger = LoggerFactory.getLogger(OutputClient.class);
 
     private OmgsProperties properties;
@@ -76,11 +77,11 @@ class OutputClient implements Constants {
         lastIncomingBit = (lastIncomingBit << seq - lastIncomingSeq) | 1;
         lastIncomingSeq = seq;
         detectMissingSeq(ack, bit);
-        if ((sys & Constants.HEADER_SYS_PONGRES) > 0) {
+        if ((sys & HEADER_SYS_PONGRES) > 0) {
             // Calc latency every pong response
             lastLatency = System.currentTimeMillis() - lastPingRequest;
         }
-        if ((sys & Constants.HEADER_SYS_PINGREQ) > 0) {
+        if ((sys & HEADER_SYS_PINGREQ) > 0) {
             // Response pong to ping request
             pong();
         }
@@ -98,7 +99,7 @@ class OutputClient implements Constants {
         if (ephemeralEvents.size() == 0 && reliableEvents.size() == 0) {
             return;
         }
-        ByteBuffer outgoingBuffer = writeHeader(ByteBuffer.allocate(Constants.BUFFER_SIZE), HEADER_SYS_NOVALUE);
+        ByteBuffer outgoingBuffer = writeHeader(ByteBuffer.allocate(BUFFER_SIZE), HEADER_SYS_NOVALUE);
         OutgoingDatagramEvent event = new OutgoingDatagramEvent(socketAddress, outgoingBuffer);
         // First write reliable events
         Iterator<OutgoingPayloadEvent> reliableIterator = reliableEvents.iterator();

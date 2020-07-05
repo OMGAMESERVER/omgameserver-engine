@@ -1,6 +1,7 @@
 package com.omgameserver.engine.networking;
 
 import com.crionuke.bolts.Dispatcher;
+import com.omgameserver.engine.OmgsConstants;
 import com.omgameserver.engine.OmgsProperties;
 import com.omgameserver.engine.events.IncomingHeaderEvent;
 import com.omgameserver.engine.events.IncomingPayloadEvent;
@@ -15,7 +16,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author Kirill Byvshev (k@byv.sh)
  * @since 1.0.0
  */
-class InputClient implements Constants {
+class InputClient implements OmgsConstants {
     static private final Logger logger = LoggerFactory.getLogger(InputClient.class);
     static private final AtomicLong uidCounter = new AtomicLong();
 
