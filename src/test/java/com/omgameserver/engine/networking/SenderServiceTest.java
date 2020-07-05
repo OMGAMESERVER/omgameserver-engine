@@ -45,7 +45,7 @@ public class SenderServiceTest extends BaseServiceTest {
         outgoingDatagram.put(outgoingPayload.getBytes());
         outgoingDatagram.flip();
         SocketAddress targetAddress = clientChannel.getLocalAddress();
-        logger.info("Send '{}' to {}", outgoingPayload, targetAddress);
+        logger.info("Server send '{}' to {}", outgoingPayload, targetAddress);
         dispatcher.dispatch(new OutgoingDatagramEvent(targetAddress, outgoingDatagram));
         // Receive on test client
         ByteBuffer incomingDatagram = ByteBuffer.allocate(1024);
@@ -54,7 +54,7 @@ public class SenderServiceTest extends BaseServiceTest {
         byte[] bytes = new byte[incomingDatagram.remaining()];
         incomingDatagram.get(bytes);
         String incomingPayload = new String(bytes);
-        logger.info("Got '{}'", outgoingPayload);
+        logger.info("Client got '{}'", outgoingPayload);
         // Check
         assertEquals(outgoingPayload, incomingPayload);
     }
