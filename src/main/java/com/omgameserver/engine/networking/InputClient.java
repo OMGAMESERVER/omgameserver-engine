@@ -72,7 +72,7 @@ class InputClient {
         }
     }
 
-    boolean isDisconnected() {
-        return System.currentTimeMillis() - lastActivity > properties.getDisconnectInterval();
+    boolean isDisconnected(long currentTimeMillis) {
+        return currentTimeMillis - lastActivity > properties.getDisconnectInterval();
     }
 }
