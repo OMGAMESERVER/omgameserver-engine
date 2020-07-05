@@ -59,10 +59,6 @@ public final class IncomingHeaderEvent extends Event<IncomingHeaderEvent.Handler
         return sys;
     }
 
-    public interface Handler {
-        void handleIncomingHeader(IncomingHeaderEvent event) throws InterruptedException;
-    }
-
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(socketAddress=" + socketAddress
@@ -70,5 +66,9 @@ public final class IncomingHeaderEvent extends Event<IncomingHeaderEvent.Handler
                 + ", ack=" + ack
                 + ", bit=" + Integer.toBinaryString(bit)
                 + ", sys=" + sys + ")";
+    }
+
+    public interface Handler {
+        void handleIncomingHeader(IncomingHeaderEvent event) throws InterruptedException;
     }
 }

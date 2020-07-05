@@ -2,7 +2,6 @@ package com.omgameserver.engine.events;
 
 import com.crionuke.bolts.Event;
 
-import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 
 /**

@@ -2,8 +2,6 @@ package com.omgameserver.engine.events;
 
 import com.crionuke.bolts.Event;
 
-import java.net.SocketAddress;
-
 /**
  * @author Kirill Byvshev (k@byv.sh)
  * @since 1.0.0
