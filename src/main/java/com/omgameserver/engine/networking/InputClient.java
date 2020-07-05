@@ -51,11 +51,12 @@ class InputClient {
         return clientUid;
     }
 
-    void handleDatagram(ByteBuffer byteBuffer) throws InterruptedException {
+    boolean handleDatagram(ByteBuffer byteBuffer) throws InterruptedException {
         if (byteBuffer.remaining() < HEADER_SIZE) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Wrong header's length={} from {}", byteBuffer.remaining(), socketAddress);
             }
+            return false;
         } else {
             int seq = byteBuffer.getInt();
             int ack = byteBuffer.getInt();
@@ -69,6 +70,7 @@ class InputClient {
                 payload.flip();
                 dispatcher.dispatch(new IncomingPayloadEvent(clientUid, payload));
             }
+            return true;
         }
     }
 
