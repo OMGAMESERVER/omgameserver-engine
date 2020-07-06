@@ -11,6 +11,10 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 
+/**
+ * @author Kirill Byvshev (k@byv.sh)
+ * @since 1.0.0
+ */
 @Service
 class TickService extends Worker {
     static private final Logger logger = LoggerFactory.getLogger(TickService.class);
