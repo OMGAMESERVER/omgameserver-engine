@@ -121,7 +121,6 @@ public class InputServiceTest extends BaseServiceTest {
             IncomingHeaderEvent.Handler,
             IncomingPayloadEvent.Handler,
             ClientDisconnectedEvent.Handler {
-        private final Logger logger = LoggerFactory.getLogger(ConsumerStub.class);
 
         public ConsumerStub() {
             super("consumer-stub", PROPERTY_QUEUE_SIZE);

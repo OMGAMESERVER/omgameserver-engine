@@ -69,7 +69,6 @@ public class ReceiverServiceTest extends BaseServiceTest {
     }
 
     private class ConsumerStub extends Bolt implements IncomingDatagramEvent.Handler {
-        private final Logger logger = LoggerFactory.getLogger(ConsumerStub.class);
 
         public ConsumerStub() {
             super("consumer-stub", PROPERTY_QUEUE_SIZE);
