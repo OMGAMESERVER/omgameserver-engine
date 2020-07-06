@@ -94,11 +94,12 @@ class OutputService extends Bolt implements
         if (logger.isTraceEnabled()) {
             logger.trace("Handle {}", event);
         }
+        long currentTimeMillis = System.currentTimeMillis();
         Iterator<Map.Entry<SocketAddress, OutputClient>> iterator = clientBySocket.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<SocketAddress, OutputClient> entry = iterator.next();
             OutputClient client = entry.getValue();
-            if (client.isPingTime()) {
+            if (client.isPingTime(currentTimeMillis)) {
                 client.ping();
             }
             client.flush();

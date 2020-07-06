@@ -131,8 +131,8 @@ class OutputClient implements OmgsConstants {
         dispatcher.dispatch(event);
     }
 
-    boolean isPingTime() {
-        return System.currentTimeMillis() - lastPingRequest > properties.getPingInterval();
+    boolean isPingTime(long currentTimeMillis) {
+        return currentTimeMillis - lastPingRequest > properties.getPingInterval();
     }
 
     void ping() throws InterruptedException {
