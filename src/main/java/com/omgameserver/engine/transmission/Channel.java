@@ -1,4 +1,4 @@
-package com.omgameserver.engine.networking;
+package com.omgameserver.engine.transmission;
 
 import com.omgameserver.engine.OmgsConstants;
 import com.omgameserver.engine.OmgsProperties;

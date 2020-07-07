@@ -1,4 +1,4 @@
-package com.omgameserver.engine.networking;
+package com.omgameserver.engine.transmission;
 
 import com.crionuke.bolts.Dispatcher;
 import com.crionuke.bolts.Worker;

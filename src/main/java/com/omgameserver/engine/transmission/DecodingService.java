@@ -1,10 +1,10 @@
-package com.omgameserver.engine.transformation;
+package com.omgameserver.engine.transmission;
 
 import com.crionuke.bolts.Bolt;
 import com.crionuke.bolts.Dispatcher;
 import com.omgameserver.engine.OmgsProperties;
 import com.omgameserver.engine.events.IncomingLuaValueEvent;
-import com.omgameserver.engine.events.IncomingRawDataEvent;
+import com.omgameserver.engine.events.IncomingPayloadEvent;
 import org.luaj.vm2.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +20,7 @@ import java.nio.ByteBuffer;
  */
 @Service
 public class DecodingService extends Bolt implements
-        IncomingRawDataEvent.Handler {
+        IncomingPayloadEvent.Handler {
     static private final Logger logger = LoggerFactory.getLogger(DecodingService.class);
 
     private final OmgsProperties properties;
@@ -35,19 +35,19 @@ public class DecodingService extends Bolt implements
     }
 
     @Override
-    public void handleIncomingRawData(IncomingRawDataEvent event) throws InterruptedException {
+    public void handleIncomingPayload(IncomingPayloadEvent event) throws InterruptedException {
         if (logger.isTraceEnabled()) {
             logger.trace("Handle {}", event);
         }
         long clientUid = event.getClientUid();
-        ByteBuffer rawData = event.getRawData();
-        // Loop as data can contain several luatables sequentially
-        while (rawData.hasRemaining()) {
+        ByteBuffer payload = event.getPayload();
+        // Loop as payload can contain more one luatables sequentially
+        while (payload.hasRemaining()) {
             try {
-                LuaValue luaValue = decode(rawData);
+                LuaValue luaValue = decode(payload);
                 dispatcher.dispatch(new IncomingLuaValueEvent(clientUid, luaValue));
             } catch (Exception e) {
-                logger.debug("Decoding rawData from {} failed with {}", event.getClientUid(), e);
+                logger.debug("Decoding payload from {} failed with {}", event.getClientUid(), e);
             }
         }
     }
@@ -55,7 +55,7 @@ public class DecodingService extends Bolt implements
     @PostConstruct
     void postConstruct() {
         threadPoolTaskExecutor.execute(this);
-        dispatcher.subscribe(this, IncomingRawDataEvent.class);
+        dispatcher.subscribe(this, IncomingPayloadEvent.class);
     }
 
     private LuaValue decode(ByteBuffer byteBuffer) {

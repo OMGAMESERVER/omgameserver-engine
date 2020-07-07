@@ -1,11 +1,11 @@
-package com.omgameserver.engine.transformation;
+package com.omgameserver.engine.transmission;
 
 import com.crionuke.bolts.Bolt;
 import com.crionuke.bolts.Dispatcher;
 import com.omgameserver.engine.OmgsConstants;
 import com.omgameserver.engine.OmgsProperties;
 import com.omgameserver.engine.events.OutgoingLuaValueEvent;
-import com.omgameserver.engine.events.OutgoingRawDataEvent;
+import com.omgameserver.engine.events.OutgoingPayloadEvent;
 import org.luaj.vm2.LuaString;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -69,11 +69,11 @@ public class EncodingService extends Bolt implements
         LuaValue luaValue = event.getLuaValue();
         boolean ephemeral = event.isEphemeral();
         try {
-            ByteBuffer rawData = ByteBuffer.allocate(properties.getDatagramSize() - HEADER_SIZE);
+            ByteBuffer payload = ByteBuffer.allocate(properties.getDatagramSize() - HEADER_SIZE);
             // Encode LuaValue to MsgPack
-            encode(rawData, luaValue);
-            rawData.flip();
-            dispatcher.dispatch(new OutgoingRawDataEvent(clientUid, rawData, ephemeral));
+            encode(payload, luaValue);
+            payload.flip();
+            dispatcher.dispatch(new OutgoingPayloadEvent(clientUid, payload, ephemeral));
         } catch (Exception e) {
             if (logger.isWarnEnabled()) {
                 logger.warn("Encoding LuaValue to RawData for {} failed with {}", event.getClientUid(), e);

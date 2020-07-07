@@ -1,4 +1,4 @@
-package com.omgameserver.engine.networking;
+package com.omgameserver.engine.transmission;
 
 import com.crionuke.bolts.Bolt;
 import com.omgameserver.engine.BaseServiceTest;
@@ -47,7 +47,7 @@ public class InputServiceTest extends BaseServiceTest {
     public void testSplitHeaderAndPayload() throws InterruptedException {
         // Send datagram with specified source address and header
         SocketAddress sourceAddress = generateSocketAddress();
-        dispatcher.dispatch(createIncomingDatagramEvent(sourceAddress,
+        dispatcher.dispatch(createIncomingRawDataEvent(sourceAddress,
                 1, 2,3, (byte) 0,"payload"));
         // Waiting header event
         IncomingHeaderEvent incomingHeaderEvent = incomingHeaderEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
@@ -65,7 +65,7 @@ public class InputServiceTest extends BaseServiceTest {
     public void testPayloadSplit() throws InterruptedException {
         // Send datagram with specified payload
         String testPayload = "payload";
-        dispatcher.dispatch(createIncomingDatagramEvent(generateSocketAddress(),
+        dispatcher.dispatch(createIncomingRawDataEvent(generateSocketAddress(),
                 1, 2,3, (byte) 0, testPayload));
         // Waiting for payload event
         IncomingPayloadEvent incomingPayloadEvent = incomingPayloadEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
@@ -80,7 +80,7 @@ public class InputServiceTest extends BaseServiceTest {
     public void testDisconnectInterval() throws InterruptedException {
         // Send datagram to client creation
         SocketAddress sourceAddress = generateSocketAddress();
-        dispatcher.dispatch(createIncomingDatagramEvent(sourceAddress,
+        dispatcher.dispatch(createIncomingRawDataEvent(sourceAddress,
                 1, 0 ,0, (byte) 0, "payload"));
         // InputService check disconnect interval for clients every tick
         Thread.sleep(properties.getDisconnectInterval() * 2);
@@ -98,7 +98,7 @@ public class InputServiceTest extends BaseServiceTest {
     public void testDisconnectRequest() throws InterruptedException {
         // Send datagram to client creation
         SocketAddress sourceAddress = generateSocketAddress();
-        dispatcher.dispatch(createIncomingDatagramEvent(sourceAddress,
+        dispatcher.dispatch(createIncomingRawDataEvent(sourceAddress,
                 1, 0 ,0, (byte) 0, "payload"));
         // Waiting for payload event with clientUid
         IncomingPayloadEvent payloadEvent = incomingPayloadEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);

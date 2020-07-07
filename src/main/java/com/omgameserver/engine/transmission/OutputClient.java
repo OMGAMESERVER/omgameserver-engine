@@ -1,10 +1,10 @@
-package com.omgameserver.engine.networking;
+package com.omgameserver.engine.transmission;
 
 import com.crionuke.bolts.Dispatcher;
 import com.omgameserver.engine.OmgsConstants;
 import com.omgameserver.engine.OmgsProperties;
-import com.omgameserver.engine.events.OutgoingDatagramEvent;
 import com.omgameserver.engine.events.OutgoingPayloadEvent;
+import com.omgameserver.engine.events.OutgoingRawDataEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,7 +100,7 @@ class OutputClient implements OmgsConstants {
             return;
         }
         ByteBuffer outgoingBuffer = writeHeader(ByteBuffer.allocate(properties.getDatagramSize()), HEADER_SYS_NOVALUE);
-        OutgoingDatagramEvent event = new OutgoingDatagramEvent(socketAddress, outgoingBuffer);
+        OutgoingRawDataEvent event = new OutgoingRawDataEvent(socketAddress, outgoingBuffer);
         // First write reliable events
         Iterator<OutgoingPayloadEvent> reliableIterator = reliableEvents.iterator();
         while (reliableIterator.hasNext()) {
@@ -138,14 +138,14 @@ class OutputClient implements OmgsConstants {
     void ping() throws InterruptedException {
         ByteBuffer datagram = writeHeader(ByteBuffer.allocate(HEADER_SIZE), HEADER_SYS_PINGREQ);
         datagram.flip();
-        dispatcher.dispatch(new OutgoingDatagramEvent(socketAddress, datagram));
+        dispatcher.dispatch(new OutgoingRawDataEvent(socketAddress, datagram));
         lastPingRequest = System.currentTimeMillis();
     }
 
     private void pong() throws InterruptedException {
         ByteBuffer datagram = writeHeader(ByteBuffer.allocate(HEADER_SIZE), HEADER_SYS_PONGRES);
         datagram.flip();
-        dispatcher.dispatch(new OutgoingDatagramEvent(socketAddress, datagram));
+        dispatcher.dispatch(new OutgoingRawDataEvent(socketAddress, datagram));
     }
 
     private void saveEvent(int seq, OutgoingPayloadEvent event) {

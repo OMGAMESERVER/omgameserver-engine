@@ -2,6 +2,7 @@ package com.omgameserver.engine.events;
 
 import com.crionuke.bolts.Event;
 
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 
 /**
@@ -10,18 +11,19 @@ import java.nio.ByteBuffer;
  */
 public final class OutgoingRawDataEvent extends Event<OutgoingRawDataEvent.Handler> {
 
-    private final long clientUid;
+    private final SocketAddress targetAddress;
     private final ByteBuffer rawData;
-    private final boolean ephemeral;
 
-    public OutgoingRawDataEvent(long clientUid, ByteBuffer rawData, boolean ephemeral) {
+    public OutgoingRawDataEvent(SocketAddress targetAddress, ByteBuffer rawData) {
         super();
+        if (targetAddress == null) {
+            throw new NullPointerException("targetAddress is null");
+        }
         if (rawData == null) {
             throw new NullPointerException("rawData is null");
         }
-        this.clientUid = clientUid;
+        this.targetAddress = targetAddress;
         this.rawData = rawData;
-        this.ephemeral = ephemeral;
     }
 
     @Override
@@ -29,22 +31,17 @@ public final class OutgoingRawDataEvent extends Event<OutgoingRawDataEvent.Handl
         handler.handleOutgoingRawData(this);
     }
 
-    public long getClientUid() {
-        return clientUid;
+    public SocketAddress getTargetAddress() {
+        return targetAddress;
     }
 
     public ByteBuffer getRawData() {
         return rawData;
     }
 
-    public boolean isEphemeral() {
-        return ephemeral;
-    }
-
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(clientUid=" + clientUid + ", rawData=" + rawData +
-                ", ephemeral=" + ephemeral + ")";
+        return getClass().getSimpleName() + "(targetAddress=" + targetAddress + ", rawData=" + rawData + ")";
     }
 
     public interface Handler {

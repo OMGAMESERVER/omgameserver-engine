@@ -2,6 +2,7 @@ package com.omgameserver.engine;
 
 import com.crionuke.bolts.Dispatcher;
 import com.omgameserver.engine.events.IncomingDatagramEvent;
+import com.omgameserver.engine.events.IncomingRawDataEvent;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,16 +56,16 @@ public class BaseServiceTest extends Assert implements OmgsConstants {
         return clientUid;
     }
 
-    protected IncomingDatagramEvent createIncomingDatagramEvent(SocketAddress sourceAddress, int seq, int ack, int bit,
-                                                                byte sys, String payload) {
-        ByteBuffer datagram = ByteBuffer.allocate(properties.getDatagramSize());
-        datagram.putInt(seq);
-        datagram.putInt(ack);
-        datagram.putInt(bit);
-        datagram.put(sys);
-        datagram.put(payload.getBytes());
-        datagram.flip();
-        return new IncomingDatagramEvent(sourceAddress, datagram);
+    protected IncomingRawDataEvent createIncomingRawDataEvent(SocketAddress sourceAddress, int seq, int ack, int bit,
+                                                              byte sys, String payload) {
+        ByteBuffer rawData = ByteBuffer.allocate(properties.getDatagramSize());
+        rawData.putInt(seq);
+        rawData.putInt(ack);
+        rawData.putInt(bit);
+        rawData.put(sys);
+        rawData.put(payload.getBytes());
+        rawData.flip();
+        return new IncomingRawDataEvent(sourceAddress, rawData);
     }
 
     protected ByteBuffer skipHeader(ByteBuffer byteBuffer) {

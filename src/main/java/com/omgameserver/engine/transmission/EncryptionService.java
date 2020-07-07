@@ -1,9 +1,9 @@
-package com.omgameserver.engine.transformation;
+package com.omgameserver.engine.transmission;
 
 import com.crionuke.bolts.Bolt;
 import com.crionuke.bolts.Dispatcher;
 import com.omgameserver.engine.OmgsProperties;
-import com.omgameserver.engine.events.OutgoingPayloadEvent;
+import com.omgameserver.engine.events.OutgoingDatagramEvent;
 import com.omgameserver.engine.events.OutgoingRawDataEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +11,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 
 /**
@@ -22,13 +23,11 @@ public class EncryptionService extends Bolt implements
         OutgoingRawDataEvent.Handler {
     static private final Logger logger = LoggerFactory.getLogger(EncryptionService.class);
 
-    private final OmgsProperties properties;
     private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
     private final Dispatcher dispatcher;
 
     EncryptionService(OmgsProperties properties, ThreadPoolTaskExecutor threadPoolTaskExecutor, Dispatcher dispatcher) {
         super("encryptor", properties.getQueueSize());
-        this.properties = properties;
         this.threadPoolTaskExecutor = threadPoolTaskExecutor;
         this.dispatcher = dispatcher;
     }
@@ -38,13 +37,12 @@ public class EncryptionService extends Bolt implements
         if (logger.isTraceEnabled()) {
             logger.trace("Handle {}", event);
         }
-        long clientUid = event.getClientUid();
+        SocketAddress socketAddress = event.getTargetAddress();
         ByteBuffer rawData = event.getRawData();
-        boolean ephemeral = event.isEphemeral();
         // TODO: encrypt rawData
-        ByteBuffer payload = ByteBuffer.allocate(rawData.remaining());
-        payload.put(rawData);
-        dispatcher.dispatch(new OutgoingPayloadEvent(clientUid, payload, ephemeral));
+        ByteBuffer datagram = ByteBuffer.allocate(rawData.remaining());
+        datagram.put(rawData);
+        dispatcher.dispatch(new OutgoingDatagramEvent(socketAddress, datagram));
     }
 
     @PostConstruct

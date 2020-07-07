@@ -1,12 +1,9 @@
-package com.omgameserver.engine.networking;
+package com.omgameserver.engine.transmission;
 
 import com.crionuke.bolts.Bolt;
 import com.crionuke.bolts.Dispatcher;
 import com.omgameserver.engine.OmgsProperties;
-import com.omgameserver.engine.events.ClientDisconnectedEvent;
-import com.omgameserver.engine.events.DisconnectClientRequestEvent;
-import com.omgameserver.engine.events.IncomingDatagramEvent;
-import com.omgameserver.engine.events.TickEvent;
+import com.omgameserver.engine.events.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -25,7 +22,7 @@ import java.util.Map;
  */
 @Service
 class InputService extends Bolt implements
-        IncomingDatagramEvent.Handler,
+        IncomingRawDataEvent.Handler,
         DisconnectClientRequestEvent.Handler,
         TickEvent.Handler {
     static private final Logger logger = LoggerFactory.getLogger(InputService.class);
@@ -46,12 +43,12 @@ class InputService extends Bolt implements
     }
 
     @Override
-    public void handleIncomingDatagram(IncomingDatagramEvent event) throws InterruptedException {
+    public void handleIncomingRawData(IncomingRawDataEvent event) throws InterruptedException {
         if (logger.isTraceEnabled()) {
             logger.trace("Handle {}", event);
         }
         SocketAddress socketAddress = event.getSocketAddress();
-        ByteBuffer byteBuffer = event.getByteBuffer();
+        ByteBuffer rawData = event.getRawData();
         InputClient inputClient = clientBySocket.get(socketAddress);
         if (inputClient == null) {
             inputClient = new InputClient(properties, dispatcher, socketAddress);
@@ -61,7 +58,7 @@ class InputService extends Bolt implements
                 logger.info("New input client from {} with uid={}", socketAddress, inputClient.getClientUid());
             }
         }
-        inputClient.handleDatagram(byteBuffer);
+        inputClient.handleDatagram(rawData);
     }
 
     @Override
@@ -106,7 +103,7 @@ class InputService extends Bolt implements
     @PostConstruct
     void postConstruct() {
         threadPoolTaskExecutor.execute(this);
-        dispatcher.subscribe(this, IncomingDatagramEvent.class);
+        dispatcher.subscribe(this, IncomingRawDataEvent.class);
         dispatcher.subscribe(this, DisconnectClientRequestEvent.class);
         dispatcher.subscribe(this, TickEvent.class);
     }

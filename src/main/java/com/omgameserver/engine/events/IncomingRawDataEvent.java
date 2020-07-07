@@ -1,7 +1,9 @@
 package com.omgameserver.engine.events;
 
 import com.crionuke.bolts.Event;
+import org.apache.tomcat.jni.Sockaddr;
 
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 
 /**
@@ -10,15 +12,18 @@ import java.nio.ByteBuffer;
  */
 public final class IncomingRawDataEvent extends Event<IncomingRawDataEvent.Handler> {
 
-    private final long clientUid;
+    private final SocketAddress socketAddress;
     private final ByteBuffer rawData;
 
-    public IncomingRawDataEvent(long clientUid, ByteBuffer rawData) {
+    public IncomingRawDataEvent(SocketAddress socketAddress, ByteBuffer rawData) {
         super();
+        if (socketAddress == null) {
+            throw new NullPointerException("socketAddress is null");
+        }
         if (rawData == null) {
             throw new NullPointerException("rawData is null");
         }
-        this.clientUid = clientUid;
+        this.socketAddress = socketAddress;
         this.rawData = rawData;
     }
 
@@ -27,8 +32,8 @@ public final class IncomingRawDataEvent extends Event<IncomingRawDataEvent.Handl
         handler.handleIncomingRawData(this);
     }
 
-    public long getClientUid() {
-        return clientUid;
+    public SocketAddress getSocketAddress() {
+        return socketAddress;
     }
 
     public ByteBuffer getRawData() {
@@ -37,7 +42,7 @@ public final class IncomingRawDataEvent extends Event<IncomingRawDataEvent.Handl
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(clientUid=" + clientUid + ", rawData=" + rawData + ")";
+        return getClass().getSimpleName() + "(socketAddress=" + socketAddress + ", rawData=" + rawData + ")";
     }
 
     public interface Handler {
