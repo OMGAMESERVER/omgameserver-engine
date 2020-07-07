@@ -13,23 +13,23 @@ import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 
-public class SenderServiceTest extends BaseServiceTest {
-    static private final Logger logger = LoggerFactory.getLogger(SenderServiceTest.class);
+public class SendingServiceTest extends BaseServiceTest {
+    static private final Logger logger = LoggerFactory.getLogger(SendingServiceTest.class);
 
-    private SenderService senderService;
+    private SendingService sendingService;
     private Channel serverChannel;
 
     @Before
     public void beforeTest() throws IOException {
         createComponents();
         serverChannel = new Channel(properties);
-        senderService = new SenderService(properties, threadPoolTaskExecutor, dispatcher, serverChannel);
-        senderService.postConstruct();
+        sendingService = new SendingService(properties, threadPoolTaskExecutor, dispatcher, serverChannel);
+        sendingService.postConstruct();
     }
 
     @After
     public void afterTest() throws IOException {
-        senderService.finish();
+        sendingService.finish();
         serverChannel.close();
     }
 
