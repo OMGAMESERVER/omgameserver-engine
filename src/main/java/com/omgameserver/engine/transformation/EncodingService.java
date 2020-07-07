@@ -69,7 +69,7 @@ public class EncodingService extends Bolt implements
         LuaValue luaValue = event.getLuaValue();
         boolean ephemeral = event.isEphemeral();
         try {
-            ByteBuffer rawData = ByteBuffer.allocate(properties.getDatagramSize());
+            ByteBuffer rawData = ByteBuffer.allocate(properties.getDatagramSize() - HEADER_SIZE);
             // Encode LuaValue to MsgPack
             encode(rawData, luaValue);
             rawData.flip();
