@@ -5,8 +5,6 @@ package com.omgameserver.engine;
  * @since 1.0.0
  */
 public interface OmgsConstants {
-    // Datagram buffer size
-    int BUFFER_SIZE = 508;
     // Header size = seq + ack + bit + sys
     int HEADER_SIZE = 3 * Integer.BYTES + Byte.BYTES;
     // No value header

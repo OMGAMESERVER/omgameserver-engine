@@ -17,6 +17,7 @@ public class OmgsProperties {
     private final int port;
     private final int threadPoolSize;
     private final int queueSize;
+    private final int datagramSize;
     private final int tickInterval;
     private final int disconnectInterval;
     private final int pingInterval;
@@ -26,6 +27,7 @@ public class OmgsProperties {
                    @Value("${omgameserver.port:12345}") int port,
                    @Value("${omgameserver.threadPoolSize:32}") int threadPoolSize,
                    @Value("${omgameserver.queueSize:128}") int queueSize,
+                   @Value("${omgameserver.datagramSize:508}") int datagramSize,
                    @Value("${omgameserver.tickInterval:100}") int tickInterval,
                    @Value("${omgameserver.disconnectInterval:5000}") int disconnectInterval,
                    @Value("${omgameserver.pingInterval:1000}") int pingInterval,
@@ -34,6 +36,7 @@ public class OmgsProperties {
         this.port = port;
         this.threadPoolSize = threadPoolSize;
         this.queueSize = queueSize;
+        this.datagramSize = datagramSize;
         this.tickInterval = tickInterval;
         this.disconnectInterval = disconnectInterval;
         this.pingInterval = pingInterval;
@@ -54,6 +57,10 @@ public class OmgsProperties {
 
     public int getQueueSize() {
         return queueSize;
+    }
+
+    public int getDatagramSize() {
+        return datagramSize;
     }
 
     public int getTickInterval() {

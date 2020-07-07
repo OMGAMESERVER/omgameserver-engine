@@ -64,7 +64,7 @@ class Channel implements OmgsConstants {
         }
 
         IncomingDatagramEvent receive() throws IOException {
-            ByteBuffer byteBuffer = ByteBuffer.allocate(BUFFER_SIZE);
+            ByteBuffer byteBuffer = ByteBuffer.allocate(properties.getDatagramSize());
             SocketAddress sourceAddress = datagramChannel.receive(byteBuffer);
             byteBuffer.flip();
             return new IncomingDatagramEvent(sourceAddress, byteBuffer);

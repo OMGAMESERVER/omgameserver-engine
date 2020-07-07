@@ -99,7 +99,7 @@ class OutputClient implements OmgsConstants {
         if (ephemeralEvents.size() == 0 && reliableEvents.size() == 0) {
             return;
         }
-        ByteBuffer outgoingBuffer = writeHeader(ByteBuffer.allocate(BUFFER_SIZE), HEADER_SYS_NOVALUE);
+        ByteBuffer outgoingBuffer = writeHeader(ByteBuffer.allocate(properties.getDatagramSize()), HEADER_SYS_NOVALUE);
         OutgoingDatagramEvent event = new OutgoingDatagramEvent(socketAddress, outgoingBuffer);
         // First write reliable events
         Iterator<OutgoingPayloadEvent> reliableIterator = reliableEvents.iterator();

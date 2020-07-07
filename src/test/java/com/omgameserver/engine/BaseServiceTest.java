@@ -21,6 +21,7 @@ public class BaseServiceTest extends Assert implements OmgsConstants {
     protected final int PROPERTY_PORT = 0;
     protected final int PROPERTY_THREAD_POOL_SIZE = 32;
     protected final int PROPERTY_QUEUE_SIZE = 128;
+    protected final int PROPERTY_DATAGRAM_SIZE = 508;
     protected final int PROPERTY_TICK_INTERVAL = 100;
     protected final int PROPERTY_DISCONNECT_INTERVAL = 1000;
     protected final int PROPERTY_PING_INTERVAL = 250;
@@ -32,7 +33,8 @@ public class BaseServiceTest extends Assert implements OmgsConstants {
 
     protected void createComponents() throws UnknownHostException {
         properties = new OmgsProperties(PROPERTY_HOST, PROPERTY_PORT, PROPERTY_THREAD_POOL_SIZE, PROPERTY_QUEUE_SIZE,
-                PROPERTY_TICK_INTERVAL, PROPERTY_DISCONNECT_INTERVAL, PROPERTY_PING_INTERVAL, PROPERTY_MAIN_SCRIPT);
+                PROPERTY_DATAGRAM_SIZE, PROPERTY_TICK_INTERVAL, PROPERTY_DISCONNECT_INTERVAL, PROPERTY_PING_INTERVAL,
+                PROPERTY_MAIN_SCRIPT);
         dispatcher = new Dispatcher();
         threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
         threadPoolTaskExecutor.setThreadNamePrefix("test-");
@@ -55,7 +57,7 @@ public class BaseServiceTest extends Assert implements OmgsConstants {
 
     protected IncomingDatagramEvent createIncomingDatagramEvent(SocketAddress sourceAddress, int seq, int ack, int bit,
                                                                 byte sys, String payload) {
-        ByteBuffer datagram = ByteBuffer.allocate(BUFFER_SIZE);
+        ByteBuffer datagram = ByteBuffer.allocate(properties.getDatagramSize());
         datagram.putInt(seq);
         datagram.putInt(ack);
         datagram.putInt(bit);
