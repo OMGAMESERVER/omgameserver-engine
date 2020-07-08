@@ -64,10 +64,13 @@ class DecryptionService extends Bolt implements
             secretKey = temporaryKeys.remove(keyUid);
             if (secretKey != null) {
                 assignedKeys.put(socketAddress, secretKey);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Key with uid={} assigned to {}", keyUid, socketAddress);
+                }
                 dispatcher.dispatch(new SecretKeyAssignedEvent(keyUid, secretKey, socketAddress));
             } else {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Unknown key uid={} got from {}", keyUid, socketAddress);
+                    logger.debug("Unknown keyUid={} got from {}", keyUid, socketAddress);
                 }
                 return;
             }
