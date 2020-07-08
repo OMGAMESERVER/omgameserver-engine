@@ -69,7 +69,7 @@ public class KeysTrackerService extends Bolt implements
         Iterator<Map.Entry<Long, Long>> iterator = temporaryKeys.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<Long, Long> entry = iterator.next();
-            long keyUid = entry.getValue();
+            long keyUid = entry.getKey();
             long creationTime = entry.getValue();
             if ((currentTimeMillis - creationTime) >= lifeTime) {
                 dispatcher.dispatch(new SecretKeyExpiredEvent(keyUid));
