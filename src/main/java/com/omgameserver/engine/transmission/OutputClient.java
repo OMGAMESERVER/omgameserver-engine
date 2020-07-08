@@ -23,8 +23,7 @@ class OutputClient implements OmgsConstants {
     private Dispatcher dispatcher;
     private SocketAddress socketAddress;
     private long clientUid;
-    private List<OutgoingPayloadEvent> ephemeralEvents;
-    private List<OutgoingPayloadEvent> reliableEvents;
+    private List<OutgoingPayloadEvent> payloadEvents;
     private Map<Integer, List<OutgoingPayloadEvent>> savedEvents;
     private List<Integer> outgoingSeq;
     private int lastOutgoingSeq;
@@ -44,8 +43,7 @@ class OutputClient implements OmgsConstants {
         lastIncomingBit = 0;
         lastPingRequest = System.currentTimeMillis();
         lastLatency = 0;
-        ephemeralEvents = new LinkedList<>();
-        reliableEvents = new LinkedList<>();
+        payloadEvents = new LinkedList<>();
         savedEvents = new HashMap<>();
         outgoingSeq = new LinkedList<>();
     }
@@ -88,47 +86,34 @@ class OutputClient implements OmgsConstants {
     }
 
     void send(OutgoingPayloadEvent event) {
-        if (event.isEphemeral()) {
-            ephemeralEvents.add(event);
-        } else {
-            reliableEvents.add(event);
-        }
+        payloadEvents.add(event);
     }
 
     void flush() throws InterruptedException {
-        if (ephemeralEvents.size() == 0 && reliableEvents.size() == 0) {
+        if (payloadEvents.size() == 0) {
             return;
-        }
-        ByteBuffer outgoingBuffer = writeHeader(ByteBuffer.allocate(properties.getDatagramSize()), HEADER_SYS_NOVALUE);
-        OutgoingRawDataEvent event = new OutgoingRawDataEvent(socketAddress, outgoingBuffer);
-        // First write reliable events
-        Iterator<OutgoingPayloadEvent> reliableIterator = reliableEvents.iterator();
-        while (reliableIterator.hasNext()) {
-            OutgoingPayloadEvent reliableEvent = reliableIterator.next();
-            ByteBuffer payload = reliableEvent.getPayload();
-            if (outgoingBuffer.remaining() >= payload.remaining()) {
-                outgoingBuffer.put(payload);
-                saveEvent(lastOutgoingSeq, reliableEvent);
-                reliableIterator.remove();
-            } else {
-                break;
+        } else {
+            OutgoingRawDataEvent nextEvent = createNextEvent();
+            for (OutgoingPayloadEvent payloadEvent : payloadEvents) {
+                ByteBuffer payload = payloadEvent.getPayload();
+                if (nextEvent.getRawData().remaining() < payload.remaining()) {
+                    // Flush
+                    nextEvent.getRawData().flip();
+                    dispatcher.dispatch(nextEvent);
+                    // Next event
+                    nextEvent = createNextEvent();
+                }
+                nextEvent.getRawData().put(payload);
+                if (!payloadEvent.isEphemeral()) {
+                    saveEvent(lastOutgoingSeq, payloadEvent);
+                }
             }
+            // Flush
+            nextEvent.getRawData().flip();
+            dispatcher.dispatch(nextEvent);
+            // Clear
+            payloadEvents.clear();
         }
-        // Then write ephemeral events
-        for (OutgoingPayloadEvent ephemeralEvent : ephemeralEvents) {
-            ByteBuffer payload = ephemeralEvent.getPayload();
-            if (outgoingBuffer.remaining() >= payload.remaining()) {
-                outgoingBuffer.put(payload);
-            }
-        }
-        // Clear remaining events as ephemeral
-        ephemeralEvents.clear();
-        if (logger.isTraceEnabled()) {
-            logger.trace("Flush with seq={}, ack={}, bin={}, payload {} bytes", lastOutgoingSeq, lastIncomingSeq,
-                    Integer.toBinaryString(lastIncomingBit), outgoingBuffer.position());
-        }
-        outgoingBuffer.flip();
-        dispatcher.dispatch(event);
     }
 
     boolean isPingTime(long currentTimeMillis) {
@@ -183,6 +168,11 @@ class OutputClient implements OmgsConstants {
                 send(event);
             }
         }
+    }
+
+    private OutgoingRawDataEvent createNextEvent() {
+        ByteBuffer rawData = writeHeader(ByteBuffer.allocate(properties.getDatagramSize()), HEADER_SYS_NOVALUE);
+        return new OutgoingRawDataEvent(socketAddress, rawData);
     }
 
     private ByteBuffer writeHeader(ByteBuffer byteBuffer, byte sysFlags) {
