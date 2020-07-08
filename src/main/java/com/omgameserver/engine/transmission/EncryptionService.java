@@ -20,7 +20,6 @@ import java.nio.ByteBuffer;
 import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Kirill Byvshev (k@byv.sh)
@@ -33,14 +32,12 @@ class EncryptionService extends Bolt implements
         ClientDisconnectedEvent.Handler {
     static private final Logger logger = LoggerFactory.getLogger(EncryptionService.class);
 
-    private final OmgsProperties properties;
     private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
     private final Dispatcher dispatcher;
     private final Map<SocketAddress, Cipher> ciphers;
 
     EncryptionService(OmgsProperties properties, ThreadPoolTaskExecutor threadPoolTaskExecutor, Dispatcher dispatcher) {
         super("encryptor", properties.getQueueSize());
-        this.properties = properties;
         this.threadPoolTaskExecutor = threadPoolTaskExecutor;
         this.dispatcher = dispatcher;
         ciphers = new HashMap<>();
@@ -58,7 +55,7 @@ class EncryptionService extends Bolt implements
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
             ciphers.put(socketAddress, cipher);
             if (logger.isDebugEnabled()) {
-                logger.debug("Decryption cipher created for {}", socketAddress);
+                logger.debug("Encrypt cipher created for {}", socketAddress);
             }
         } catch (GeneralSecurityException e) {
             if (logger.isWarnEnabled()) {
@@ -77,8 +74,10 @@ class EncryptionService extends Bolt implements
         Cipher cipher = ciphers.get(socketAddress);
         if (cipher != null) {
             try {
-                ByteBuffer datagram = ByteBuffer.allocate(properties.getDatagramSize());
+                int outputSize = cipher.getOutputSize(rawData.remaining());
+                ByteBuffer datagram = ByteBuffer.allocate(outputSize);
                 cipher.doFinal(rawData, datagram);
+                datagram.flip();
                 dispatcher.dispatch(new OutgoingDatagramEvent(socketAddress, datagram));
             } catch (GeneralSecurityException e) {
                 if (logger.isDebugEnabled()) {
