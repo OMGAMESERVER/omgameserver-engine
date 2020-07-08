@@ -66,7 +66,8 @@ class DecryptionService extends Bolt implements
         long keyUid = byteBuffer.getLong();
         Cipher cipher = getCipher(keyUid, socketAddress);
         if (cipher != null) {
-            ByteBuffer rawData = ByteBuffer.allocate(properties.getDatagramSize());
+            int outputSize = cipher.getOutputSize(byteBuffer.remaining());
+            ByteBuffer rawData = ByteBuffer.allocate(outputSize);
             try {
                 cipher.doFinal(byteBuffer, rawData);
                 rawData.flip();
