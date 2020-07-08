@@ -11,10 +11,11 @@ import java.net.SocketAddress;
  */
 public final class SecretKeyAssignedEvent extends Event<SecretKeyAssignedEvent.Handler> {
 
+    private final long keyUid;
     private final SecretKey secretKey;
     private final SocketAddress socketAddress;
 
-    public SecretKeyAssignedEvent(SecretKey secretKey, SocketAddress socketAddress) {
+    public SecretKeyAssignedEvent(long keyUid, SecretKey secretKey, SocketAddress socketAddress) {
         super();
         if (secretKey == null) {
             throw new NullPointerException("secretKey is null");
@@ -22,6 +23,7 @@ public final class SecretKeyAssignedEvent extends Event<SecretKeyAssignedEvent.H
         if (socketAddress == null) {
             throw new NullPointerException("socketAddress is null");
         }
+        this.keyUid = keyUid;
         this.secretKey = secretKey;
         this.socketAddress = socketAddress;
     }
@@ -29,6 +31,10 @@ public final class SecretKeyAssignedEvent extends Event<SecretKeyAssignedEvent.H
     @Override
     public void handle(Handler handler) throws InterruptedException {
         handler.handleSecretKeyAssigned(this);
+    }
+
+    public long getKeyUid() {
+        return keyUid;
     }
 
     public SecretKey getSecretKey() {
@@ -41,7 +47,8 @@ public final class SecretKeyAssignedEvent extends Event<SecretKeyAssignedEvent.H
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(secretKey=" + secretKey + ", socketAddress=" + socketAddress + ")";
+        return getClass().getSimpleName() + "(keyUid=" + keyUid + ", secretKey=" + secretKey +
+                ", socketAddress=" + socketAddress + ")";
     }
 
     public interface Handler {

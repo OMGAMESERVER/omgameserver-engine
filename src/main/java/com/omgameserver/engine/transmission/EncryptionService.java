@@ -3,6 +3,7 @@ package com.omgameserver.engine.transmission;
 import com.crionuke.bolts.Bolt;
 import com.crionuke.bolts.Dispatcher;
 import com.omgameserver.engine.OmgsProperties;
+import com.omgameserver.engine.events.ClientDisconnectedEvent;
 import com.omgameserver.engine.events.OutgoingDatagramEvent;
 import com.omgameserver.engine.events.OutgoingRawDataEvent;
 import com.omgameserver.engine.events.SecretKeyAssignedEvent;
@@ -23,9 +24,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since 1.0.0
  */
 @Service
-public class EncryptionService extends Bolt implements
+class EncryptionService extends Bolt implements
         SecretKeyAssignedEvent.Handler,
-        OutgoingRawDataEvent.Handler {
+        OutgoingRawDataEvent.Handler,
+        ClientDisconnectedEvent.Handler {
     static private final Logger logger = LoggerFactory.getLogger(EncryptionService.class);
 
     private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
@@ -40,7 +42,7 @@ public class EncryptionService extends Bolt implements
     }
 
     @Override
-    public void handleSecretKeyAssigned(SecretKeyAssignedEvent event) throws InterruptedException {
+    public void handleSecretKeyAssigned(SecretKeyAssignedEvent event) {
         if (logger.isTraceEnabled()) {
             logger.trace("Handle {}", event);
         }
@@ -62,16 +64,26 @@ public class EncryptionService extends Bolt implements
             ByteBuffer datagram = ByteBuffer.allocate(rawData.remaining());
             datagram.put(rawData);
             dispatcher.dispatch(new OutgoingDatagramEvent(socketAddress, datagram));
-        } else  {
-            if (logger.isDebugEnabled())  {
-                logger.debug("Secret key not found for {}",  socketAddress);
+        } else {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Secret key not found for {}", socketAddress);
             }
         }
+    }
+
+    @Override
+    public void handleClientDisconnected(ClientDisconnectedEvent event) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("Handle {}", event);
+        }
+        assignedKeys.remove(event.getSocketAddress());
     }
 
     @PostConstruct
     void postConstruct() {
         threadPoolTaskExecutor.execute(this);
+        dispatcher.subscribe(this, SecretKeyAssignedEvent.class);
         dispatcher.subscribe(this, OutgoingRawDataEvent.class);
+        dispatcher.subscribe(this, ClientDisconnectedEvent.class);
     }
 }

@@ -3,10 +3,7 @@ package com.omgameserver.engine.transmission;
 import com.crionuke.bolts.Bolt;
 import com.crionuke.bolts.Dispatcher;
 import com.omgameserver.engine.OmgsProperties;
-import com.omgameserver.engine.events.AuthorizationCreatedEvent;
-import com.omgameserver.engine.events.IncomingDatagramEvent;
-import com.omgameserver.engine.events.IncomingRawDataEvent;
-import com.omgameserver.engine.events.SecretKeyAssignedEvent;
+import com.omgameserver.engine.events.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -24,16 +21,17 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since 1.0.0
  */
 @Service
-public class DecryptionService extends Bolt implements
-        AuthorizationCreatedEvent.Handler,
-        IncomingDatagramEvent.Handler {
+class DecryptionService extends Bolt implements
+        SecretKeyCreatedEvent.Handler,
+        IncomingDatagramEvent.Handler,
+        SecretKeyExpiredEvent.Handler,
+        ClientDisconnectedEvent.Handler {
     static private final Logger logger = LoggerFactory.getLogger(DecryptionService.class);
 
     private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
     private final Dispatcher dispatcher;
     private final Map<Long, SecretKey> temporaryKeys;
     private final Map<SocketAddress, SecretKey> assignedKeys;
-
 
     DecryptionService(OmgsProperties properties, ThreadPoolTaskExecutor threadPoolTaskExecutor, Dispatcher dispatcher) {
         super("decryptor", properties.getQueueSize());
@@ -44,7 +42,7 @@ public class DecryptionService extends Bolt implements
     }
 
     @Override
-    public void handleAuthorizationCreated(AuthorizationCreatedEvent event) {
+    public void handleSecretKeyCreated(SecretKeyCreatedEvent event) {
         if (logger.isTraceEnabled()) {
             logger.trace("Handle {}", event);
         }
@@ -66,7 +64,7 @@ public class DecryptionService extends Bolt implements
             secretKey = temporaryKeys.remove(keyUid);
             if (secretKey != null) {
                 assignedKeys.put(socketAddress, secretKey);
-                dispatcher.dispatch(new SecretKeyAssignedEvent(secretKey, socketAddress));
+                dispatcher.dispatch(new SecretKeyAssignedEvent(keyUid, secretKey, socketAddress));
             } else {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Unknown key uid={} got from {}", keyUid, socketAddress);
@@ -81,10 +79,28 @@ public class DecryptionService extends Bolt implements
         dispatcher.dispatch(new IncomingRawDataEvent(socketAddress, rawData));
     }
 
+    @Override
+    public void handleSecretKeyExpired(SecretKeyExpiredEvent event) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("Handle {}", event);
+        }
+        temporaryKeys.remove(event.getKeyUid());
+    }
+
+    @Override
+    public void handleClientDisconnected(ClientDisconnectedEvent event) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("Handle {}", event);
+        }
+        assignedKeys.remove(event.getSocketAddress());
+    }
+
     @PostConstruct
     void postConstruct() {
         threadPoolTaskExecutor.execute(this);
-        dispatcher.subscribe(this, AuthorizationCreatedEvent.class);
+        dispatcher.subscribe(this, SecretKeyCreatedEvent.class);
         dispatcher.subscribe(this, IncomingDatagramEvent.class);
+        dispatcher.subscribe(this, SecretKeyExpiredEvent.class);
+        dispatcher.subscribe(this, ClientDisconnectedEvent.class);
     }
 }

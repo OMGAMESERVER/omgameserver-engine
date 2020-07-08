@@ -8,12 +8,12 @@ import javax.crypto.SecretKey;
  * @author Kirill Byvshev (k@byv.sh)
  * @since 1.0.0
  */
-public final class AuthorizationCreatedEvent extends Event<AuthorizationCreatedEvent.Handler> {
+public final class SecretKeyCreatedEvent extends Event<SecretKeyCreatedEvent.Handler> {
 
     private final long keyUid;
     private final SecretKey secretKey;
 
-    public AuthorizationCreatedEvent(long keyUid, SecretKey secretKey) {
+    public SecretKeyCreatedEvent(long keyUid, SecretKey secretKey) {
         super();
         this.keyUid = keyUid;
         this.secretKey = secretKey;
@@ -21,7 +21,7 @@ public final class AuthorizationCreatedEvent extends Event<AuthorizationCreatedE
 
     @Override
     public void handle(Handler handler) throws InterruptedException {
-        handler.handleAuthorizationCreated(this);
+        handler.handleSecretKeyCreated(this);
     }
 
     public long getKeyUid() {
@@ -38,6 +38,6 @@ public final class AuthorizationCreatedEvent extends Event<AuthorizationCreatedE
     }
 
     public interface Handler {
-        void handleAuthorizationCreated(AuthorizationCreatedEvent event) throws InterruptedException;
+        void handleSecretKeyCreated(SecretKeyCreatedEvent event) throws InterruptedException;
     }
 }

@@ -1,7 +1,7 @@
 package com.omgameserver.engine.web;
 
 import com.crionuke.bolts.Dispatcher;
-import com.omgameserver.engine.events.AuthorizationCreatedEvent;
+import com.omgameserver.engine.events.SecretKeyCreatedEvent;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.KeyGenerator;
@@ -26,7 +26,7 @@ class WebService {
         keyGenerator.init(128, secureRandom);
         long keyUid = uidCounter.incrementAndGet();
         SecretKey secretKey = keyGenerator.generateKey();
-        dispatcher.dispatch(new AuthorizationCreatedEvent(keyUid, secretKey));
+        dispatcher.dispatch(new SecretKeyCreatedEvent(keyUid, secretKey));
         return new Authorization(keyUid, secretKey);
     }
 

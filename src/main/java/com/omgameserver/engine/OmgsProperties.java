@@ -18,6 +18,7 @@ public class OmgsProperties {
     private final int threadPoolSize;
     private final int queueSize;
     private final int datagramSize;
+    private final int secretKeyLifetime;
     private final int tickInterval;
     private final int disconnectInterval;
     private final int pingInterval;
@@ -28,6 +29,7 @@ public class OmgsProperties {
                    @Value("${omgameserver.threadPoolSize:32}") int threadPoolSize,
                    @Value("${omgameserver.queueSize:128}") int queueSize,
                    @Value("${omgameserver.datagramSize:508}") int datagramSize,
+                   @Value("${omgameserver.secretKeyLifetime:5000}") int secretKeyLifetime,
                    @Value("${omgameserver.tickInterval:100}") int tickInterval,
                    @Value("${omgameserver.disconnectInterval:5000}") int disconnectInterval,
                    @Value("${omgameserver.pingInterval:1000}") int pingInterval,
@@ -37,6 +39,7 @@ public class OmgsProperties {
         this.threadPoolSize = threadPoolSize;
         this.queueSize = queueSize;
         this.datagramSize = datagramSize;
+        this.secretKeyLifetime = secretKeyLifetime;
         this.tickInterval = tickInterval;
         this.disconnectInterval = disconnectInterval;
         this.pingInterval = pingInterval;
@@ -61,6 +64,10 @@ public class OmgsProperties {
 
     public int getDatagramSize() {
         return datagramSize;
+    }
+
+    public int getSecretKeyLifetime() {
+        return secretKeyLifetime;
     }
 
     public int getTickInterval() {
