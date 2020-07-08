@@ -17,7 +17,6 @@ import java.nio.ByteBuffer;
 import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Kirill Byvshev (k@byv.sh)
