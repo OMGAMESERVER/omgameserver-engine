@@ -8,10 +8,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 public class BaseServiceTest extends Assert implements OmgsConstants {
     static private final Logger logger = LoggerFactory.getLogger(BaseServiceTest.class);
@@ -67,6 +71,13 @@ public class BaseServiceTest extends Assert implements OmgsConstants {
         rawData.put(payload.getBytes());
         rawData.flip();
         return new IncomingRawDataEvent(sourceAddress, rawData);
+    }
+
+    protected SecretKey createSecretKey() throws NoSuchAlgorithmException {
+        KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+        SecureRandom secureRandom = new SecureRandom();
+        keyGenerator.init(128, secureRandom);
+        return keyGenerator.generateKey();
     }
 
     protected ByteBuffer skipHeader(ByteBuffer byteBuffer) {

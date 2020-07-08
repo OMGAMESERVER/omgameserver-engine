@@ -45,12 +45,8 @@ public class KeysTrackerServiceTest extends BaseServiceTest {
 
     @Test
     public void testSecretKeyExpire() throws NoSuchAlgorithmException, InterruptedException {
-        // Create secret key
-        KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
-        SecureRandom secureRandom = new SecureRandom();
-        keyGenerator.init(128, secureRandom);
         long keyUid = 1;
-        SecretKey secretKey = keyGenerator.generateKey();
+        SecretKey secretKey = createSecretKey();
         dispatcher.dispatch(new SecretKeyCreatedEvent(keyUid, secretKey));
         Thread.sleep(PROPERTY_SECRET_KEY_LIFETIME);
         // Expiration interval tracked every tick event
