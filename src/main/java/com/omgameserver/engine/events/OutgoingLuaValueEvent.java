@@ -11,16 +11,16 @@ public final class OutgoingLuaValueEvent extends Event<OutgoingLuaValueEvent.Han
 
     private final long clientUid;
     private final LuaValue luaValue;
-    private final boolean ephemeral;
+    private final boolean reliable;
 
-    public OutgoingLuaValueEvent(long clientUid, LuaValue luaValue, boolean ephemeral) {
+    public OutgoingLuaValueEvent(long clientUid, LuaValue luaValue, boolean reliable) {
         super();
         if (luaValue == null) {
             throw new NullPointerException("luaValue is null");
         }
         this.clientUid = clientUid;
         this.luaValue = luaValue;
-        this.ephemeral = ephemeral;
+        this.reliable = reliable;
     }
 
     @Override
@@ -36,14 +36,14 @@ public final class OutgoingLuaValueEvent extends Event<OutgoingLuaValueEvent.Han
         return luaValue;
     }
 
-    public boolean isEphemeral() {
-        return ephemeral;
+    public boolean isReliable() {
+        return reliable;
     }
 
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(clientUid=" + clientUid + ", luaValue=" + luaValue +
-                ", ephemeral=" + ephemeral + ")";
+                ", reliable=" + reliable + ")";
     }
 
     public interface Handler {

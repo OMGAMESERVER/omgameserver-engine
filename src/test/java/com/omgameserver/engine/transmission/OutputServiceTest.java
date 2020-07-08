@@ -116,7 +116,7 @@ public class OutputServiceTest extends BaseServiceTest implements OmgsConstants 
                     ByteBuffer outgoingByteBuffer = ByteBuffer.allocate(Integer.BYTES);
                     outgoingByteBuffer.putInt(iteration);
                     outgoingByteBuffer.flip();
-                    dispatcher.dispatch(new OutgoingPayloadEvent(clientUid, outgoingByteBuffer, false));
+                    dispatcher.dispatch(new OutgoingPayloadEvent(clientUid, outgoingByteBuffer, true));
                     // Save data to waiting on client
                     waiting.add(iteration);
                 }

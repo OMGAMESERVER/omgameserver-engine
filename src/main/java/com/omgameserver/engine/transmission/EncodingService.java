@@ -67,13 +67,13 @@ public class EncodingService extends Bolt implements
         }
         long clientUid = event.getClientUid();
         LuaValue luaValue = event.getLuaValue();
-        boolean ephemeral = event.isEphemeral();
+        boolean reliable = event.isReliable();
         try {
             ByteBuffer payload = ByteBuffer.allocate(properties.getDatagramSize() - HEADER_SIZE);
             // Encode LuaValue to MsgPack
             encode(payload, luaValue);
             payload.flip();
-            dispatcher.dispatch(new OutgoingPayloadEvent(clientUid, payload, ephemeral));
+            dispatcher.dispatch(new OutgoingPayloadEvent(clientUid, payload, reliable));
         } catch (Exception e) {
             if (logger.isWarnEnabled()) {
                 logger.warn("Encoding LuaValue to RawData for {} failed with {}", event.getClientUid(), e);

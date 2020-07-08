@@ -104,7 +104,7 @@ class OutputClient implements OmgsConstants {
                     nextEvent = createNextEvent();
                 }
                 nextEvent.getRawData().put(payload);
-                if (!payloadEvent.isEphemeral()) {
+                if (payloadEvent.isReliable()) {
                     saveEvent(lastOutgoingSeq, payloadEvent);
                 }
             }
@@ -151,7 +151,9 @@ class OutputClient implements OmgsConstants {
                 if (delta >= 32 || (incomingBit & (1 << delta)) == 0) {
                     resendEvents(seq);
                 } else {
-                    logger.trace("Seq={} confirmed from {}", seq, socketAddress);
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Seq={} confirmed from {}", seq, socketAddress);
+                    }
                     savedEvents.remove(seq);
                 }
                 seqIterator.remove();
@@ -162,7 +164,9 @@ class OutputClient implements OmgsConstants {
     private void resendEvents(int seq) {
         List<OutgoingPayloadEvent> events = savedEvents.remove(seq);
         if (events != null) {
-            logger.trace("Resend events from seq={} for {}", seq, socketAddress);
+            if (logger.isTraceEnabled()) {
+                logger.trace("Resend events from seq={} for {}", seq, socketAddress);
+            }
             for (OutgoingPayloadEvent event : events) {
                 event.getPayload().position(0);
                 send(event);
