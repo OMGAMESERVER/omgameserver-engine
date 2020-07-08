@@ -13,9 +13,12 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
+import java.security.GeneralSecurityException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -30,15 +33,17 @@ class EncryptionService extends Bolt implements
         ClientDisconnectedEvent.Handler {
     static private final Logger logger = LoggerFactory.getLogger(EncryptionService.class);
 
+    private final OmgsProperties properties;
     private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
     private final Dispatcher dispatcher;
-    private final Map<SocketAddress, SecretKey> assignedKeys;
+    private final Map<SocketAddress, Cipher> ciphers;
 
     EncryptionService(OmgsProperties properties, ThreadPoolTaskExecutor threadPoolTaskExecutor, Dispatcher dispatcher) {
         super("encryptor", properties.getQueueSize());
+        this.properties = properties;
         this.threadPoolTaskExecutor = threadPoolTaskExecutor;
         this.dispatcher = dispatcher;
-        assignedKeys = new ConcurrentHashMap<>();
+        ciphers = new HashMap<>();
     }
 
     @Override
@@ -48,7 +53,18 @@ class EncryptionService extends Bolt implements
         }
         SecretKey secretKey = event.getSecretKey();
         SocketAddress socketAddress = event.getSocketAddress();
-        assignedKeys.put(socketAddress, secretKey);
+        try {
+            Cipher cipher = Cipher.getInstance("AES");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+            ciphers.put(socketAddress, cipher);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Decryption cipher created for {}", socketAddress);
+            }
+        } catch (GeneralSecurityException e) {
+            if (logger.isWarnEnabled()) {
+                logger.warn(e.getMessage(), e);
+            }
+        }
     }
 
     @Override
@@ -58,15 +74,20 @@ class EncryptionService extends Bolt implements
         }
         SocketAddress socketAddress = event.getTargetAddress();
         ByteBuffer rawData = event.getRawData();
-        SecretKey secretKey = assignedKeys.get(socketAddress);
-        if (secretKey != null) {
-            // TODO: encrypt rawData by secretKey
-            ByteBuffer datagram = ByteBuffer.allocate(rawData.remaining());
-            datagram.put(rawData);
-            dispatcher.dispatch(new OutgoingDatagramEvent(socketAddress, datagram));
+        Cipher cipher = ciphers.get(socketAddress);
+        if (cipher != null) {
+            try {
+                ByteBuffer datagram = ByteBuffer.allocate(properties.getDatagramSize());
+                cipher.doFinal(rawData, datagram);
+                dispatcher.dispatch(new OutgoingDatagramEvent(socketAddress, datagram));
+            } catch (GeneralSecurityException e) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Decryption failed for {} as {}", socketAddress, e);
+                }
+            }
         } else {
             if (logger.isDebugEnabled()) {
-                logger.debug("Secret key not found for {}", socketAddress);
+                logger.debug("Cipher not found for {}", socketAddress);
             }
         }
     }
@@ -76,7 +97,7 @@ class EncryptionService extends Bolt implements
         if (logger.isTraceEnabled()) {
             logger.trace("Handle {}", event);
         }
-        assignedKeys.remove(event.getSocketAddress());
+        ciphers.remove(event.getSocketAddress());
     }
 
     @PostConstruct

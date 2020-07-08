@@ -10,9 +10,12 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
+import java.security.GeneralSecurityException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -28,17 +31,19 @@ class DecryptionService extends Bolt implements
         ClientDisconnectedEvent.Handler {
     static private final Logger logger = LoggerFactory.getLogger(DecryptionService.class);
 
+    private final OmgsProperties properties;
     private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
     private final Dispatcher dispatcher;
     private final Map<Long, SecretKey> temporaryKeys;
-    private final Map<SocketAddress, SecretKey> assignedKeys;
+    private final Map<SocketAddress, Cipher> ciphers;
 
     DecryptionService(OmgsProperties properties, ThreadPoolTaskExecutor threadPoolTaskExecutor, Dispatcher dispatcher) {
         super("decryptor", properties.getQueueSize());
+        this.properties = properties;
         this.threadPoolTaskExecutor = threadPoolTaskExecutor;
         this.dispatcher = dispatcher;
-        temporaryKeys = new ConcurrentHashMap<>();
-        assignedKeys = new ConcurrentHashMap<>();
+        temporaryKeys = new HashMap<>();
+        ciphers = new HashMap<>();
     }
 
     @Override
@@ -59,27 +64,23 @@ class DecryptionService extends Bolt implements
         SocketAddress socketAddress = event.getSocketAddress();
         ByteBuffer byteBuffer = event.getByteBuffer();
         long keyUid = byteBuffer.getLong();
-        SecretKey secretKey = assignedKeys.get(socketAddress);
-        if (secretKey == null) {
-            secretKey = temporaryKeys.remove(keyUid);
-            if (secretKey != null) {
-                assignedKeys.put(socketAddress, secretKey);
+        Cipher cipher = getCipher(keyUid, socketAddress);
+        if (cipher != null) {
+            ByteBuffer rawData = ByteBuffer.allocate(properties.getDatagramSize());
+            try {
+                cipher.doFinal(byteBuffer, rawData);
+                rawData.flip();
+                dispatcher.dispatch(new IncomingRawDataEvent(socketAddress, rawData));
+            } catch (GeneralSecurityException e) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Key with uid={} assigned to {}", keyUid, socketAddress);
+                    logger.debug("Encryption failed for {} as {}", socketAddress, e);
                 }
-                dispatcher.dispatch(new SecretKeyAssignedEvent(keyUid, secretKey, socketAddress));
-            } else {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Unknown keyUid={} got from {}", keyUid, socketAddress);
-                }
-                return;
+            }
+        } else {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Cipher not found for {}", socketAddress);
             }
         }
-        // TODO: decrypt using secretKey
-        ByteBuffer rawData = ByteBuffer.allocate(byteBuffer.remaining());
-        rawData.put(byteBuffer);
-        rawData.flip();
-        dispatcher.dispatch(new IncomingRawDataEvent(socketAddress, rawData));
     }
 
     @Override
@@ -95,7 +96,7 @@ class DecryptionService extends Bolt implements
         if (logger.isTraceEnabled()) {
             logger.trace("Handle {}", event);
         }
-        assignedKeys.remove(event.getSocketAddress());
+        ciphers.remove(event.getSocketAddress());
     }
 
     @PostConstruct
@@ -105,5 +106,33 @@ class DecryptionService extends Bolt implements
         dispatcher.subscribe(this, IncomingDatagramEvent.class);
         dispatcher.subscribe(this, SecretKeyExpiredEvent.class);
         dispatcher.subscribe(this, ClientDisconnectedEvent.class);
+    }
+
+    private Cipher getCipher(long keyUid, SocketAddress socketAddress) throws InterruptedException {
+        Cipher cipher = ciphers.get(socketAddress);
+        if (cipher == null) {
+            SecretKey secretKey = temporaryKeys.remove(keyUid);
+            if (secretKey != null) {
+                try {
+                    cipher = Cipher.getInstance("AES");
+                    cipher.init(Cipher.DECRYPT_MODE, secretKey);
+                    ciphers.put(socketAddress, cipher);
+                    dispatcher.dispatch(new SecretKeyAssignedEvent(keyUid, secretKey, socketAddress));
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Key with uid={} assigned to {}", keyUid, socketAddress);
+                    }
+                } catch (GeneralSecurityException e) {
+                    if (logger.isWarnEnabled()) {
+                        logger.warn(e.getMessage(), e);
+                    }
+                    return null;
+                }
+            } else {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Not found key with uid={} for {}", uid, socketAddress);
+                }
+            }
+        }
+        return cipher;
     }
 }
