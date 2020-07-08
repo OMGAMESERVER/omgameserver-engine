@@ -35,7 +35,7 @@ public class KeysTrackerService extends Bolt implements
     private final Map<Long, Long> temporaryKeys;
 
     KeysTrackerService(OmgsProperties properties, ThreadPoolTaskExecutor threadPoolTaskExecutor, Dispatcher dispatcher) {
-        super("kesy-tracker", properties.getQueueSize());
+        super("keys-tracker", properties.getQueueSize());
         this.properties = properties;
         this.threadPoolTaskExecutor = threadPoolTaskExecutor;
         this.dispatcher = dispatcher;
