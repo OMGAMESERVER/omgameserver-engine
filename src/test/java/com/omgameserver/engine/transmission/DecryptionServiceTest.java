@@ -12,10 +12,12 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -62,6 +64,35 @@ public class DecryptionServiceTest extends BaseServiceTest {
         assertEquals(keyUid, assignedEvent.getKeyUid());
         assertEquals(secretKey, assignedEvent.getSecretKey());
         assertEquals(socketAddress, assignedEvent.getSocketAddress());
+    }
+
+    @Test
+    public void testDecryption() throws NoSuchAlgorithmException, GeneralSecurityException, InterruptedException {
+        // Generate key
+        long keyUid = 1;
+        SecretKey secretKey = createSecretKey();
+        dispatcher.dispatch(new SecretKeyCreatedEvent(keyUid, secretKey));
+        // Create datagram
+        SocketAddress socketAddress = generateSocketAddress();
+        ByteBuffer datagram = ByteBuffer.allocate(PROPERTY_DATAGRAM_SIZE);
+        datagram.putLong(keyUid);
+        // Cipher data
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+        String testText = "helloworld";
+        byte[] cipherBytes = cipher.doFinal(testText.getBytes());
+        datagram.put(cipherBytes);
+        datagram.flip();
+        dispatcher.dispatch(new IncomingDatagramEvent(socketAddress, datagram));
+        // Wait result event
+        IncomingRawDataEvent rawDataEvent = incomingRawDataEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        assertNotNull(rawDataEvent);
+        // Read raw data
+        ByteBuffer rawData = rawDataEvent.getRawData();
+        byte[] bytes = new byte[rawData.remaining()];
+        rawData.get(bytes);
+        String resultText = new String(bytes);
+        assertEquals(testText, resultText);
     }
 
     private class ConsumerStub extends Bolt implements
