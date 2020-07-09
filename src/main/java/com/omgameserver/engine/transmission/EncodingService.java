@@ -23,7 +23,7 @@ import java.nio.ByteBuffer;
  * @since 1.0.0
  */
 @Service
-public class EncodingService extends Bolt implements
+class EncodingService extends Bolt implements
         OutgoingLuaValueEvent.Handler,
         OmgsConstants {
     static private final Logger logger = LoggerFactory.getLogger(EncodingService.class);

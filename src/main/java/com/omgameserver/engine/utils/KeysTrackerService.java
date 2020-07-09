@@ -22,7 +22,7 @@ import java.util.Map;
  * @since 1.0.0
  */
 @Service
-public class KeysTrackerService extends Bolt implements
+class KeysTrackerService extends Bolt implements
         SecretKeyCreatedEvent.Handler,
         SecretKeyAssignedEvent.Handler,
         TickEvent.Handler {

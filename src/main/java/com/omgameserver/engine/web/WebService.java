@@ -16,7 +16,7 @@ class WebService {
 
     private final Dispatcher dispatcher;
 
-    public WebService(Dispatcher dispatcher) {
+    WebService(Dispatcher dispatcher) {
         this.dispatcher = dispatcher;
     }
 

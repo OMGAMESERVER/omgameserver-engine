@@ -19,7 +19,7 @@ import java.nio.ByteBuffer;
  * @since 1.0.0
  */
 @Service
-public class DecodingService extends Bolt implements
+class DecodingService extends Bolt implements
         IncomingPayloadEvent.Handler {
     static private final Logger logger = LoggerFactory.getLogger(DecodingService.class);
 
