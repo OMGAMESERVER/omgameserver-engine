@@ -10,18 +10,8 @@ import org.slf4j.LoggerFactory;
 
 class LuaLogFunction extends VarArgFunction {
     static private final Logger logger = LoggerFactory.getLogger(LuaLogFunction.class);
-
-    enum LEVEL {
-        ERROR,
-        WARN,
-        INFO,
-        DEBUG,
-        TRACE,
-    }
-
     private final LEVEL logLevel;
     private final LuaValue tostring;
-
     LuaLogFunction(Globals globals, LEVEL logLevel) {
         this.logLevel = logLevel;
         tostring = globals.get("tostring");
@@ -55,5 +45,13 @@ class LuaLogFunction extends VarArgFunction {
                 break;
         }
         return NONE;
+    }
+
+    enum LEVEL {
+        ERROR,
+        WARN,
+        INFO,
+        DEBUG,
+        TRACE,
     }
 }

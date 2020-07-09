@@ -64,6 +64,6 @@ class LuaWorker extends Bolt implements
         threadPoolTaskExecutor.execute(this);
         dispatcher.subscribe(this, TickEvent.class);
         // Subscribe to all event dispatched directly to this bolt
-        dispatcher.subscribe(this,this);
+        dispatcher.subscribe(this, this);
     }
 }
