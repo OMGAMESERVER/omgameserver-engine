@@ -43,11 +43,11 @@ public class TickServiceTest extends BaseServiceTest {
         TickEvent tick2 = tickEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         TickEvent tick3 = tickEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         assertNotNull(tick1);
-        assertEquals(tick1.getNumber(), 1);
+        assertEquals(1, tick1.getNumber());
         assertNotNull(tick2);
-        assertEquals(tick2.getNumber(), 2);
+        assertEquals(2, tick2.getNumber());
         assertNotNull(tick3);
-        assertEquals(tick3.getNumber(), 3);
+        assertEquals(3, tick3.getNumber());
     }
 
     private class ConsumerStub extends Bolt implements TickEvent.Handler {
