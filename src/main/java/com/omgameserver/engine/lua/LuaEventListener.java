@@ -24,7 +24,7 @@ class LuaEventListener extends LuaTable {
         set(FUNCTION_REMOVE_EVENT_LISTENER, new LuaRemoveEventListenerFunction(functional, tabulated));
     }
 
-    protected void dispatch(String id, LuaValue event) {
+    void dispatch(String id, LuaValue event) {
         LuaString key = LuaString.valueOf(id);
         Set<LuaFunction> functions = functional.get(key);
         if (functions != null) {
