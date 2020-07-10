@@ -7,7 +7,6 @@ import com.omgameserver.engine.events.IncomingLuaValueEvent;
 import com.omgameserver.engine.events.TickEvent;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaTable;
-import org.luaj.vm2.lib.jse.JsePlatform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -19,19 +18,19 @@ class LuaWorker extends Bolt implements
 
     private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
     private final Dispatcher dispatcher;
-    private final Globals globals;
+    private final LuaGlobals luaGlobals;
     private final LuaRuntime luaRuntime;
 
     private final String EVENT_RECEIVED = "received";
     private final String EVENT_TICK = "tick";
 
     LuaWorker(OmgsProperties properties, ThreadPoolTaskExecutor threadPoolTaskExecutor, Dispatcher dispatcher,
-              String luaScript) {
+              LuaGlobals luaGlobals, String luaScript) {
         super(luaScript, properties.getQueueSize());
         this.threadPoolTaskExecutor = threadPoolTaskExecutor;
         this.dispatcher = dispatcher;
-        globals = JsePlatform.standardGlobals();
-        globals.finder = new LuaScriptFinder();
+        this.luaGlobals = luaGlobals;
+        Globals globals = luaGlobals.getGlobals();
         luaRuntime = new LuaRuntime(globals);
         globals.set("runtime", luaRuntime);
         globals.loadfile(luaScript).call();

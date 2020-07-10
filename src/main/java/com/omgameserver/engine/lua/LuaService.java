@@ -25,13 +25,14 @@ public class LuaService extends Bolt implements
     private final LuaWorker defaultWorker;
     private final Map<Long, LuaWorker> routes;
 
-    LuaService(OmgsProperties properties, ThreadPoolTaskExecutor threadPoolTaskExecutor, Dispatcher dispatcher) {
+    LuaService(OmgsProperties properties, ThreadPoolTaskExecutor threadPoolTaskExecutor, Dispatcher dispatcher,
+               LuaGlobals luaGlobals) {
         super("lua", properties.getQueueSize());
         this.properties = properties;
         this.threadPoolTaskExecutor = threadPoolTaskExecutor;
         this.dispatcher = dispatcher;
         workerExecutor = createWorkerExecutor();
-        defaultWorker = new LuaWorker(properties, workerExecutor, dispatcher, properties.getMainScript());
+        defaultWorker = new LuaWorker(properties, workerExecutor, dispatcher, luaGlobals, properties.getMainScript());
         defaultWorker.postConstruct();
         routes = new HashMap<>();
     }
