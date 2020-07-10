@@ -12,6 +12,7 @@ class LuaLogFunction extends VarArgFunction {
     static private final Logger logger = LoggerFactory.getLogger(LuaLogFunction.class);
     private final LEVEL logLevel;
     private final LuaValue tostring;
+
     LuaLogFunction(Globals globals, LEVEL logLevel) {
         this.logLevel = logLevel;
         tostring = globals.get("tostring");

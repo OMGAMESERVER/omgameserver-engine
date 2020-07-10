@@ -3,7 +3,10 @@ package com.omgameserver.engine.transmission;
 import com.crionuke.bolts.Bolt;
 import com.omgameserver.engine.BaseServiceTest;
 import com.omgameserver.engine.OmgsConstants;
-import com.omgameserver.engine.events.*;
+import com.omgameserver.engine.events.IncomingHeaderEvent;
+import com.omgameserver.engine.events.OutgoingPayloadEvent;
+import com.omgameserver.engine.events.OutgoingRawDataEvent;
+import com.omgameserver.engine.events.TickEvent;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -99,7 +102,7 @@ public class OutputServiceTest extends BaseServiceTest implements OmgsConstants 
             logger.info("socketAddress={}", socketAddress);
             // Initialize connection
             dispatcher.dispatch(
-                    new IncomingHeaderEvent(socketAddress, clientUid,1,0,0, HEADER_SYS_NOVALUE));
+                    new IncomingHeaderEvent(socketAddress, clientUid, 1, 0, 0, HEADER_SYS_NOVALUE));
             double lossSimulationLevel = 0.1 + Math.random() * 0.4;
             logger.info("lossSimulationLevel={}", lossSimulationLevel);
             int lastIncomingBit = 0;
@@ -121,7 +124,7 @@ public class OutputServiceTest extends BaseServiceTest implements OmgsConstants 
                     waiting.add(iteration);
                 }
                 // Flush on server works every tick
-                dispatcher.dispatch(new TickEvent(iteration,0));
+                dispatcher.dispatch(new TickEvent(iteration, 0));
                 iteration++;
                 // Handle server datagrams
                 OutgoingRawDataEvent event =

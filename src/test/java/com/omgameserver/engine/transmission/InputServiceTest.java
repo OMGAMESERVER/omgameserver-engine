@@ -48,7 +48,7 @@ public class InputServiceTest extends BaseServiceTest {
         // Send datagram with specified source address and header
         SocketAddress sourceAddress = generateSocketAddress();
         dispatcher.dispatch(createIncomingRawDataEvent(sourceAddress,
-                1, 2,3, (byte) 0,"payload"));
+                1, 2, 3, (byte) 0, "payload"));
         // Waiting header event
         IncomingHeaderEvent incomingHeaderEvent = incomingHeaderEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         logger.info("Got {}", incomingHeaderEvent);
@@ -66,7 +66,7 @@ public class InputServiceTest extends BaseServiceTest {
         // Send datagram with specified payload
         String testPayload = "payload";
         dispatcher.dispatch(createIncomingRawDataEvent(generateSocketAddress(),
-                1, 2,3, (byte) 0, testPayload));
+                1, 2, 3, (byte) 0, testPayload));
         // Waiting for payload event
         IncomingPayloadEvent incomingPayloadEvent = incomingPayloadEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         logger.info("Got {}", incomingPayloadEvent);
@@ -81,10 +81,10 @@ public class InputServiceTest extends BaseServiceTest {
         // Send datagram to client creation
         SocketAddress sourceAddress = generateSocketAddress();
         dispatcher.dispatch(createIncomingRawDataEvent(sourceAddress,
-                1, 0 ,0, (byte) 0, "payload"));
+                1, 0, 0, (byte) 0, "payload"));
         // InputService check disconnect interval for clients every tick
         Thread.sleep(properties.getDisconnectInterval() * 2);
-        dispatcher.dispatch(new TickEvent(1,PROPERTY_DISCONNECT_INTERVAL * 2));
+        dispatcher.dispatch(new TickEvent(1, PROPERTY_DISCONNECT_INTERVAL * 2));
         // Waiting for disconnect event
         ClientDisconnectedEvent clientDisconnectedEvent =
                 clientDisconnectedEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
@@ -99,7 +99,7 @@ public class InputServiceTest extends BaseServiceTest {
         // Send datagram to client creation
         SocketAddress sourceAddress = generateSocketAddress();
         dispatcher.dispatch(createIncomingRawDataEvent(sourceAddress,
-                1, 0 ,0, (byte) 0, "payload"));
+                1, 0, 0, (byte) 0, "payload"));
         // Waiting for payload event with clientUid
         IncomingPayloadEvent payloadEvent = incomingPayloadEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         logger.info("Got {}", payloadEvent);

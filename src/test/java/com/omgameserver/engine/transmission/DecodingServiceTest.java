@@ -5,7 +5,6 @@ import com.omgameserver.engine.BaseServiceTest;
 import com.omgameserver.engine.events.IncomingLuaValueEvent;
 import com.omgameserver.engine.events.IncomingPayloadEvent;
 import com.omgameserver.engine.events.SecretKeyAssignedEvent;
-import org.apache.tomcat.util.buf.ByteBufferUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -202,12 +201,12 @@ public class DecodingServiceTest extends BaseServiceTest {
         LuaValue luaValue = incomingLuaValueEvent.getLuaValue();
         LuaValue fixMap = luaValue.get("fixmap");
         assertNotNull(fixMap);
-        for (int i = 1; i <= 8; i*=2) {
+        for (int i = 1; i <= 8; i *= 2) {
             assertTrue(fixMap.get(String.valueOf(i)).checkint() == i);
         }
         LuaValue map16 = luaValue.get("map16");
         assertNotNull(map16);
-        for (int i = 1; i <= 65536 + 1; i*=2) {
+        for (int i = 1; i <= 65536 + 1; i *= 2) {
             assertTrue(map16.get(String.valueOf(i)).checkint() == i);
         }
     }
