@@ -25,7 +25,8 @@ class LuaWorker extends Bolt implements
     private final String EVENT_RECEIVED = "received";
     private final String EVENT_TICK = "tick";
 
-    LuaWorker(OmgsProperties properties, ThreadPoolTaskExecutor threadPoolTaskExecutor, Dispatcher dispatcher, String luaScript) {
+    LuaWorker(OmgsProperties properties, ThreadPoolTaskExecutor threadPoolTaskExecutor, Dispatcher dispatcher,
+              String luaScript) {
         super(luaScript, properties.getQueueSize());
         this.threadPoolTaskExecutor = threadPoolTaskExecutor;
         this.dispatcher = dispatcher;
@@ -64,6 +65,6 @@ class LuaWorker extends Bolt implements
         threadPoolTaskExecutor.execute(this);
         dispatcher.subscribe(this, TickEvent.class);
         // Subscribe to all event dispatched directly to this bolt
-        dispatcher.subscribe(this, this);
+        dispatcher.subscribe(this);
     }
 }
