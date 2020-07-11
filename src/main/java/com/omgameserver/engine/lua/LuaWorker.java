@@ -5,6 +5,7 @@ import com.omgameserver.engine.OmgsDispatcher;
 import com.omgameserver.engine.OmgsExecutors;
 import com.omgameserver.engine.OmgsProperties;
 import com.omgameserver.engine.events.ClientConnectedEvent;
+import com.omgameserver.engine.events.ClientDisconnectedEvent;
 import com.omgameserver.engine.events.IncomingLuaValueEvent;
 import com.omgameserver.engine.events.TickEvent;
 import org.luaj.vm2.Globals;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 class LuaWorker extends Bolt implements
         ClientConnectedEvent.Handler,
+        ClientDisconnectedEvent.Handler,
         IncomingLuaValueEvent.Handler,
         TickEvent.Handler {
     static private final Logger logger = LoggerFactory.getLogger(LuaWorker.class);
@@ -24,6 +26,7 @@ class LuaWorker extends Bolt implements
     private final LuaRuntime luaRuntime;
 
     private final String EVENT_CLIENT_CONNTECTED = "client_connected";
+    private final String EVENT_CLIENT_DISCONNECTED = "client_disconnected";
     private final String EVENT_RECEIVED = "received";
     private final String EVENT_TICK = "tick";
 
@@ -48,6 +51,17 @@ class LuaWorker extends Bolt implements
         luaEvent.set("id", EVENT_CLIENT_CONNTECTED);
         luaEvent.set("client_uid", event.getClientUid());
         luaRuntime.dispatch(EVENT_CLIENT_CONNTECTED, luaEvent);
+    }
+
+    @Override
+    public void handleClientDisconnected(ClientDisconnectedEvent event) throws InterruptedException {
+        if (logger.isTraceEnabled()) {
+            logger.trace("Handle {}", event);
+        }
+        LuaTable luaEvent = new LuaTable();
+        luaEvent.set("id", EVENT_CLIENT_DISCONNECTED);
+        luaEvent.set("client_uid", event.getClientUid());
+        luaRuntime.dispatch(EVENT_CLIENT_DISCONNECTED, luaEvent);
     }
 
     @Override
@@ -77,6 +91,7 @@ class LuaWorker extends Bolt implements
     void postConstruct() {
         executors.executeInUserPool(this);
         dispatcher.getDispatcher().subscribe(this, ClientConnectedEvent.class);
+        dispatcher.getDispatcher().subscribe(this, ClientDisconnectedEvent.class);
         dispatcher.getDispatcher().subscribe(this, TickEvent.class);
         // Subscribe to all event dispatched directly to this bolt
         dispatcher.getDispatcher().subscribe(this);

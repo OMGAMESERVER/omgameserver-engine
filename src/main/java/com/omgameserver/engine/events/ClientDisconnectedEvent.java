@@ -11,13 +11,15 @@ import java.net.SocketAddress;
 public final class ClientDisconnectedEvent extends Event<ClientDisconnectedEvent.Handler> {
 
     private final SocketAddress socketAddress;
+    private final long clientUid;
 
-    public ClientDisconnectedEvent(SocketAddress socketAddress) {
+    public ClientDisconnectedEvent(SocketAddress socketAddress, long clientUid) {
         super();
         if (socketAddress == null) {
             throw new NullPointerException("socketAddress is null");
         }
         this.socketAddress = socketAddress;
+        this.clientUid = clientUid;
     }
 
     @Override
@@ -29,9 +31,13 @@ public final class ClientDisconnectedEvent extends Event<ClientDisconnectedEvent
         return socketAddress;
     }
 
+    public long getClientUid() {
+        return clientUid;
+    }
+
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(socketAddress=" + socketAddress + ")";
+        return getClass().getSimpleName() + "(socketAddress=" + socketAddress + ", clientUid=" + clientUid + ")";
     }
 
     public interface Handler {

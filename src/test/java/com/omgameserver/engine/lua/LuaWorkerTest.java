@@ -20,6 +20,7 @@ public class LuaWorkerTest extends LuaBaseTest {
     static private final Logger logger = LoggerFactory.getLogger(LuaWorkerTest.class);
 
     private BlockingQueue<LuaClientConnectedReceivedEvent> luaClientConnectedReceivedEvents;
+    private BlockingQueue<LuaClientDisconnectedReceivedEvent> luaClientDisconnectedReceivedEvents;
     private BlockingQueue<LuaDataReceivedEvent> luaDataReceivedEvents;
     private BlockingQueue<LuaTickReceivedEvent> luaTickReceivedEvents;
     private BlockingQueue<OutgoingLuaValueEvent> outgoingLuaValueEvents;
@@ -29,6 +30,7 @@ public class LuaWorkerTest extends LuaBaseTest {
     public void beforeTest() throws UnknownHostException {
         createComponents();
         luaClientConnectedReceivedEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
+        luaClientDisconnectedReceivedEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
         luaDataReceivedEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
         luaTickReceivedEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
         outgoingLuaValueEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
@@ -46,7 +48,7 @@ public class LuaWorkerTest extends LuaBaseTest {
         LuaWorker luaWorker = new LuaWorker(properties, executors, dispatcher, luaGlobals,
                 "lua_client_connected_listener_test.lua");
         luaWorker.postConstruct();
-        long clientUid = 12;
+        long clientUid = 1;
         SocketAddress socketAddress = generateSocketAddress();
         dispatcher.getDispatcher().dispatch(new ClientConnectedEvent(socketAddress, clientUid));
         LuaClientConnectedReceivedEvent luaClientConnectedReceivedEvent =
@@ -54,6 +56,21 @@ public class LuaWorkerTest extends LuaBaseTest {
         luaWorker.finish();
         assertNotNull(luaClientConnectedReceivedEvent);
         assertEquals(clientUid, luaClientConnectedReceivedEvent.getClientUid());
+    }
+
+    @Test
+    public void testClientDisconnectedListener() throws InterruptedException {
+        LuaWorker luaWorker = new LuaWorker(properties, executors, dispatcher, luaGlobals,
+                "lua_client_disconnected_listener_test.lua");
+        luaWorker.postConstruct();
+        long clientUid = 1;
+        SocketAddress socketAddress = generateSocketAddress();
+        dispatcher.getDispatcher().dispatch(new ClientDisconnectedEvent(socketAddress, clientUid));
+        LuaClientDisconnectedReceivedEvent luaClientDisconnectedReceivedEvent =
+                luaClientDisconnectedReceivedEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        luaWorker.finish();
+        assertNotNull(luaClientDisconnectedReceivedEvent);
+        assertEquals(clientUid, luaClientDisconnectedReceivedEvent.getClientUid());
     }
 
     @Test
@@ -101,6 +118,7 @@ public class LuaWorkerTest extends LuaBaseTest {
 
     private class ConsumerStub extends Bolt implements
             LuaClientConnectedReceivedEvent.Handler,
+            LuaClientDisconnectedReceivedEvent.Handler,
             LuaDataReceivedEvent.Handler,
             LuaTickReceivedEvent.Handler,
             OutgoingLuaValueEvent.Handler {
@@ -112,6 +130,11 @@ public class LuaWorkerTest extends LuaBaseTest {
         @Override
         public void handleLuaClientConnectedReceivedEvent(LuaClientConnectedReceivedEvent event) throws InterruptedException {
             luaClientConnectedReceivedEvents.put(event);
+        }
+
+        @Override
+        public void handleLuaClientDisconnectedReceivedEvent(LuaClientDisconnectedReceivedEvent event) throws InterruptedException {
+            luaClientDisconnectedReceivedEvents.put(event);
         }
 
         @Override
@@ -132,6 +155,7 @@ public class LuaWorkerTest extends LuaBaseTest {
         void postConstruct() {
             executors.executeInInternalPool(this);
             dispatcher.getDispatcher().subscribe(this, LuaClientConnectedReceivedEvent.class);
+            dispatcher.getDispatcher().subscribe(this, LuaClientDisconnectedReceivedEvent.class);
             dispatcher.getDispatcher().subscribe(this, LuaDataReceivedEvent.class);
             dispatcher.getDispatcher().subscribe(this, LuaTickReceivedEvent.class);
             dispatcher.getDispatcher().subscribe(this, OutgoingLuaValueEvent.class);
