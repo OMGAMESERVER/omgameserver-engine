@@ -42,7 +42,7 @@ public class LuaWorkerTest extends LuaBaseTest {
     public void testTickEvent() throws InterruptedException {
         long tickNumber = 1;
         long tickDeltaTime = 100;
-        dispatcher.dispatch(new TickEvent(tickNumber, tickDeltaTime));
+        dispatcher.getDispatcher().dispatch(new TickEvent(tickNumber, tickDeltaTime));
         LuaTickEventReceived luaTickEventReceived = luaTickEventReceiveds.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         assertNotNull(luaTickEventReceived);
         assertEquals(tickNumber, luaTickEventReceived.getNumber());
@@ -63,7 +63,7 @@ public class LuaWorkerTest extends LuaBaseTest {
 
         void postConstruct() {
             executors.executeInInternalPool(this);
-            dispatcher.subscribe(this, LuaTickEventReceived.class);
+            dispatcher.getDispatcher().subscribe(this, LuaTickEventReceived.class);
         }
     }
 }

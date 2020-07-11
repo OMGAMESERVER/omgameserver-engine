@@ -60,7 +60,7 @@ public class TickServiceTest extends BaseServiceTest {
 
         void postConstruct() {
             executors.executeInInternalPool(this);
-            dispatcher.subscribe(this, TickEvent.class);
+            dispatcher.getDispatcher().subscribe(this, TickEvent.class);
         }
     }
 }

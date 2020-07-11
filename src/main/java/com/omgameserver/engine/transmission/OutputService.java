@@ -1,7 +1,7 @@
 package com.omgameserver.engine.transmission;
 
 import com.crionuke.bolts.Bolt;
-import com.crionuke.bolts.Dispatcher;
+import com.omgameserver.engine.OmgsDispatcher;
 import com.omgameserver.engine.OmgsExecutors;
 import com.omgameserver.engine.OmgsProperties;
 import com.omgameserver.engine.events.ClientDisconnectedEvent;
@@ -30,11 +30,11 @@ class OutputService extends Bolt implements
 
     private final OmgsProperties properties;
     private final OmgsExecutors executors;
-    private final Dispatcher dispatcher;
+    private final OmgsDispatcher dispatcher;
     private final Map<SocketAddress, OutputClient> clientBySocket;
     private final Map<Long, OutputClient> clientByUid;
 
-    OutputService(OmgsProperties properties, OmgsExecutors executors, Dispatcher dispatcher) {
+    OutputService(OmgsProperties properties, OmgsExecutors executors, OmgsDispatcher dispatcher) {
         super("output", properties.getQueueSize());
         this.properties = properties;
         this.executors = executors;
@@ -109,9 +109,9 @@ class OutputService extends Bolt implements
     @PostConstruct
     void postConstruct() {
         executors.executeInInternalPool(this);
-        dispatcher.subscribe(this, IncomingHeaderEvent.class);
-        dispatcher.subscribe(this, OutgoingPayloadEvent.class);
-        dispatcher.subscribe(this, ClientDisconnectedEvent.class);
-        dispatcher.subscribe(this, TickEvent.class);
+        dispatcher.getDispatcher().subscribe(this, IncomingHeaderEvent.class);
+        dispatcher.getDispatcher().subscribe(this, OutgoingPayloadEvent.class);
+        dispatcher.getDispatcher().subscribe(this, ClientDisconnectedEvent.class);
+        dispatcher.getDispatcher().subscribe(this, TickEvent.class);
     }
 }

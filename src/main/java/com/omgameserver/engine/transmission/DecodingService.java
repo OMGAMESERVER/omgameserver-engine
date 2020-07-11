@@ -1,7 +1,7 @@
 package com.omgameserver.engine.transmission;
 
 import com.crionuke.bolts.Bolt;
-import com.crionuke.bolts.Dispatcher;
+import com.omgameserver.engine.OmgsDispatcher;
 import com.omgameserver.engine.OmgsExecutors;
 import com.omgameserver.engine.OmgsProperties;
 import com.omgameserver.engine.events.IncomingLuaValueEvent;
@@ -25,9 +25,9 @@ class DecodingService extends Bolt implements
 
     private final OmgsProperties properties;
     private final OmgsExecutors executors;
-    private final Dispatcher dispatcher;
+    private final OmgsDispatcher dispatcher;
 
-    DecodingService(OmgsProperties properties, OmgsExecutors executors, Dispatcher dispatcher) {
+    DecodingService(OmgsProperties properties, OmgsExecutors executors, OmgsDispatcher dispatcher) {
         super("decoder", properties.getQueueSize());
         this.properties = properties;
         this.executors = executors;
@@ -45,7 +45,7 @@ class DecodingService extends Bolt implements
         while (payload.hasRemaining()) {
             try {
                 LuaValue luaValue = decode(payload);
-                dispatcher.dispatch(new IncomingLuaValueEvent(clientUid, luaValue));
+                dispatcher.getDispatcher().dispatch(new IncomingLuaValueEvent(clientUid, luaValue));
             } catch (Exception e) {
                 logger.debug("Decoding payload from {} failed with {}", event.getClientUid(), e);
             }
@@ -55,7 +55,7 @@ class DecodingService extends Bolt implements
     @PostConstruct
     void postConstruct() {
         executors.executeInInternalPool(this);
-        dispatcher.subscribe(this, IncomingPayloadEvent.class);
+        dispatcher.getDispatcher().subscribe(this, IncomingPayloadEvent.class);
     }
 
     private LuaValue decode(ByteBuffer byteBuffer) {

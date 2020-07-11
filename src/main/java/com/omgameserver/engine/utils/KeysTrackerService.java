@@ -1,7 +1,7 @@
 package com.omgameserver.engine.utils;
 
 import com.crionuke.bolts.Bolt;
-import com.crionuke.bolts.Dispatcher;
+import com.omgameserver.engine.OmgsDispatcher;
 import com.omgameserver.engine.OmgsExecutors;
 import com.omgameserver.engine.OmgsProperties;
 import com.omgameserver.engine.events.SecretKeyAssignedEvent;
@@ -30,11 +30,11 @@ class KeysTrackerService extends Bolt implements
 
     private final OmgsProperties properties;
     private final OmgsExecutors executors;
-    private final Dispatcher dispatcher;
+    private final OmgsDispatcher dispatcher;
     // Map for keyUid => createionTime
     private final Map<Long, Long> temporaryKeys;
 
-    KeysTrackerService(OmgsProperties properties, OmgsExecutors executors, Dispatcher dispatcher) {
+    KeysTrackerService(OmgsProperties properties, OmgsExecutors executors, OmgsDispatcher dispatcher) {
         super("keys-tracker", properties.getQueueSize());
         this.properties = properties;
         this.executors = executors;
@@ -72,7 +72,7 @@ class KeysTrackerService extends Bolt implements
             long keyUid = entry.getKey();
             long creationTime = entry.getValue();
             if ((currentTimeMillis - creationTime) >= lifeTime) {
-                dispatcher.dispatch(new SecretKeyExpiredEvent(keyUid));
+                dispatcher.getDispatcher().dispatch(new SecretKeyExpiredEvent(keyUid));
                 iterator.remove();
             }
         }
@@ -81,8 +81,8 @@ class KeysTrackerService extends Bolt implements
     @PostConstruct
     void postConstruct() {
         executors.executeInInternalPool(this);
-        dispatcher.subscribe(this, SecretKeyCreatedEvent.class);
-        dispatcher.subscribe(this, SecretKeyAssignedEvent.class);
-        dispatcher.subscribe(this, TickEvent.class);
+        dispatcher.getDispatcher().subscribe(this, SecretKeyCreatedEvent.class);
+        dispatcher.getDispatcher().subscribe(this, SecretKeyAssignedEvent.class);
+        dispatcher.getDispatcher().subscribe(this, TickEvent.class);
     }
 }

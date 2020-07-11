@@ -52,12 +52,12 @@ public class DecryptionServiceTest extends BaseServiceTest {
     public void testKeyAssignation() throws NoSuchAlgorithmException, InterruptedException {
         long keyUid = 1;
         SecretKey secretKey = createSecretKey();
-        dispatcher.dispatch(new SecretKeyCreatedEvent(keyUid, secretKey));
+        dispatcher.getDispatcher().dispatch(new SecretKeyCreatedEvent(keyUid, secretKey));
         SocketAddress socketAddress = generateSocketAddress();
         ByteBuffer datagram = ByteBuffer.allocate(PROPERTY_DATAGRAM_SIZE);
         datagram.putLong(keyUid);
         datagram.flip();
-        dispatcher.dispatch(new IncomingDatagramEvent(socketAddress, datagram));
+        dispatcher.getDispatcher().dispatch(new IncomingDatagramEvent(socketAddress, datagram));
         // Waiting key assignition to socket address
         SecretKeyAssignedEvent assignedEvent = secretKeyAssignedEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         assertNotNull(assignedEvent);
@@ -71,7 +71,7 @@ public class DecryptionServiceTest extends BaseServiceTest {
         // Generate key
         long keyUid = 1;
         SecretKey secretKey = createSecretKey();
-        dispatcher.dispatch(new SecretKeyCreatedEvent(keyUid, secretKey));
+        dispatcher.getDispatcher().dispatch(new SecretKeyCreatedEvent(keyUid, secretKey));
         // Create datagram
         SocketAddress socketAddress = generateSocketAddress();
         ByteBuffer datagram = ByteBuffer.allocate(PROPERTY_DATAGRAM_SIZE);
@@ -83,7 +83,7 @@ public class DecryptionServiceTest extends BaseServiceTest {
         byte[] cipherBytes = cipher.doFinal(testText.getBytes());
         datagram.put(cipherBytes);
         datagram.flip();
-        dispatcher.dispatch(new IncomingDatagramEvent(socketAddress, datagram));
+        dispatcher.getDispatcher().dispatch(new IncomingDatagramEvent(socketAddress, datagram));
         // Wait result event
         IncomingRawDataEvent rawDataEvent = incomingRawDataEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         assertNotNull(rawDataEvent);
@@ -115,8 +115,8 @@ public class DecryptionServiceTest extends BaseServiceTest {
 
         void postConstruct() {
             executors.executeInInternalPool(this);
-            dispatcher.subscribe(this, SecretKeyAssignedEvent.class);
-            dispatcher.subscribe(this, IncomingRawDataEvent.class);
+            dispatcher.getDispatcher().subscribe(this, SecretKeyAssignedEvent.class);
+            dispatcher.getDispatcher().subscribe(this, IncomingRawDataEvent.class);
         }
     }
 }

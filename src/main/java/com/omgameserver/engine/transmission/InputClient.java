@@ -1,7 +1,7 @@
 package com.omgameserver.engine.transmission;
 
-import com.crionuke.bolts.Dispatcher;
 import com.omgameserver.engine.OmgsConstants;
+import com.omgameserver.engine.OmgsDispatcher;
 import com.omgameserver.engine.OmgsProperties;
 import com.omgameserver.engine.events.IncomingHeaderEvent;
 import com.omgameserver.engine.events.IncomingPayloadEvent;
@@ -21,12 +21,12 @@ class InputClient implements OmgsConstants {
     static private final AtomicLong uidCounter = new AtomicLong();
 
     private OmgsProperties properties;
-    private Dispatcher dispatcher;
+    private OmgsDispatcher dispatcher;
     private SocketAddress socketAddress;
     private long clientUid;
     private long lastActivity;
 
-    InputClient(OmgsProperties properties, Dispatcher dispatcher, SocketAddress socketAddress) {
+    InputClient(OmgsProperties properties, OmgsDispatcher dispatcher, SocketAddress socketAddress) {
         super();
         this.properties = properties;
         this.dispatcher = dispatcher;
@@ -61,12 +61,12 @@ class InputClient implements OmgsConstants {
             int bit = byteBuffer.getInt();
             int sys = byteBuffer.get();
             lastActivity = System.currentTimeMillis();
-            dispatcher.dispatch(new IncomingHeaderEvent(socketAddress, clientUid, seq, ack, bit, sys));
+            dispatcher.getDispatcher().dispatch(new IncomingHeaderEvent(socketAddress, clientUid, seq, ack, bit, sys));
             if (byteBuffer.remaining() > 0) {
                 ByteBuffer payload = ByteBuffer.allocate(byteBuffer.remaining());
                 payload.put(byteBuffer);
                 payload.flip();
-                dispatcher.dispatch(new IncomingPayloadEvent(clientUid, payload));
+                dispatcher.getDispatcher().dispatch(new IncomingPayloadEvent(clientUid, payload));
             }
             return true;
         }

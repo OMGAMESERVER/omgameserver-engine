@@ -1,7 +1,7 @@
 package com.omgameserver.engine.transmission;
 
 import com.crionuke.bolts.Bolt;
-import com.crionuke.bolts.Dispatcher;
+import com.omgameserver.engine.OmgsDispatcher;
 import com.omgameserver.engine.OmgsExecutors;
 import com.omgameserver.engine.OmgsProperties;
 import com.omgameserver.engine.events.OutgoingDatagramEvent;
@@ -21,10 +21,10 @@ class SendingService extends Bolt implements OutgoingDatagramEvent.Handler {
     static private final Logger logger = LoggerFactory.getLogger(SendingService.class);
 
     private final OmgsExecutors executors;
-    private final Dispatcher dispatcher;
+    private final OmgsDispatcher dispatcher;
     private final Channel.Sender sender;
 
-    SendingService(OmgsProperties properties, OmgsExecutors executors, Dispatcher dispatcher,
+    SendingService(OmgsProperties properties, OmgsExecutors executors, OmgsDispatcher dispatcher,
                    Channel channel) {
         super("sender", properties.getQueueSize());
         this.executors = executors;
@@ -49,6 +49,6 @@ class SendingService extends Bolt implements OutgoingDatagramEvent.Handler {
     @PostConstruct
     void postConstruct() {
         executors.executeInInternalPool(this);
-        dispatcher.subscribe(this, OutgoingDatagramEvent.class);
+        dispatcher.getDispatcher().subscribe(this, OutgoingDatagramEvent.class);
     }
 }

@@ -1,7 +1,7 @@
 package com.omgameserver.engine.transmission;
 
 import com.crionuke.bolts.Bolt;
-import com.crionuke.bolts.Dispatcher;
+import com.omgameserver.engine.OmgsDispatcher;
 import com.omgameserver.engine.OmgsExecutors;
 import com.omgameserver.engine.OmgsProperties;
 import com.omgameserver.engine.events.ClientDisconnectedEvent;
@@ -33,10 +33,10 @@ class EncryptionService extends Bolt implements
     static private final Logger logger = LoggerFactory.getLogger(EncryptionService.class);
 
     private final OmgsExecutors executors;
-    private final Dispatcher dispatcher;
+    private final OmgsDispatcher dispatcher;
     private final Map<SocketAddress, Cipher> ciphers;
 
-    EncryptionService(OmgsProperties properties, OmgsExecutors executors, Dispatcher dispatcher) {
+    EncryptionService(OmgsProperties properties, OmgsExecutors executors, OmgsDispatcher dispatcher) {
         super("encryptor", properties.getQueueSize());
         this.executors = executors;
         this.dispatcher = dispatcher;
@@ -78,7 +78,7 @@ class EncryptionService extends Bolt implements
                 ByteBuffer datagram = ByteBuffer.allocate(outputSize);
                 cipher.doFinal(rawData, datagram);
                 datagram.flip();
-                dispatcher.dispatch(new OutgoingDatagramEvent(socketAddress, datagram));
+                dispatcher.getDispatcher().dispatch(new OutgoingDatagramEvent(socketAddress, datagram));
             } catch (GeneralSecurityException e) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Decryption failed for {} as {}", socketAddress, e);
@@ -102,8 +102,8 @@ class EncryptionService extends Bolt implements
     @PostConstruct
     void postConstruct() {
         executors.executeInInternalPool(this);
-        dispatcher.subscribe(this, SecretKeyAssignedEvent.class);
-        dispatcher.subscribe(this, OutgoingRawDataEvent.class);
-        dispatcher.subscribe(this, ClientDisconnectedEvent.class);
+        dispatcher.getDispatcher().subscribe(this, SecretKeyAssignedEvent.class);
+        dispatcher.getDispatcher().subscribe(this, OutgoingRawDataEvent.class);
+        dispatcher.getDispatcher().subscribe(this, ClientDisconnectedEvent.class);
     }
 }

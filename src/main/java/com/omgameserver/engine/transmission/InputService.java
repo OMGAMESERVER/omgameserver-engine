@@ -1,7 +1,7 @@
 package com.omgameserver.engine.transmission;
 
 import com.crionuke.bolts.Bolt;
-import com.crionuke.bolts.Dispatcher;
+import com.omgameserver.engine.OmgsDispatcher;
 import com.omgameserver.engine.OmgsExecutors;
 import com.omgameserver.engine.OmgsProperties;
 import com.omgameserver.engine.events.ClientDisconnectedEvent;
@@ -32,11 +32,11 @@ class InputService extends Bolt implements
 
     private final OmgsProperties properties;
     private final OmgsExecutors executors;
-    private final Dispatcher dispatcher;
+    private final OmgsDispatcher dispatcher;
     private final Map<SocketAddress, InputClient> clientBySocket;
     private final Map<Long, InputClient> clientByUid;
 
-    InputService(OmgsProperties properties, OmgsExecutors executors, Dispatcher dispatcher) {
+    InputService(OmgsProperties properties, OmgsExecutors executors, OmgsDispatcher dispatcher) {
         super("input", properties.getQueueSize());
         this.properties = properties;
         this.executors = executors;
@@ -75,7 +75,7 @@ class InputService extends Bolt implements
             clientByUid.remove(clientUid);
             SocketAddress socketAddress = inputClient.getSocketAddress();
             clientBySocket.remove(socketAddress);
-            dispatcher.dispatch(new ClientDisconnectedEvent(inputClient.getSocketAddress()));
+            dispatcher.getDispatcher().dispatch(new ClientDisconnectedEvent(inputClient.getSocketAddress()));
             logger.info("{} disconnected by server", inputClient);
         } else {
             if (logger.isInfoEnabled()) {
@@ -97,7 +97,7 @@ class InputService extends Bolt implements
             if (inputClient.isDisconnected(currentTimeMillis)) {
                 clientByUid.remove(inputClient.getClientUid());
                 iterator.remove();
-                dispatcher.dispatch(new ClientDisconnectedEvent(inputClient.getSocketAddress()));
+                dispatcher.getDispatcher().dispatch(new ClientDisconnectedEvent(inputClient.getSocketAddress()));
                 logger.info("{} timed out", inputClient);
             }
         }
@@ -106,8 +106,8 @@ class InputService extends Bolt implements
     @PostConstruct
     void postConstruct() {
         executors.executeInInternalPool(this);
-        dispatcher.subscribe(this, IncomingRawDataEvent.class);
-        dispatcher.subscribe(this, DisconnectClientRequestEvent.class);
-        dispatcher.subscribe(this, TickEvent.class);
+        dispatcher.getDispatcher().subscribe(this, IncomingRawDataEvent.class);
+        dispatcher.getDispatcher().subscribe(this, DisconnectClientRequestEvent.class);
+        dispatcher.getDispatcher().subscribe(this, TickEvent.class);
     }
 }

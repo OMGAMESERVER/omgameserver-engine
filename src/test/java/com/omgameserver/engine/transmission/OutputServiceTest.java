@@ -53,7 +53,7 @@ public class OutputServiceTest extends BaseServiceTest implements OmgsConstants 
         SocketAddress socketAddress = generateSocketAddress();
         IncomingHeaderEvent headerEvent = new IncomingHeaderEvent(socketAddress, generateClientUid(),
                 1, 0, 0, HEADER_SYS_PINGREQ);
-        dispatcher.dispatch(headerEvent);
+        dispatcher.getDispatcher().dispatch(headerEvent);
         // Waiting pong response
         OutgoingRawDataEvent pongEvent =
                 outgoingRawDataEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
@@ -75,11 +75,11 @@ public class OutputServiceTest extends BaseServiceTest implements OmgsConstants 
         SocketAddress socketAddress = generateSocketAddress();
         IncomingHeaderEvent headerEvent = new IncomingHeaderEvent(socketAddress, generateClientUid(),
                 1, 0, 0, HEADER_SYS_NOVALUE);
-        dispatcher.dispatch(headerEvent);
+        dispatcher.getDispatcher().dispatch(headerEvent);
         // Output client check ping interval every tick event
         Thread.sleep(properties.getPingInterval() * 2);
         TickEvent tickEvent = new TickEvent(1, 0);
-        dispatcher.dispatch(tickEvent);
+        dispatcher.getDispatcher().dispatch(tickEvent);
         // Waiting ping request
         OutgoingRawDataEvent outgoingDatagramEvent =
                 outgoingRawDataEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
@@ -101,7 +101,7 @@ public class OutputServiceTest extends BaseServiceTest implements OmgsConstants 
             SocketAddress socketAddress = new InetSocketAddress("0.0.0.0", 10000 + clientUid);
             logger.info("socketAddress={}", socketAddress);
             // Initialize connection
-            dispatcher.dispatch(
+            dispatcher.getDispatcher().dispatch(
                     new IncomingHeaderEvent(socketAddress, clientUid, 1, 0, 0, HEADER_SYS_NOVALUE));
             double lossSimulationLevel = 0.1 + Math.random() * 0.4;
             logger.info("lossSimulationLevel={}", lossSimulationLevel);
@@ -119,12 +119,12 @@ public class OutputServiceTest extends BaseServiceTest implements OmgsConstants 
                     ByteBuffer outgoingByteBuffer = ByteBuffer.allocate(Integer.BYTES);
                     outgoingByteBuffer.putInt(iteration);
                     outgoingByteBuffer.flip();
-                    dispatcher.dispatch(new OutgoingPayloadEvent(clientUid, outgoingByteBuffer, true));
+                    dispatcher.getDispatcher().dispatch(new OutgoingPayloadEvent(clientUid, outgoingByteBuffer, true));
                     // Save data to waiting on client
                     waiting.add(iteration);
                 }
                 // Flush on server works every tick
-                dispatcher.dispatch(new TickEvent(iteration, 0));
+                dispatcher.getDispatcher().dispatch(new TickEvent(iteration, 0));
                 iteration++;
                 // Handle server datagrams
                 OutgoingRawDataEvent event =
@@ -160,7 +160,7 @@ public class OutputServiceTest extends BaseServiceTest implements OmgsConstants 
                     // Notify server about incoming and missing datagrams
                     lastOutgoingSeq++;
                     logger.info("Outgoing seq={}, ack={}, bit={}", lastOutgoingSeq, lastIncomingSeq, Integer.toBinaryString(lastIncomingBit));
-                    dispatcher.dispatch(new IncomingHeaderEvent(socketAddress, clientUid, lastOutgoingSeq, lastIncomingSeq,
+                    dispatcher.getDispatcher().dispatch(new IncomingHeaderEvent(socketAddress, clientUid, lastOutgoingSeq, lastIncomingSeq,
                             lastIncomingBit, HEADER_SYS_NOVALUE));
                 }
             }
@@ -182,7 +182,7 @@ public class OutputServiceTest extends BaseServiceTest implements OmgsConstants 
 
         public void postConstruct() {
             executors.executeInInternalPool(this);
-            dispatcher.subscribe(this, OutgoingRawDataEvent.class);
+            dispatcher.getDispatcher().subscribe(this, OutgoingRawDataEvent.class);
         }
     }
 }

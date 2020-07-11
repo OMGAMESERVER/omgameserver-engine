@@ -32,14 +32,14 @@ public class BaseServiceTest extends Assert implements OmgsConstants {
     protected final String PROPERTY_MAIN_SCRIPT = "main.lua";
 
     protected OmgsProperties properties;
-    protected Dispatcher dispatcher;
+    protected OmgsDispatcher dispatcher;
     protected OmgsExecutors executors;
 
     protected void createComponents() throws UnknownHostException {
         properties = new OmgsProperties(PROPERTY_HOST, PROPERTY_PORT, PROPERTY_THREAD_POOL_SIZE, PROPERTY_QUEUE_SIZE,
                 PROPERTY_DATAGRAM_SIZE, PROPERTY_SECRET_KEY_LIFETIME, PROPERTY_TICK_INTERVAL,
                 PROPERTY_DISCONNECT_INTERVAL, PROPERTY_PING_INTERVAL, PROPERTY_MAIN_SCRIPT);
-        dispatcher = new Dispatcher();
+        dispatcher = new OmgsDispatcher();
         executors = new OmgsExecutors(properties);
         logger.info("Thread pool with size={} created", properties.getThreadPoolSize());
     }

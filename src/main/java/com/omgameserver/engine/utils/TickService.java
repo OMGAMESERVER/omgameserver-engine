@@ -1,7 +1,7 @@
 package com.omgameserver.engine.utils;
 
-import com.crionuke.bolts.Dispatcher;
 import com.crionuke.bolts.Worker;
+import com.omgameserver.engine.OmgsDispatcher;
 import com.omgameserver.engine.OmgsExecutors;
 import com.omgameserver.engine.OmgsProperties;
 import com.omgameserver.engine.events.TickEvent;
@@ -20,10 +20,10 @@ class TickService extends Worker {
     static private final Logger logger = LoggerFactory.getLogger(TickService.class);
 
     private final OmgsProperties properties;
-    private final Dispatcher dispatcher;
+    private final OmgsDispatcher dispatcher;
     private final OmgsExecutors executors;
 
-    TickService(OmgsProperties properties, Dispatcher dispatcher, OmgsExecutors executors) {
+    TickService(OmgsProperties properties, OmgsDispatcher dispatcher, OmgsExecutors executors) {
         this.properties = properties;
         this.dispatcher = dispatcher;
         this.executors = executors;
@@ -40,7 +40,7 @@ class TickService extends Worker {
         try {
             while (looping) {
                 number++;
-                dispatcher.dispatch(new TickEvent(number, System.currentTimeMillis() - lastTime));
+                dispatcher.getDispatcher().dispatch(new TickEvent(number, System.currentTimeMillis() - lastTime));
                 lastTime = System.currentTimeMillis();
                 Thread.sleep(properties.getTickInterval());
             }

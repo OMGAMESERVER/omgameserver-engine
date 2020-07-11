@@ -1,7 +1,7 @@
 package com.omgameserver.engine.transmission;
 
-import com.crionuke.bolts.Dispatcher;
 import com.crionuke.bolts.Worker;
+import com.omgameserver.engine.OmgsDispatcher;
 import com.omgameserver.engine.OmgsExecutors;
 import com.omgameserver.engine.events.IncomingDatagramEvent;
 import org.slf4j.Logger;
@@ -21,10 +21,10 @@ class ReceiverService extends Worker {
     static private final Logger logger = LoggerFactory.getLogger(ReceiverService.class);
 
     private final OmgsExecutors executors;
-    private final Dispatcher dispatcher;
+    private final OmgsDispatcher dispatcher;
     private final Channel.Receiver receiver;
 
-    ReceiverService(OmgsExecutors executors, Dispatcher dispatcher,
+    ReceiverService(OmgsExecutors executors, OmgsDispatcher dispatcher,
                     Channel channel) {
         super();
         this.executors = executors;
@@ -41,7 +41,7 @@ class ReceiverService extends Worker {
             looping = true;
             while (looping) {
                 IncomingDatagramEvent incomingDatagramEvent = receiver.receive();
-                dispatcher.dispatch(incomingDatagramEvent);
+                dispatcher.getDispatcher().dispatch(incomingDatagramEvent);
             }
         } catch (InterruptedException | AsynchronousCloseException e) {
             logger.debug("{} interrupted", this);

@@ -1,7 +1,7 @@
 package com.omgameserver.engine.transmission;
 
-import com.crionuke.bolts.Dispatcher;
 import com.omgameserver.engine.OmgsConstants;
+import com.omgameserver.engine.OmgsDispatcher;
 import com.omgameserver.engine.OmgsProperties;
 import com.omgameserver.engine.events.OutgoingPayloadEvent;
 import com.omgameserver.engine.events.OutgoingRawDataEvent;
@@ -20,7 +20,7 @@ class OutputClient implements OmgsConstants {
     static private final Logger logger = LoggerFactory.getLogger(OutputClient.class);
 
     private OmgsProperties properties;
-    private Dispatcher dispatcher;
+    private OmgsDispatcher dispatcher;
     private SocketAddress socketAddress;
     private long clientUid;
     private List<OutgoingPayloadEvent> payloadEvents;
@@ -32,7 +32,7 @@ class OutputClient implements OmgsConstants {
     private long lastPingRequest;
     private long lastLatency;
 
-    OutputClient(OmgsProperties properties, Dispatcher dispatcher, SocketAddress socketAddress, long clientUid) {
+    OutputClient(OmgsProperties properties, OmgsDispatcher dispatcher, SocketAddress socketAddress, long clientUid) {
         super();
         this.properties = properties;
         this.dispatcher = dispatcher;
@@ -99,7 +99,7 @@ class OutputClient implements OmgsConstants {
                 if (nextEvent.getRawData().remaining() < payload.remaining()) {
                     // Flush
                     nextEvent.getRawData().flip();
-                    dispatcher.dispatch(nextEvent);
+                    dispatcher.getDispatcher().dispatch(nextEvent);
                     // Next event
                     nextEvent = createNextEvent();
                 }
@@ -110,7 +110,7 @@ class OutputClient implements OmgsConstants {
             }
             // Flush
             nextEvent.getRawData().flip();
-            dispatcher.dispatch(nextEvent);
+            dispatcher.getDispatcher().dispatch(nextEvent);
             // Clear
             payloadEvents.clear();
         }
@@ -123,14 +123,14 @@ class OutputClient implements OmgsConstants {
     void ping() throws InterruptedException {
         ByteBuffer datagram = writeHeader(ByteBuffer.allocate(HEADER_SIZE), HEADER_SYS_PINGREQ);
         datagram.flip();
-        dispatcher.dispatch(new OutgoingRawDataEvent(socketAddress, datagram));
+        dispatcher.getDispatcher().dispatch(new OutgoingRawDataEvent(socketAddress, datagram));
         lastPingRequest = System.currentTimeMillis();
     }
 
     private void pong() throws InterruptedException {
         ByteBuffer datagram = writeHeader(ByteBuffer.allocate(HEADER_SIZE), HEADER_SYS_PONGRES);
         datagram.flip();
-        dispatcher.dispatch(new OutgoingRawDataEvent(socketAddress, datagram));
+        dispatcher.getDispatcher().dispatch(new OutgoingRawDataEvent(socketAddress, datagram));
     }
 
     private void saveEvent(int seq, OutgoingPayloadEvent event) {

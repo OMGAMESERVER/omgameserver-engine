@@ -48,7 +48,7 @@ public class DecodingServiceTest extends BaseServiceTest {
                 240, 164, 105, 110, 116, 56, 208, 192, 165, 105, 110, 116, 49, 54, 209, 240, 1, 165, 105, 110, 116, 51,
                 50, 210, 240, 0, 0, 1};
         long clientUid = generateClientUid();
-        dispatcher.dispatch(createIncomingPayloadEvent(clientUid, bytes));
+        dispatcher.getDispatcher().dispatch(createIncomingPayloadEvent(clientUid, bytes));
         IncomingLuaValueEvent incomingLuaValueEvent =
                 incomingLuaValueEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         logger.info("Got event {}", incomingLuaValueEvent);
@@ -79,7 +79,7 @@ public class DecodingServiceTest extends BaseServiceTest {
         int[] bytes = {130, 166, 117, 105, 110, 116, 54, 52, 207, 66, 6, 254, 224, 225, 168, 0, 0, 165, 105, 110, 116,
                 54, 52, 211, 66, 54, 254, 224, 229, 45, 0, 0};
         long clientUid = generateClientUid();
-        dispatcher.dispatch(createIncomingPayloadEvent(clientUid, bytes));
+        dispatcher.getDispatcher().dispatch(createIncomingPayloadEvent(clientUid, bytes));
         IncomingLuaValueEvent incomingLuaValueEvent =
                 incomingLuaValueEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         logger.info("Got event {}", incomingLuaValueEvent);
@@ -99,7 +99,7 @@ public class DecodingServiceTest extends BaseServiceTest {
     public void testBoolean() throws InterruptedException {
         int[] bytes = {130, 164, 116, 114, 117, 101, 195, 165, 102, 97, 108, 115, 101, 194};
         long clientUid = generateClientUid();
-        dispatcher.dispatch(createIncomingPayloadEvent(clientUid, bytes));
+        dispatcher.getDispatcher().dispatch(createIncomingPayloadEvent(clientUid, bytes));
         IncomingLuaValueEvent incomingLuaValueEvent =
                 incomingLuaValueEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         logger.info("Got event {}", incomingLuaValueEvent);
@@ -133,7 +133,7 @@ public class DecodingServiceTest extends BaseServiceTest {
                 49, 54, 168, 208, 186, 208, 187, 209, 142, 209, 135, 176, 208, 183, 208, 189, 208, 176, 209, 135, 208,
                 181, 208, 189, 208, 184, 208, 181};
         long clientUid = generateClientUid();
-        dispatcher.dispatch(createIncomingPayloadEvent(clientUid, bytes));
+        dispatcher.getDispatcher().dispatch(createIncomingPayloadEvent(clientUid, bytes));
         IncomingLuaValueEvent incomingLuaValueEvent =
                 incomingLuaValueEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         logger.info("Got event {}", incomingLuaValueEvent);
@@ -160,7 +160,7 @@ public class DecodingServiceTest extends BaseServiceTest {
                 114, 97, 121, 49, 54, 220, 0, 32, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
                 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32};
         long clientUid = generateClientUid();
-        dispatcher.dispatch(createIncomingPayloadEvent(clientUid, bytes));
+        dispatcher.getDispatcher().dispatch(createIncomingPayloadEvent(clientUid, bytes));
         IncomingLuaValueEvent incomingLuaValueEvent =
                 incomingLuaValueEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         logger.info("Got event {}", incomingLuaValueEvent);
@@ -189,7 +189,7 @@ public class DecodingServiceTest extends BaseServiceTest {
                 16, 0, 164, 56, 49, 57, 50, 205, 32, 0, 165, 49, 54, 51, 56, 52, 205, 64, 0, 165, 51, 50, 55, 54, 56,
                 205, 128, 0, 165, 54, 53, 53, 51, 54, 206, 0, 1, 0, 0};
         long clientUid = generateClientUid();
-        dispatcher.dispatch(createIncomingPayloadEvent(clientUid, bytes));
+        dispatcher.getDispatcher().dispatch(createIncomingPayloadEvent(clientUid, bytes));
         IncomingLuaValueEvent incomingLuaValueEvent =
                 incomingLuaValueEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         logger.info("Got event {}", incomingLuaValueEvent);
@@ -232,7 +232,7 @@ public class DecodingServiceTest extends BaseServiceTest {
 
         void postConstruct() {
             executors.executeInInternalPool(this);
-            dispatcher.subscribe(this, IncomingLuaValueEvent.class);
+            dispatcher.getDispatcher().subscribe(this, IncomingLuaValueEvent.class);
         }
     }
 }

@@ -51,13 +51,13 @@ public class EncryptionServiceTest extends BaseServiceTest {
         long keyUid = 1;
         SecretKey secretKey = createSecretKey();
         SocketAddress socketAddress = generateSocketAddress();
-        dispatcher.dispatch(new SecretKeyAssignedEvent(keyUid, secretKey, socketAddress));
+        dispatcher.getDispatcher().dispatch(new SecretKeyAssignedEvent(keyUid, secretKey, socketAddress));
         // Create rawData
         ByteBuffer rawData = ByteBuffer.allocate(PROPERTY_DATAGRAM_SIZE);
         String testData = "helloworld";
         rawData.put(testData.getBytes());
         rawData.flip();
-        dispatcher.dispatch(new OutgoingRawDataEvent(socketAddress, rawData));
+        dispatcher.getDispatcher().dispatch(new OutgoingRawDataEvent(socketAddress, rawData));
         // Waiting result event
         OutgoingDatagramEvent datagramEvent = outgoingDatagramEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         assertNotNull(datagramEvent);
@@ -87,7 +87,7 @@ public class EncryptionServiceTest extends BaseServiceTest {
 
         void postConstruct() {
             executors.executeInInternalPool(this);
-            dispatcher.subscribe(this, OutgoingDatagramEvent.class);
+            dispatcher.getDispatcher().subscribe(this, OutgoingDatagramEvent.class);
         }
     }
 }

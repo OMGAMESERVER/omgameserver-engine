@@ -45,10 +45,10 @@ public class KeysTrackerServiceTest extends BaseServiceTest {
     public void testSecretKeyExpire() throws NoSuchAlgorithmException, InterruptedException {
         long keyUid = 1;
         SecretKey secretKey = createSecretKey();
-        dispatcher.dispatch(new SecretKeyCreatedEvent(keyUid, secretKey));
+        dispatcher.getDispatcher().dispatch(new SecretKeyCreatedEvent(keyUid, secretKey));
         Thread.sleep(PROPERTY_SECRET_KEY_LIFETIME);
         // Expiration interval tracked every tick event
-        dispatcher.dispatch(new TickEvent(1, 0));
+        dispatcher.getDispatcher().dispatch(new TickEvent(1, 0));
         // Wait event
         SecretKeyExpiredEvent expiredEvent = secretKeyExpiredEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         assertNotNull(expiredEvent);
@@ -68,7 +68,7 @@ public class KeysTrackerServiceTest extends BaseServiceTest {
 
         void postConstruct() {
             executors.executeInInternalPool(this);
-            dispatcher.subscribe(this, SecretKeyExpiredEvent.class);
+            dispatcher.getDispatcher().subscribe(this, SecretKeyExpiredEvent.class);
         }
     }
 }

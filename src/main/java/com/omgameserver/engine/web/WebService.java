@@ -1,6 +1,6 @@
 package com.omgameserver.engine.web;
 
-import com.crionuke.bolts.Dispatcher;
+import com.omgameserver.engine.OmgsDispatcher;
 import com.omgameserver.engine.events.SecretKeyCreatedEvent;
 import org.springframework.stereotype.Component;
 
@@ -18,9 +18,9 @@ import java.util.concurrent.atomic.AtomicLong;
 class WebService {
     static private final AtomicLong uidCounter = new AtomicLong();
 
-    private final Dispatcher dispatcher;
+    private final OmgsDispatcher dispatcher;
 
-    WebService(Dispatcher dispatcher) {
+    WebService(OmgsDispatcher dispatcher) {
         this.dispatcher = dispatcher;
     }
 
@@ -30,7 +30,7 @@ class WebService {
         keyGenerator.init(128, secureRandom);
         long keyUid = uidCounter.incrementAndGet();
         SecretKey secretKey = keyGenerator.generateKey();
-        dispatcher.dispatch(new SecretKeyCreatedEvent(keyUid, secretKey));
+        dispatcher.getDispatcher().dispatch(new SecretKeyCreatedEvent(keyUid, secretKey));
         return new Authorization(keyUid, secretKey);
     }
 

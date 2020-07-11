@@ -1,8 +1,8 @@
 package com.omgameserver.engine.transmission;
 
 import com.crionuke.bolts.Bolt;
-import com.crionuke.bolts.Dispatcher;
 import com.omgameserver.engine.OmgsConstants;
+import com.omgameserver.engine.OmgsDispatcher;
 import com.omgameserver.engine.OmgsExecutors;
 import com.omgameserver.engine.OmgsProperties;
 import com.omgameserver.engine.events.OutgoingLuaValueEvent;
@@ -51,9 +51,9 @@ class EncodingService extends Bolt implements
 
     private final OmgsProperties properties;
     private final OmgsExecutors executors;
-    private final Dispatcher dispatcher;
+    private final OmgsDispatcher dispatcher;
 
-    EncodingService(OmgsProperties properties, OmgsExecutors executors, Dispatcher dispatcher) {
+    EncodingService(OmgsProperties properties, OmgsExecutors executors, OmgsDispatcher dispatcher) {
         super("encoder", properties.getQueueSize());
         this.properties = properties;
         this.executors = executors;
@@ -73,7 +73,7 @@ class EncodingService extends Bolt implements
             // Encode LuaValue to MsgPack
             encode(payload, luaValue);
             payload.flip();
-            dispatcher.dispatch(new OutgoingPayloadEvent(clientUid, payload, reliable));
+            dispatcher.getDispatcher().dispatch(new OutgoingPayloadEvent(clientUid, payload, reliable));
         } catch (Exception e) {
             if (logger.isWarnEnabled()) {
                 logger.warn("Encoding LuaValue to RawData for {} failed with {}", event.getClientUid(), e);
@@ -84,7 +84,7 @@ class EncodingService extends Bolt implements
     @PostConstruct
     void postConstruct() {
         executors.executeInInternalPool(this);
-        dispatcher.subscribe(this, OutgoingLuaValueEvent.class);
+        dispatcher.getDispatcher().subscribe(this, OutgoingLuaValueEvent.class);
     }
 
     private ByteBuffer encode(ByteBuffer rawData, LuaValue luaValue) {

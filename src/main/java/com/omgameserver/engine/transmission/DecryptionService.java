@@ -1,7 +1,7 @@
 package com.omgameserver.engine.transmission;
 
 import com.crionuke.bolts.Bolt;
-import com.crionuke.bolts.Dispatcher;
+import com.omgameserver.engine.OmgsDispatcher;
 import com.omgameserver.engine.OmgsExecutors;
 import com.omgameserver.engine.OmgsProperties;
 import com.omgameserver.engine.events.*;
@@ -31,11 +31,11 @@ class DecryptionService extends Bolt implements
     static private final Logger logger = LoggerFactory.getLogger(DecryptionService.class);
 
     private final OmgsExecutors executors;
-    private final Dispatcher dispatcher;
+    private final OmgsDispatcher dispatcher;
     private final Map<Long, SecretKey> temporaryKeys;
     private final Map<SocketAddress, Cipher> ciphers;
 
-    DecryptionService(OmgsProperties properties, OmgsExecutors executors, Dispatcher dispatcher) {
+    DecryptionService(OmgsProperties properties, OmgsExecutors executors, OmgsDispatcher dispatcher) {
         super("decryptor", properties.getQueueSize());
         this.executors = executors;
         this.dispatcher = dispatcher;
@@ -68,7 +68,7 @@ class DecryptionService extends Bolt implements
             try {
                 cipher.doFinal(byteBuffer, rawData);
                 rawData.flip();
-                dispatcher.dispatch(new IncomingRawDataEvent(socketAddress, rawData));
+                dispatcher.getDispatcher().dispatch(new IncomingRawDataEvent(socketAddress, rawData));
             } catch (GeneralSecurityException e) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Encryption failed for {} as {}", socketAddress, e);
@@ -100,10 +100,10 @@ class DecryptionService extends Bolt implements
     @PostConstruct
     void postConstruct() {
         executors.executeInInternalPool(this);
-        dispatcher.subscribe(this, SecretKeyCreatedEvent.class);
-        dispatcher.subscribe(this, IncomingDatagramEvent.class);
-        dispatcher.subscribe(this, SecretKeyExpiredEvent.class);
-        dispatcher.subscribe(this, ClientDisconnectedEvent.class);
+        dispatcher.getDispatcher().subscribe(this, SecretKeyCreatedEvent.class);
+        dispatcher.getDispatcher().subscribe(this, IncomingDatagramEvent.class);
+        dispatcher.getDispatcher().subscribe(this, SecretKeyExpiredEvent.class);
+        dispatcher.getDispatcher().subscribe(this, ClientDisconnectedEvent.class);
     }
 
     private Cipher getCipher(long keyUid, SocketAddress socketAddress) throws InterruptedException {
@@ -115,7 +115,7 @@ class DecryptionService extends Bolt implements
                     cipher = Cipher.getInstance("AES");
                     cipher.init(Cipher.DECRYPT_MODE, secretKey);
                     ciphers.put(socketAddress, cipher);
-                    dispatcher.dispatch(new SecretKeyAssignedEvent(keyUid, secretKey, socketAddress));
+                    dispatcher.getDispatcher().dispatch(new SecretKeyAssignedEvent(keyUid, secretKey, socketAddress));
                     if (logger.isDebugEnabled()) {
                         logger.debug("Key with uid={} assigned to {}", keyUid, socketAddress);
                     }

@@ -81,7 +81,7 @@ public class ReceiverServiceTest extends BaseServiceTest {
 
         public void postConstruct() {
             executors.executeInInternalPool(this);
-            dispatcher.subscribe(this, IncomingDatagramEvent.class);
+            dispatcher.getDispatcher().subscribe(this, IncomingDatagramEvent.class);
         }
     }
 }
