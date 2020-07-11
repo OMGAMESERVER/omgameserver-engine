@@ -6,12 +6,12 @@ import com.crionuke.bolts.Event;
  * @author Kirill Byvshev (k@byv.sh)
  * @since 1.0.0
  */
-public final class LuaTickEventReceived extends Event<LuaTickEventReceived.Handler> {
+public final class LuaTickReceivedEvent extends Event<LuaTickReceivedEvent.Handler> {
 
     private final long number;
     private final long deltaTime;
 
-    public LuaTickEventReceived(long number, long deltaTime) {
+    public LuaTickReceivedEvent(long number, long deltaTime) {
         super();
         this.number = number;
         this.deltaTime = deltaTime;
@@ -19,7 +19,7 @@ public final class LuaTickEventReceived extends Event<LuaTickEventReceived.Handl
 
     @Override
     public void handle(Handler handler) throws InterruptedException {
-        handler.handleLuaTickEventReceived(this);
+        handler.handleLuaTickReceivedEvent(this);
     }
 
     public long getNumber() {
@@ -31,6 +31,6 @@ public final class LuaTickEventReceived extends Event<LuaTickEventReceived.Handl
     }
 
     public interface Handler {
-        void handleLuaTickEventReceived(LuaTickEventReceived event) throws InterruptedException;
+        void handleLuaTickReceivedEvent(LuaTickReceivedEvent event) throws InterruptedException;
     }
 }
