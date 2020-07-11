@@ -1,6 +1,5 @@
 package com.omgameserver.engine;
 
-import com.crionuke.bolts.Dispatcher;
 import com.omgameserver.engine.events.IncomingRawDataEvent;
 import org.junit.Assert;
 import org.slf4j.Logger;

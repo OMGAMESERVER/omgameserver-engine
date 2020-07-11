@@ -1,6 +1,5 @@
 package com.omgameserver.engine.lua;
 
-import com.crionuke.bolts.Dispatcher;
 import com.omgameserver.engine.OmgsDispatcher;
 import org.luaj.vm2.LuaTable;
 
