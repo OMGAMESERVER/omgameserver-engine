@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class LuaService extends Bolt implements
+class LuaService extends Bolt implements
         IncomingLuaValueEvent.Handler {
     static private final Logger logger = LoggerFactory.getLogger(LuaService.class);
 
