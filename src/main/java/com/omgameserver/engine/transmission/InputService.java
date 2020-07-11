@@ -4,10 +4,7 @@ import com.crionuke.bolts.Bolt;
 import com.omgameserver.engine.OmgsDispatcher;
 import com.omgameserver.engine.OmgsExecutors;
 import com.omgameserver.engine.OmgsProperties;
-import com.omgameserver.engine.events.ClientDisconnectedEvent;
-import com.omgameserver.engine.events.DisconnectClientRequestEvent;
-import com.omgameserver.engine.events.IncomingRawDataEvent;
-import com.omgameserver.engine.events.TickEvent;
+import com.omgameserver.engine.events.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -60,6 +57,7 @@ class InputService extends Bolt implements
             if (logger.isInfoEnabled()) {
                 logger.info("New input client from {} with uid={}", socketAddress, inputClient.getClientUid());
             }
+            dispatcher.getDispatcher().dispatch(new ClientConnectedEvent(socketAddress, inputClient.getClientUid()));
         }
         inputClient.handleDatagram(rawData);
     }

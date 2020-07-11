@@ -24,6 +24,7 @@ public class InputServiceTest extends BaseServiceTest {
     private BlockingQueue<IncomingHeaderEvent> incomingHeaderEvents;
     private BlockingQueue<IncomingPayloadEvent> incomingPayloadEvents;
     private BlockingQueue<ClientDisconnectedEvent> clientDisconnectedEvents;
+    private BlockingQueue<ClientConnectedEvent> clientConnectedEvents;
 
     @Before
     public void beforeTest() throws IOException {
@@ -34,6 +35,7 @@ public class InputServiceTest extends BaseServiceTest {
         consumerStub.postConstruct();
         incomingHeaderEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
         incomingPayloadEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
+        clientConnectedEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
         clientDisconnectedEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
     }
 
@@ -44,7 +46,7 @@ public class InputServiceTest extends BaseServiceTest {
     }
 
     @Test
-    public void testSplitHeaderAndPayload() throws InterruptedException {
+    public void testHeaderSplit() throws InterruptedException {
         // Send datagram with specified source address and header
         SocketAddress sourceAddress = generateSocketAddress();
         dispatcher.getDispatcher().dispatch(createIncomingRawDataEvent(sourceAddress,
@@ -74,6 +76,19 @@ public class InputServiceTest extends BaseServiceTest {
         assertNotNull(incomingPayloadEvent);
         String incomingPayload = readPayload(incomingPayloadEvent.getPayload());
         assertEquals(testPayload, incomingPayload);
+    }
+
+    @Test
+    public void testNewClient() throws InterruptedException {
+        // Send datagram to client creation
+        SocketAddress sourceAddress = generateSocketAddress();
+        dispatcher.getDispatcher().dispatch(createIncomingRawDataEvent(sourceAddress,
+                1, 0, 0, (byte) 0, "payload"));
+        // Waiting event
+        ClientConnectedEvent clientConnectedEvent = clientConnectedEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        // Asserts
+        assertNotNull(clientConnectedEvent);
+        assertEquals(sourceAddress, clientConnectedEvent.getSocketAddress());
     }
 
     @Test
@@ -120,6 +135,7 @@ public class InputServiceTest extends BaseServiceTest {
     private class ConsumerStub extends Bolt implements
             IncomingHeaderEvent.Handler,
             IncomingPayloadEvent.Handler,
+            ClientConnectedEvent.Handler,
             ClientDisconnectedEvent.Handler {
 
         public ConsumerStub() {
@@ -137,6 +153,11 @@ public class InputServiceTest extends BaseServiceTest {
         }
 
         @Override
+        public void handleClientConnected(ClientConnectedEvent event) throws InterruptedException {
+            clientConnectedEvents.put(event);
+        }
+
+        @Override
         public void handleClientDisconnected(ClientDisconnectedEvent event) throws InterruptedException {
             clientDisconnectedEvents.put(event);
         }
@@ -145,6 +166,7 @@ public class InputServiceTest extends BaseServiceTest {
             executors.executeInInternalPool(this);
             dispatcher.getDispatcher().subscribe(this, IncomingHeaderEvent.class);
             dispatcher.getDispatcher().subscribe(this, IncomingPayloadEvent.class);
+            dispatcher.getDispatcher().subscribe(this, ClientConnectedEvent.class);
             dispatcher.getDispatcher().subscribe(this, ClientDisconnectedEvent.class);
         }
     }

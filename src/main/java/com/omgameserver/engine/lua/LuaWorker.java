@@ -4,6 +4,7 @@ import com.crionuke.bolts.Bolt;
 import com.omgameserver.engine.OmgsDispatcher;
 import com.omgameserver.engine.OmgsExecutors;
 import com.omgameserver.engine.OmgsProperties;
+import com.omgameserver.engine.events.ClientConnectedEvent;
 import com.omgameserver.engine.events.IncomingLuaValueEvent;
 import com.omgameserver.engine.events.TickEvent;
 import org.luaj.vm2.Globals;
@@ -12,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class LuaWorker extends Bolt implements
+        ClientConnectedEvent.Handler,
         IncomingLuaValueEvent.Handler,
         TickEvent.Handler {
     static private final Logger logger = LoggerFactory.getLogger(LuaWorker.class);
@@ -21,6 +23,7 @@ class LuaWorker extends Bolt implements
     private final LuaGlobals luaGlobals;
     private final LuaRuntime luaRuntime;
 
+    private final String EVENT_CLIENT_CONNTECTED = "client_connected";
     private final String EVENT_RECEIVED = "received";
     private final String EVENT_TICK = "tick";
 
@@ -34,6 +37,17 @@ class LuaWorker extends Bolt implements
         luaRuntime = new LuaRuntime(dispatcher, globals);
         globals.set("runtime", luaRuntime);
         globals.loadfile(luaScript).call();
+    }
+
+    @Override
+    public void handleClientConnected(ClientConnectedEvent event) throws InterruptedException {
+        if (logger.isTraceEnabled()) {
+            logger.trace("Handle {}", event);
+        }
+        LuaTable luaEvent = new LuaTable();
+        luaEvent.set("id", EVENT_CLIENT_CONNTECTED);
+        luaEvent.set("client_uid", event.getClientUid());
+        luaRuntime.dispatch(EVENT_CLIENT_CONNTECTED, luaEvent);
     }
 
     @Override
@@ -62,6 +76,7 @@ class LuaWorker extends Bolt implements
 
     void postConstruct() {
         executors.executeInUserPool(this);
+        dispatcher.getDispatcher().subscribe(this, ClientConnectedEvent.class);
         dispatcher.getDispatcher().subscribe(this, TickEvent.class);
         // Subscribe to all event dispatched directly to this bolt
         dispatcher.getDispatcher().subscribe(this);
