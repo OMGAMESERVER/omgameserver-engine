@@ -31,7 +31,7 @@ class LuaWorker extends Bolt implements
         this.dispatcher = dispatcher;
         this.luaGlobals = luaGlobals;
         Globals globals = luaGlobals.getGlobals();
-        luaRuntime = new LuaRuntime(globals);
+        luaRuntime = new LuaRuntime(dispatcher, globals);
         globals.set("runtime", luaRuntime);
         globals.loadfile(luaScript).call();
     }

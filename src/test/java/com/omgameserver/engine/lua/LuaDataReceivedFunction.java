@@ -2,7 +2,6 @@ package com.omgameserver.engine.lua;
 
 import com.omgameserver.engine.OmgsDispatcher;
 import com.omgameserver.engine.events.LuaDataReceivedEvent;
-import com.omgameserver.engine.events.LuaTickReceivedEvent;
 import org.luaj.vm2.LuaBoolean;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.TwoArgFunction;
