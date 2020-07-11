@@ -1,11 +1,15 @@
 package com.omgameserver.engine.lua;
 
 import com.crionuke.bolts.Bolt;
+import com.omgameserver.engine.events.IncomingLuaValueEvent;
+import com.omgameserver.engine.events.LuaDataReceivedEvent;
 import com.omgameserver.engine.events.LuaTickReceivedEvent;
 import com.omgameserver.engine.events.TickEvent;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.luaj.vm2.LuaString;
+import org.luaj.vm2.LuaValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +22,7 @@ public class LuaWorkerTest extends LuaBaseTest {
     static private final Logger logger = LoggerFactory.getLogger(LuaWorkerTest.class);
 
     private LuaWorker luaWorker;
+    private BlockingQueue<LuaDataReceivedEvent> luaDataReceivedEvents;
     private BlockingQueue<LuaTickReceivedEvent> luaTickReceivedEvents;
     private ConsumerStub consumerStub;
 
@@ -27,6 +32,7 @@ public class LuaWorkerTest extends LuaBaseTest {
         luaWorker = new LuaWorker(properties, executors, dispatcher, luaGlobals,
                 "lua_worker_test.lua");
         luaWorker.postConstruct();
+        luaDataReceivedEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
         luaTickReceivedEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
         consumerStub = new ConsumerStub();
         consumerStub.postConstruct();
@@ -36,6 +42,18 @@ public class LuaWorkerTest extends LuaBaseTest {
     public void afterTest() {
         luaWorker.finish();
         consumerStub.finish();
+    }
+
+    @Test
+    public void testIncomingLuaValueEvent() throws InterruptedException {
+        long clientUid = 1;
+        String data = "helloworld";
+        LuaValue luaValue = LuaString.valueOf(data);
+        dispatcher.getDispatcher().dispatch(new IncomingLuaValueEvent(clientUid, luaValue), luaWorker);
+        LuaDataReceivedEvent luaDataReceivedEvent = luaDataReceivedEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        assertNotNull(luaDataReceivedEvent);
+        assertEquals(clientUid, luaDataReceivedEvent.getClientUid());
+        assertEquals(data, luaDataReceivedEvent.getData());
     }
 
     @Test
@@ -50,10 +68,16 @@ public class LuaWorkerTest extends LuaBaseTest {
     }
 
     private class ConsumerStub extends Bolt implements
+            LuaDataReceivedEvent.Handler,
             LuaTickReceivedEvent.Handler {
 
         ConsumerStub() {
             super("consumer-stub", PROPERTY_QUEUE_SIZE);
+        }
+
+        @Override
+        public void handleLuaDataReceived(LuaDataReceivedEvent event) throws InterruptedException {
+            luaDataReceivedEvents.put(event);
         }
 
         @Override
@@ -63,6 +87,7 @@ public class LuaWorkerTest extends LuaBaseTest {
 
         void postConstruct() {
             executors.executeInInternalPool(this);
+            dispatcher.getDispatcher().subscribe(this, LuaDataReceivedEvent.class);
             dispatcher.getDispatcher().subscribe(this, LuaTickReceivedEvent.class);
         }
     }
