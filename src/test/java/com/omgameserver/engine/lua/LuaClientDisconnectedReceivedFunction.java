@@ -1,7 +1,6 @@
 package com.omgameserver.engine.lua;
 
 import com.omgameserver.engine.OmgsDispatcher;
-import com.omgameserver.engine.events.LuaClientConnectedReceivedEvent;
 import com.omgameserver.engine.events.LuaClientDisconnectedReceivedEvent;
 import org.luaj.vm2.LuaBoolean;
 import org.luaj.vm2.LuaValue;
