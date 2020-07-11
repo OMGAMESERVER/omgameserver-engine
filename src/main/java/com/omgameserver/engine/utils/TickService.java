@@ -2,11 +2,11 @@ package com.omgameserver.engine.utils;
 
 import com.crionuke.bolts.Dispatcher;
 import com.crionuke.bolts.Worker;
+import com.omgameserver.engine.OmgsExecutors;
 import com.omgameserver.engine.OmgsProperties;
 import com.omgameserver.engine.events.TickEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -21,12 +21,12 @@ class TickService extends Worker {
 
     private final OmgsProperties properties;
     private final Dispatcher dispatcher;
-    private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
+    private final OmgsExecutors executors;
 
-    TickService(OmgsProperties properties, Dispatcher dispatcher, ThreadPoolTaskExecutor threadPoolTaskExecutor) {
+    TickService(OmgsProperties properties, Dispatcher dispatcher, OmgsExecutors executors) {
         this.properties = properties;
         this.dispatcher = dispatcher;
-        this.threadPoolTaskExecutor = threadPoolTaskExecutor;
+        this.executors = executors;
     }
 
     @Override
@@ -54,6 +54,6 @@ class TickService extends Worker {
 
     @PostConstruct
     void postConstruct() {
-        threadPoolTaskExecutor.execute(this);
+        executors.executeInInternalPool(this);
     }
 }

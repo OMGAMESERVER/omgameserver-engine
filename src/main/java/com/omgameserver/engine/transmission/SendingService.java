@@ -2,11 +2,11 @@ package com.omgameserver.engine.transmission;
 
 import com.crionuke.bolts.Bolt;
 import com.crionuke.bolts.Dispatcher;
+import com.omgameserver.engine.OmgsExecutors;
 import com.omgameserver.engine.OmgsProperties;
 import com.omgameserver.engine.events.OutgoingDatagramEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -20,14 +20,14 @@ import java.io.IOException;
 class SendingService extends Bolt implements OutgoingDatagramEvent.Handler {
     static private final Logger logger = LoggerFactory.getLogger(SendingService.class);
 
-    private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
+    private final OmgsExecutors executors;
     private final Dispatcher dispatcher;
     private final Channel.Sender sender;
 
-    SendingService(OmgsProperties properties, ThreadPoolTaskExecutor threadPoolTaskExecutor, Dispatcher dispatcher,
+    SendingService(OmgsProperties properties, OmgsExecutors executors, Dispatcher dispatcher,
                    Channel channel) {
         super("sender", properties.getQueueSize());
-        this.threadPoolTaskExecutor = threadPoolTaskExecutor;
+        this.executors = executors;
         this.dispatcher = dispatcher;
         this.sender = channel.getSender();
     }
@@ -48,7 +48,7 @@ class SendingService extends Bolt implements OutgoingDatagramEvent.Handler {
 
     @PostConstruct
     void postConstruct() {
-        threadPoolTaskExecutor.execute(this);
+        executors.executeInInternalPool(this);
         dispatcher.subscribe(this, OutgoingDatagramEvent.class);
     }
 }

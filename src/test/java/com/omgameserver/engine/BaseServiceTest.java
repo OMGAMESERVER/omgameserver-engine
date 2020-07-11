@@ -5,7 +5,6 @@ import com.omgameserver.engine.events.IncomingRawDataEvent;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -34,17 +33,14 @@ public class BaseServiceTest extends Assert implements OmgsConstants {
 
     protected OmgsProperties properties;
     protected Dispatcher dispatcher;
-    protected ThreadPoolTaskExecutor threadPoolTaskExecutor;
+    protected OmgsExecutors executors;
 
     protected void createComponents() throws UnknownHostException {
         properties = new OmgsProperties(PROPERTY_HOST, PROPERTY_PORT, PROPERTY_THREAD_POOL_SIZE, PROPERTY_QUEUE_SIZE,
                 PROPERTY_DATAGRAM_SIZE, PROPERTY_SECRET_KEY_LIFETIME, PROPERTY_TICK_INTERVAL,
                 PROPERTY_DISCONNECT_INTERVAL, PROPERTY_PING_INTERVAL, PROPERTY_MAIN_SCRIPT);
         dispatcher = new Dispatcher();
-        threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
-        threadPoolTaskExecutor.setThreadNamePrefix("test-");
-        threadPoolTaskExecutor.setCorePoolSize(properties.getThreadPoolSize());
-        threadPoolTaskExecutor.initialize();
+        executors = new OmgsExecutors(properties);
         logger.info("Thread pool with size={} created", properties.getThreadPoolSize());
     }
 

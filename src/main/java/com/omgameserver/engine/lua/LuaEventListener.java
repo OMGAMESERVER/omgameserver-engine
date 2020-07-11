@@ -9,6 +9,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * @author Kirill Byvshev (k@byv.sh)
+ * @since 1.0.0
+ */
 class LuaEventListener extends LuaTable {
 
     private final String FUNCTION_ADD_EVENT_LISTENER = "add_event_listener";

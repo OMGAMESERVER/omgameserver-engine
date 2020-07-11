@@ -9,6 +9,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * @author Kirill Byvshev (k@byv.sh)
+ * @since 1.0.0
+ */
 class LuaAddEventListenerFunction extends TwoArgFunction {
     static private final Logger logger = LoggerFactory.getLogger(LuaAddEventListenerFunction.class);
 

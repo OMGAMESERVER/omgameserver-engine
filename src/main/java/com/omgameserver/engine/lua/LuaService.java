@@ -2,6 +2,7 @@ package com.omgameserver.engine.lua;
 
 import com.crionuke.bolts.Bolt;
 import com.crionuke.bolts.Dispatcher;
+import com.omgameserver.engine.OmgsExecutors;
 import com.omgameserver.engine.OmgsProperties;
 import com.omgameserver.engine.events.IncomingLuaValueEvent;
 import org.slf4j.Logger;
@@ -19,20 +20,20 @@ public class LuaService extends Bolt implements
     static private final Logger logger = LoggerFactory.getLogger(LuaService.class);
 
     private final OmgsProperties properties;
-    private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
+    private final OmgsExecutors executors;
     private final Dispatcher dispatcher;
     private final ThreadPoolTaskExecutor workerExecutor;
     private final LuaWorker defaultWorker;
     private final Map<Long, LuaWorker> routes;
 
-    LuaService(OmgsProperties properties, ThreadPoolTaskExecutor threadPoolTaskExecutor, Dispatcher dispatcher,
+    LuaService(OmgsProperties properties, OmgsExecutors executors, Dispatcher dispatcher,
                LuaGlobals luaGlobals) {
         super("lua", properties.getQueueSize());
         this.properties = properties;
-        this.threadPoolTaskExecutor = threadPoolTaskExecutor;
+        this.executors = executors;
         this.dispatcher = dispatcher;
         workerExecutor = createWorkerExecutor();
-        defaultWorker = new LuaWorker(properties, workerExecutor, dispatcher, luaGlobals, properties.getMainScript());
+        defaultWorker = new LuaWorker(properties, executors, dispatcher, luaGlobals, properties.getMainScript());
         defaultWorker.postConstruct();
         routes = new HashMap<>();
     }
@@ -50,7 +51,7 @@ public class LuaService extends Bolt implements
 
     @PostConstruct
     void postConstruct() {
-        threadPoolTaskExecutor.execute(this);
+        executors.executeInInternalPool(this);
         dispatcher.subscribe(this, IncomingLuaValueEvent.class);
     }
 

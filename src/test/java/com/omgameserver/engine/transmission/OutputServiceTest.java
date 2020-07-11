@@ -34,7 +34,7 @@ public class OutputServiceTest extends BaseServiceTest implements OmgsConstants 
     @Before
     public void beforeTest() throws IOException {
         createComponents();
-        outputService = new OutputService(properties, threadPoolTaskExecutor, dispatcher);
+        outputService = new OutputService(properties, executors, dispatcher);
         outputService.postConstruct();
         consumerStub = new ConsumerStub();
         consumerStub.postConstruct();
@@ -181,7 +181,7 @@ public class OutputServiceTest extends BaseServiceTest implements OmgsConstants 
         }
 
         public void postConstruct() {
-            threadPoolTaskExecutor.execute(this);
+            executors.executeInInternalPool(this);
             dispatcher.subscribe(this, OutgoingRawDataEvent.class);
         }
     }

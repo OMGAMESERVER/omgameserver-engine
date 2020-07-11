@@ -2,10 +2,10 @@ package com.omgameserver.engine.transmission;
 
 import com.crionuke.bolts.Dispatcher;
 import com.crionuke.bolts.Worker;
+import com.omgameserver.engine.OmgsExecutors;
 import com.omgameserver.engine.events.IncomingDatagramEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -20,14 +20,14 @@ import java.nio.channels.AsynchronousCloseException;
 class ReceiverService extends Worker {
     static private final Logger logger = LoggerFactory.getLogger(ReceiverService.class);
 
-    private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
+    private final OmgsExecutors executors;
     private final Dispatcher dispatcher;
     private final Channel.Receiver receiver;
 
-    ReceiverService(ThreadPoolTaskExecutor threadPoolTaskExecutor, Dispatcher dispatcher,
+    ReceiverService(OmgsExecutors executors, Dispatcher dispatcher,
                     Channel channel) {
         super();
-        this.threadPoolTaskExecutor = threadPoolTaskExecutor;
+        this.executors = executors;
         this.dispatcher = dispatcher;
         this.receiver = channel.getReceiver();
     }
@@ -56,6 +56,6 @@ class ReceiverService extends Worker {
 
     @PostConstruct
     void postConstruct() {
-        threadPoolTaskExecutor.execute(this);
+        executors.executeInInternalPool(this);
     }
 }

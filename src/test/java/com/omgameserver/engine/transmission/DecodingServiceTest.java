@@ -4,7 +4,6 @@ import com.crionuke.bolts.Bolt;
 import com.omgameserver.engine.BaseServiceTest;
 import com.omgameserver.engine.events.IncomingLuaValueEvent;
 import com.omgameserver.engine.events.IncomingPayloadEvent;
-import com.omgameserver.engine.events.SecretKeyAssignedEvent;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,14 +21,13 @@ public class DecodingServiceTest extends BaseServiceTest {
     static private final Logger logger = LoggerFactory.getLogger(DecodingServiceTest.class);
 
     private DecodingService decodingService;
-    private BlockingQueue<SecretKeyAssignedEvent> secretKeyAssignedEvents;
     private BlockingQueue<IncomingLuaValueEvent> incomingLuaValueEvents;
     private ConsumerStub consumerStub;
 
     @Before
     public void beforeTest() throws UnknownHostException {
         createComponents();
-        decodingService = new DecodingService(properties, threadPoolTaskExecutor, dispatcher);
+        decodingService = new DecodingService(properties, executors, dispatcher);
         decodingService.postConstruct();
         incomingLuaValueEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
         consumerStub = new ConsumerStub();
@@ -233,7 +231,7 @@ public class DecodingServiceTest extends BaseServiceTest {
         }
 
         void postConstruct() {
-            threadPoolTaskExecutor.execute(this);
+            executors.executeInInternalPool(this);
             dispatcher.subscribe(this, IncomingLuaValueEvent.class);
         }
     }

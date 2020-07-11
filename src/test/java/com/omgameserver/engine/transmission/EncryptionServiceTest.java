@@ -32,7 +32,7 @@ public class EncryptionServiceTest extends BaseServiceTest {
     @Before
     public void beforeTest() throws UnknownHostException {
         createComponents();
-        encryptionService = new EncryptionService(properties, threadPoolTaskExecutor, dispatcher);
+        encryptionService = new EncryptionService(properties, executors, dispatcher);
         encryptionService.postConstruct();
         outgoingDatagramEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
         consumerStub = new ConsumerStub();
@@ -86,7 +86,7 @@ public class EncryptionServiceTest extends BaseServiceTest {
         }
 
         void postConstruct() {
-            threadPoolTaskExecutor.execute(this);
+            executors.executeInInternalPool(this);
             dispatcher.subscribe(this, OutgoingDatagramEvent.class);
         }
     }

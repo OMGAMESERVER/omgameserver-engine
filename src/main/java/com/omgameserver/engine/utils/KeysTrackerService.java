@@ -2,6 +2,7 @@ package com.omgameserver.engine.utils;
 
 import com.crionuke.bolts.Bolt;
 import com.crionuke.bolts.Dispatcher;
+import com.omgameserver.engine.OmgsExecutors;
 import com.omgameserver.engine.OmgsProperties;
 import com.omgameserver.engine.events.SecretKeyAssignedEvent;
 import com.omgameserver.engine.events.SecretKeyCreatedEvent;
@@ -9,7 +10,6 @@ import com.omgameserver.engine.events.SecretKeyExpiredEvent;
 import com.omgameserver.engine.events.TickEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -29,15 +29,15 @@ class KeysTrackerService extends Bolt implements
     static private final Logger logger = LoggerFactory.getLogger(KeysTrackerService.class);
 
     private final OmgsProperties properties;
-    private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
+    private final OmgsExecutors executors;
     private final Dispatcher dispatcher;
     // Map for keyUid => createionTime
     private final Map<Long, Long> temporaryKeys;
 
-    KeysTrackerService(OmgsProperties properties, ThreadPoolTaskExecutor threadPoolTaskExecutor, Dispatcher dispatcher) {
+    KeysTrackerService(OmgsProperties properties, OmgsExecutors executors, Dispatcher dispatcher) {
         super("keys-tracker", properties.getQueueSize());
         this.properties = properties;
-        this.threadPoolTaskExecutor = threadPoolTaskExecutor;
+        this.executors = executors;
         this.dispatcher = dispatcher;
         temporaryKeys = new HashMap<>();
     }
@@ -80,7 +80,7 @@ class KeysTrackerService extends Bolt implements
 
     @PostConstruct
     void postConstruct() {
-        threadPoolTaskExecutor.execute(this);
+        executors.executeInInternalPool(this);
         dispatcher.subscribe(this, SecretKeyCreatedEvent.class);
         dispatcher.subscribe(this, SecretKeyAssignedEvent.class);
         dispatcher.subscribe(this, TickEvent.class);

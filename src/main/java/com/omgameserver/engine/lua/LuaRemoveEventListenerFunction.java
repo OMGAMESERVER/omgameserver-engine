@@ -8,6 +8,10 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * @author Kirill Byvshev (k@byv.sh)
+ * @since 1.0.0
+ */
 class LuaRemoveEventListenerFunction extends TwoArgFunction {
     static private final Logger logger = LoggerFactory.getLogger(LuaRemoveEventListenerFunction.class);
 

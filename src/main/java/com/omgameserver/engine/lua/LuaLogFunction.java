@@ -8,6 +8,10 @@ import org.luaj.vm2.lib.VarArgFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author Kirill Byvshev (k@byv.sh)
+ * @since 1.0.0
+ */
 class LuaLogFunction extends VarArgFunction {
     static private final Logger logger = LoggerFactory.getLogger(LuaLogFunction.class);
     private final LEVEL logLevel;

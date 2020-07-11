@@ -6,6 +6,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 
+/**
+ * @author Kirill Byvshev (k@byv.sh)
+ * @since 1.0.0
+ */
 class LuaScriptFinder implements ResourceFinder {
     static private final Logger logger = LoggerFactory.getLogger(LuaScriptFinder.class);
 

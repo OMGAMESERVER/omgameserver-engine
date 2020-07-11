@@ -2,6 +2,7 @@ package com.omgameserver.engine.transmission;
 
 import com.crionuke.bolts.Bolt;
 import com.crionuke.bolts.Dispatcher;
+import com.omgameserver.engine.OmgsExecutors;
 import com.omgameserver.engine.OmgsProperties;
 import com.omgameserver.engine.events.ClientDisconnectedEvent;
 import com.omgameserver.engine.events.IncomingHeaderEvent;
@@ -9,7 +10,6 @@ import com.omgameserver.engine.events.OutgoingPayloadEvent;
 import com.omgameserver.engine.events.TickEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import javax.annotation.PostConstruct;
 import java.net.SocketAddress;
@@ -29,15 +29,15 @@ class OutputService extends Bolt implements
     static private final Logger logger = LoggerFactory.getLogger(OutputService.class);
 
     private final OmgsProperties properties;
-    private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
+    private final OmgsExecutors executors;
     private final Dispatcher dispatcher;
     private final Map<SocketAddress, OutputClient> clientBySocket;
     private final Map<Long, OutputClient> clientByUid;
 
-    OutputService(OmgsProperties properties, ThreadPoolTaskExecutor threadPoolTaskExecutor, Dispatcher dispatcher) {
+    OutputService(OmgsProperties properties, OmgsExecutors executors, Dispatcher dispatcher) {
         super("output", properties.getQueueSize());
         this.properties = properties;
-        this.threadPoolTaskExecutor = threadPoolTaskExecutor;
+        this.executors = executors;
         this.dispatcher = dispatcher;
         clientBySocket = new HashMap<>();
         clientByUid = new HashMap<>();
@@ -108,7 +108,7 @@ class OutputService extends Bolt implements
 
     @PostConstruct
     void postConstruct() {
-        threadPoolTaskExecutor.execute(this);
+        executors.executeInInternalPool(this);
         dispatcher.subscribe(this, IncomingHeaderEvent.class);
         dispatcher.subscribe(this, OutgoingPayloadEvent.class);
         dispatcher.subscribe(this, ClientDisconnectedEvent.class);

@@ -2,6 +2,7 @@ package com.omgameserver.engine.transmission;
 
 import com.crionuke.bolts.Bolt;
 import com.crionuke.bolts.Dispatcher;
+import com.omgameserver.engine.OmgsExecutors;
 import com.omgameserver.engine.OmgsProperties;
 import com.omgameserver.engine.events.ClientDisconnectedEvent;
 import com.omgameserver.engine.events.OutgoingDatagramEvent;
@@ -9,7 +10,6 @@ import com.omgameserver.engine.events.OutgoingRawDataEvent;
 import com.omgameserver.engine.events.SecretKeyAssignedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -32,13 +32,13 @@ class EncryptionService extends Bolt implements
         ClientDisconnectedEvent.Handler {
     static private final Logger logger = LoggerFactory.getLogger(EncryptionService.class);
 
-    private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
+    private final OmgsExecutors executors;
     private final Dispatcher dispatcher;
     private final Map<SocketAddress, Cipher> ciphers;
 
-    EncryptionService(OmgsProperties properties, ThreadPoolTaskExecutor threadPoolTaskExecutor, Dispatcher dispatcher) {
+    EncryptionService(OmgsProperties properties, OmgsExecutors executors, Dispatcher dispatcher) {
         super("encryptor", properties.getQueueSize());
-        this.threadPoolTaskExecutor = threadPoolTaskExecutor;
+        this.executors = executors;
         this.dispatcher = dispatcher;
         ciphers = new HashMap<>();
     }
@@ -101,7 +101,7 @@ class EncryptionService extends Bolt implements
 
     @PostConstruct
     void postConstruct() {
-        threadPoolTaskExecutor.execute(this);
+        executors.executeInInternalPool(this);
         dispatcher.subscribe(this, SecretKeyAssignedEvent.class);
         dispatcher.subscribe(this, OutgoingRawDataEvent.class);
         dispatcher.subscribe(this, ClientDisconnectedEvent.class);

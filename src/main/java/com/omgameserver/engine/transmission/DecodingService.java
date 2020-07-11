@@ -2,13 +2,13 @@ package com.omgameserver.engine.transmission;
 
 import com.crionuke.bolts.Bolt;
 import com.crionuke.bolts.Dispatcher;
+import com.omgameserver.engine.OmgsExecutors;
 import com.omgameserver.engine.OmgsProperties;
 import com.omgameserver.engine.events.IncomingLuaValueEvent;
 import com.omgameserver.engine.events.IncomingPayloadEvent;
 import org.luaj.vm2.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -24,13 +24,13 @@ class DecodingService extends Bolt implements
     static private final Logger logger = LoggerFactory.getLogger(DecodingService.class);
 
     private final OmgsProperties properties;
-    private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
+    private final OmgsExecutors executors;
     private final Dispatcher dispatcher;
 
-    DecodingService(OmgsProperties properties, ThreadPoolTaskExecutor threadPoolTaskExecutor, Dispatcher dispatcher) {
+    DecodingService(OmgsProperties properties, OmgsExecutors executors, Dispatcher dispatcher) {
         super("decoder", properties.getQueueSize());
         this.properties = properties;
-        this.threadPoolTaskExecutor = threadPoolTaskExecutor;
+        this.executors = executors;
         this.dispatcher = dispatcher;
     }
 
@@ -54,7 +54,7 @@ class DecodingService extends Bolt implements
 
     @PostConstruct
     void postConstruct() {
-        threadPoolTaskExecutor.execute(this);
+        executors.executeInInternalPool(this);
         dispatcher.subscribe(this, IncomingPayloadEvent.class);
     }
 

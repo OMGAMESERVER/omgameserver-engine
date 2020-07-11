@@ -7,6 +7,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * @author Kirill Byvshev (k@byv.sh)
+ * @since 1.0.0
+ */
 @RestController
 @RequestMapping(value = "/omgameserver/v1")
 class WebController {

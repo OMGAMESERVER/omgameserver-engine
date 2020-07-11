@@ -30,7 +30,7 @@ public class ReceiverServiceTest extends BaseServiceTest {
     public void beforeTest() throws IOException {
         createComponents();
         serverChannel = new Channel(properties);
-        receiverService = new ReceiverService(threadPoolTaskExecutor, dispatcher, serverChannel);
+        receiverService = new ReceiverService(executors, dispatcher, serverChannel);
         receiverService.postConstruct();
         consumerStub = new ConsumerStub();
         consumerStub.postConstruct();
@@ -80,7 +80,7 @@ public class ReceiverServiceTest extends BaseServiceTest {
         }
 
         public void postConstruct() {
-            threadPoolTaskExecutor.execute(this);
+            executors.executeInInternalPool(this);
             dispatcher.subscribe(this, IncomingDatagramEvent.class);
         }
     }

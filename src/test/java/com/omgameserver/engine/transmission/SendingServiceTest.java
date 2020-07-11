@@ -23,7 +23,7 @@ public class SendingServiceTest extends BaseServiceTest {
     public void beforeTest() throws IOException {
         createComponents();
         serverChannel = new Channel(properties);
-        sendingService = new SendingService(properties, threadPoolTaskExecutor, dispatcher, serverChannel);
+        sendingService = new SendingService(properties, executors, dispatcher, serverChannel);
         sendingService.postConstruct();
     }
 

@@ -1,0 +1,50 @@
+package com.omgameserver.engine;
+
+import com.crionuke.bolts.Worker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Component;
+
+/**
+ * @author Kirill Byvshev (k@byv.sh)
+ * @since 1.0.0
+ */
+@Component
+public class OmgsExecutors {
+    static private final Logger logger = LoggerFactory.getLogger(OmgsExecutors.class);
+
+    private final int INTERNAL_THREAD_POOL_SIZE = 16;
+
+    private final ThreadPoolTaskExecutor internalExecutor;
+    private final ThreadPoolTaskExecutor userExecutor;
+
+    OmgsExecutors(OmgsProperties properties) {
+        internalExecutor = createExecutor(INTERNAL_THREAD_POOL_SIZE);
+        userExecutor = createExecutor(properties.getThreadPoolSize());
+    }
+
+    public void executeInInternalPool(Worker worker) {
+        internalExecutor.execute(worker);
+        if (logger.isDebugEnabled()) {
+            logger.debug("{} executed in internal thread pool, used {}/{} threads", worker,
+                    internalExecutor.getActiveCount(), internalExecutor.getCorePoolSize());
+        }
+    }
+
+    public void executeInUserPool(Worker worker) {
+        userExecutor.execute(worker);
+        if (logger.isDebugEnabled()) {
+            logger.debug("{} executed in user thread pool, used {}/{} threads", worker, userExecutor.getActiveCount(),
+                    userExecutor.getCorePoolSize());
+        }
+    }
+
+    private ThreadPoolTaskExecutor createExecutor(int size) {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(INTERNAL_THREAD_POOL_SIZE);
+        executor.initialize();
+        logger.info("Executor with size={} created", INTERNAL_THREAD_POOL_SIZE);
+        return executor;
+    }
+}

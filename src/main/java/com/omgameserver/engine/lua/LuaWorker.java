@@ -2,6 +2,7 @@ package com.omgameserver.engine.lua;
 
 import com.crionuke.bolts.Bolt;
 import com.crionuke.bolts.Dispatcher;
+import com.omgameserver.engine.OmgsExecutors;
 import com.omgameserver.engine.OmgsProperties;
 import com.omgameserver.engine.events.IncomingLuaValueEvent;
 import com.omgameserver.engine.events.TickEvent;
@@ -9,14 +10,13 @@ import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 class LuaWorker extends Bolt implements
         IncomingLuaValueEvent.Handler,
         TickEvent.Handler {
     static private final Logger logger = LoggerFactory.getLogger(LuaWorker.class);
 
-    private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
+    private final OmgsExecutors executors;
     private final Dispatcher dispatcher;
     private final LuaGlobals luaGlobals;
     private final LuaRuntime luaRuntime;
@@ -24,10 +24,10 @@ class LuaWorker extends Bolt implements
     private final String EVENT_RECEIVED = "received";
     private final String EVENT_TICK = "tick";
 
-    LuaWorker(OmgsProperties properties, ThreadPoolTaskExecutor threadPoolTaskExecutor, Dispatcher dispatcher,
+    LuaWorker(OmgsProperties properties, OmgsExecutors executors, Dispatcher dispatcher,
               LuaGlobals luaGlobals, String luaScript) {
         super(luaScript, properties.getQueueSize());
-        this.threadPoolTaskExecutor = threadPoolTaskExecutor;
+        this.executors = executors;
         this.dispatcher = dispatcher;
         this.luaGlobals = luaGlobals;
         Globals globals = luaGlobals.getGlobals();
@@ -61,7 +61,7 @@ class LuaWorker extends Bolt implements
     }
 
     void postConstruct() {
-        threadPoolTaskExecutor.execute(this);
+        executors.executeInUserPool(this);
         dispatcher.subscribe(this, TickEvent.class);
         // Subscribe to all event dispatched directly to this bolt
         dispatcher.subscribe(this);

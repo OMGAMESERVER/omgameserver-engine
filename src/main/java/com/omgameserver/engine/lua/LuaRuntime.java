@@ -2,6 +2,10 @@ package com.omgameserver.engine.lua;
 
 import org.luaj.vm2.Globals;
 
+/**
+ * @author Kirill Byvshev (k@byv.sh)
+ * @since 1.0.0
+ */
 class LuaRuntime extends LuaEventListener {
 
     private final String FUNCTION_LOG_ERROR = "log_error";

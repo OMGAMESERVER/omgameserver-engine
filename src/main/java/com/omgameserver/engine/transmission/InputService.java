@@ -2,6 +2,7 @@ package com.omgameserver.engine.transmission;
 
 import com.crionuke.bolts.Bolt;
 import com.crionuke.bolts.Dispatcher;
+import com.omgameserver.engine.OmgsExecutors;
 import com.omgameserver.engine.OmgsProperties;
 import com.omgameserver.engine.events.ClientDisconnectedEvent;
 import com.omgameserver.engine.events.DisconnectClientRequestEvent;
@@ -9,7 +10,6 @@ import com.omgameserver.engine.events.IncomingRawDataEvent;
 import com.omgameserver.engine.events.TickEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -31,15 +31,15 @@ class InputService extends Bolt implements
     static private final Logger logger = LoggerFactory.getLogger(InputService.class);
 
     private final OmgsProperties properties;
-    private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
+    private final OmgsExecutors executors;
     private final Dispatcher dispatcher;
     private final Map<SocketAddress, InputClient> clientBySocket;
     private final Map<Long, InputClient> clientByUid;
 
-    InputService(OmgsProperties properties, ThreadPoolTaskExecutor threadPoolTaskExecutor, Dispatcher dispatcher) {
+    InputService(OmgsProperties properties, OmgsExecutors executors, Dispatcher dispatcher) {
         super("input", properties.getQueueSize());
         this.properties = properties;
-        this.threadPoolTaskExecutor = threadPoolTaskExecutor;
+        this.executors = executors;
         this.dispatcher = dispatcher;
         clientBySocket = new HashMap<>();
         clientByUid = new HashMap<>();
@@ -105,7 +105,7 @@ class InputService extends Bolt implements
 
     @PostConstruct
     void postConstruct() {
-        threadPoolTaskExecutor.execute(this);
+        executors.executeInInternalPool(this);
         dispatcher.subscribe(this, IncomingRawDataEvent.class);
         dispatcher.subscribe(this, DisconnectClientRequestEvent.class);
         dispatcher.subscribe(this, TickEvent.class);

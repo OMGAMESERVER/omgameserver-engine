@@ -10,6 +10,10 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * @author Kirill Byvshev (k@byv.sh)
+ * @since 1.0.0
+ */
 @Component
 class WebService {
     static private final AtomicLong uidCounter = new AtomicLong();

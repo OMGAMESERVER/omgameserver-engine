@@ -34,7 +34,7 @@ public class DecryptionServiceTest extends BaseServiceTest {
     @Before
     public void beforeTest() throws UnknownHostException {
         createComponents();
-        decryptionService = new DecryptionService(properties, threadPoolTaskExecutor, dispatcher);
+        decryptionService = new DecryptionService(properties, executors, dispatcher);
         decryptionService.postConstruct();
         secretKeyAssignedEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
         incomingRawDataEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
@@ -114,7 +114,7 @@ public class DecryptionServiceTest extends BaseServiceTest {
         }
 
         void postConstruct() {
-            threadPoolTaskExecutor.execute(this);
+            executors.executeInInternalPool(this);
             dispatcher.subscribe(this, SecretKeyAssignedEvent.class);
             dispatcher.subscribe(this, IncomingRawDataEvent.class);
         }

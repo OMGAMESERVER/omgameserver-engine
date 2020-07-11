@@ -28,7 +28,7 @@ public class InputServiceTest extends BaseServiceTest {
     @Before
     public void beforeTest() throws IOException {
         createComponents();
-        inputService = new InputService(properties, threadPoolTaskExecutor, dispatcher);
+        inputService = new InputService(properties, executors, dispatcher);
         inputService.postConstruct();
         consumerStub = new ConsumerStub();
         consumerStub.postConstruct();
@@ -142,7 +142,7 @@ public class InputServiceTest extends BaseServiceTest {
         }
 
         public void postConstruct() {
-            threadPoolTaskExecutor.execute(this);
+            executors.executeInInternalPool(this);
             dispatcher.subscribe(this, IncomingHeaderEvent.class);
             dispatcher.subscribe(this, IncomingPayloadEvent.class);
             dispatcher.subscribe(this, ClientDisconnectedEvent.class);

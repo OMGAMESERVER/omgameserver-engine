@@ -28,7 +28,7 @@ public class KeysTrackerServiceTest extends BaseServiceTest {
     @Before
     public void beforeTest() throws UnknownHostException {
         createComponents();
-        keysTrackerService = new KeysTrackerService(properties, threadPoolTaskExecutor, dispatcher);
+        keysTrackerService = new KeysTrackerService(properties, executors, dispatcher);
         keysTrackerService.postConstruct();
         secretKeyExpiredEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
         consumerStub = new ConsumerStub();
@@ -67,7 +67,7 @@ public class KeysTrackerServiceTest extends BaseServiceTest {
         }
 
         void postConstruct() {
-            threadPoolTaskExecutor.execute(this);
+            executors.executeInInternalPool(this);
             dispatcher.subscribe(this, SecretKeyExpiredEvent.class);
         }
     }

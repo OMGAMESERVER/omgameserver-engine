@@ -7,6 +7,10 @@ import org.luaj.vm2.lib.*;
 import org.luaj.vm2.lib.jse.*;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author Kirill Byvshev (k@byv.sh)
+ * @since 1.0.0
+ */
 @Component
 class LuaGlobals {
 

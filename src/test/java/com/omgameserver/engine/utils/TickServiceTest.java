@@ -24,7 +24,7 @@ public class TickServiceTest extends BaseServiceTest {
     @Before
     public void beforeTest() throws UnknownHostException {
         createComponents();
-        tickService = new TickService(properties, dispatcher, threadPoolTaskExecutor);
+        tickService = new TickService(properties, dispatcher, executors);
         tickService.postConstruct();
         tickEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
         consumerStub = new ConsumerStub();
@@ -59,7 +59,7 @@ public class TickServiceTest extends BaseServiceTest {
         }
 
         void postConstruct() {
-            threadPoolTaskExecutor.execute(this);
+            executors.executeInInternalPool(this);
             dispatcher.subscribe(this, TickEvent.class);
         }
     }

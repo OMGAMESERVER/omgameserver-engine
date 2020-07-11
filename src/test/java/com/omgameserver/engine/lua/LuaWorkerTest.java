@@ -24,7 +24,7 @@ public class LuaWorkerTest extends LuaBaseTest {
     @Before
     public void beforeTest() throws UnknownHostException {
         createComponents();
-        luaWorker = new LuaWorker(properties, threadPoolTaskExecutor, dispatcher, luaGlobals,
+        luaWorker = new LuaWorker(properties, executors, dispatcher, luaGlobals,
                 "lua_worker_test.lua");
         luaWorker.postConstruct();
         luaTickEventReceiveds = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
@@ -62,7 +62,7 @@ public class LuaWorkerTest extends LuaBaseTest {
         }
 
         void postConstruct() {
-            threadPoolTaskExecutor.execute(this);
+            executors.executeInInternalPool(this);
             dispatcher.subscribe(this, LuaTickEventReceived.class);
         }
     }
