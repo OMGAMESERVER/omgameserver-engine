@@ -24,6 +24,7 @@ public class LuaWorkerTest extends LuaBaseTest {
     private BlockingQueue<LuaDataReceivedEvent> luaDataReceivedEvents;
     private BlockingQueue<LuaTickReceivedEvent> luaTickReceivedEvents;
     private BlockingQueue<OutgoingLuaValueEvent> outgoingLuaValueEvents;
+    private BlockingQueue<DisconnectClientRequestEvent> disconnectClientRequestEvents;
     private ConsumerStub consumerStub;
 
     @Before
@@ -34,6 +35,7 @@ public class LuaWorkerTest extends LuaBaseTest {
         luaDataReceivedEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
         luaTickReceivedEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
         outgoingLuaValueEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
+        disconnectClientRequestEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
         consumerStub = new ConsumerStub();
         consumerStub.postConstruct();
     }
@@ -116,12 +118,23 @@ public class LuaWorkerTest extends LuaBaseTest {
         assertEquals(true, outgoingLuaValueEvent.isReliable());
     }
 
+    @Test
+    public void testDiconnectFunction() throws InterruptedException {
+        LuaWorker luaWorker = new LuaWorker(properties, executors, dispatcher, luaGlobals,
+                "lua_disconnect_function_test.lua");
+        DisconnectClientRequestEvent disconnectClientRequestEvent = disconnectClientRequestEvents.poll(POLL_TIMEOUT_MS,
+                TimeUnit.MILLISECONDS);
+        assertNotNull(disconnectClientRequestEvent);
+        assertEquals(1, disconnectClientRequestEvent.getClientUid());
+    }
+
     private class ConsumerStub extends Bolt implements
             LuaClientConnectedReceivedEvent.Handler,
             LuaClientDisconnectedReceivedEvent.Handler,
             LuaDataReceivedEvent.Handler,
             LuaTickReceivedEvent.Handler,
-            OutgoingLuaValueEvent.Handler {
+            OutgoingLuaValueEvent.Handler,
+            DisconnectClientRequestEvent.Handler {
 
         ConsumerStub() {
             super("consumer-stub", PROPERTY_QUEUE_SIZE);
@@ -152,6 +165,11 @@ public class LuaWorkerTest extends LuaBaseTest {
             outgoingLuaValueEvents.put(event);
         }
 
+        @Override
+        public void handleDisconnectClientRequest(DisconnectClientRequestEvent event) throws InterruptedException {
+            disconnectClientRequestEvents.put(event);
+        }
+
         void postConstruct() {
             executors.executeInInternalPool(this);
             dispatcher.getDispatcher().subscribe(this, LuaClientConnectedReceivedEvent.class);
@@ -159,6 +177,7 @@ public class LuaWorkerTest extends LuaBaseTest {
             dispatcher.getDispatcher().subscribe(this, LuaDataReceivedEvent.class);
             dispatcher.getDispatcher().subscribe(this, LuaTickReceivedEvent.class);
             dispatcher.getDispatcher().subscribe(this, OutgoingLuaValueEvent.class);
+            dispatcher.getDispatcher().subscribe(this, DisconnectClientRequestEvent.class);
         }
     }
 }

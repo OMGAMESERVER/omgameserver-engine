@@ -16,6 +16,7 @@ class LuaRuntime extends LuaEventListener {
     private final String FUNCTION_LOG_TRACE = "log_trace";
 
     private final String FUNCTION_SEND = "send";
+    private final String FUNCTION_DISCONNECT = "disconnect";
 
     LuaRuntime(OmgsDispatcher dispatcher, Globals globals) {
         super();
@@ -25,5 +26,6 @@ class LuaRuntime extends LuaEventListener {
         set(FUNCTION_LOG_DEBUG, new LuaLogFunction(globals, LuaLogFunction.LEVEL.DEBUG));
         set(FUNCTION_LOG_TRACE, new LuaLogFunction(globals, LuaLogFunction.LEVEL.TRACE));
         set(FUNCTION_SEND, new LuaSendFunction(dispatcher));
+        set(FUNCTION_DISCONNECT, new LuaDisconnectClientFunction(dispatcher));
     }
 }
