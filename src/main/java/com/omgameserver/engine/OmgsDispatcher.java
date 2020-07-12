@@ -3,6 +3,10 @@ package com.omgameserver.engine;
 import com.crionuke.bolts.Dispatcher;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author Kirill Byvshev (k@byv.sh)
+ * @since 1.0.0
+ */
 @Component
 public class OmgsDispatcher {
 

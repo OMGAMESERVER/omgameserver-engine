@@ -13,6 +13,10 @@ import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 
+/**
+ * @author Kirill Byvshev (k@byv.sh)
+ * @since 1.0.0
+ */
 public class SendingServiceTest extends BaseServiceTest {
     static private final Logger logger = LoggerFactory.getLogger(SendingServiceTest.class);
 

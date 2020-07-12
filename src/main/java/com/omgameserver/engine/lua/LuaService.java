@@ -13,6 +13,10 @@ import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author Kirill Byvshev (k@byv.sh)
+ * @since 1.0.0
+ */
 @Service
 class LuaService extends Bolt implements
         IncomingLuaValueEvent.Handler {

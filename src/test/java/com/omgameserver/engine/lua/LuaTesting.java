@@ -3,6 +3,10 @@ package com.omgameserver.engine.lua;
 import com.omgameserver.engine.OmgsDispatcher;
 import org.luaj.vm2.LuaTable;
 
+/**
+ * @author Kirill Byvshev (k@byv.sh)
+ * @since 1.0.0
+ */
 public class LuaTesting extends LuaTable {
 
     private final String FUNCTION_CLIENT_CONNECTED_RECEIVED = "client_connected_received";

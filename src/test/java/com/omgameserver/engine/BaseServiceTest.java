@@ -14,6 +14,10 @@ import java.nio.ByteBuffer;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
+/**
+ * @author Kirill Byvshev (k@byv.sh)
+ * @since 1.0.0
+ */
 public class BaseServiceTest extends Assert implements OmgsConstants {
     static private final Logger logger = LoggerFactory.getLogger(BaseServiceTest.class);
 

@@ -4,6 +4,10 @@ import com.omgameserver.engine.BaseServiceTest;
 
 import java.net.UnknownHostException;
 
+/**
+ * @author Kirill Byvshev (k@byv.sh)
+ * @since 1.0.0
+ */
 public class LuaBaseTest extends BaseServiceTest {
 
     protected LuaGlobals luaGlobals;

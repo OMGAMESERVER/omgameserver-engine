@@ -13,6 +13,10 @@ import org.luaj.vm2.LuaTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author Kirill Byvshev (k@byv.sh)
+ * @since 1.0.0
+ */
 class LuaWorker extends Bolt implements
         ClientConnectedEvent.Handler,
         ClientDisconnectedEvent.Handler,

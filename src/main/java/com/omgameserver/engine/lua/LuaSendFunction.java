@@ -6,6 +6,10 @@ import org.luaj.vm2.LuaBoolean;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.ThreeArgFunction;
 
+/**
+ * @author Kirill Byvshev (k@byv.sh)
+ * @since 1.0.0
+ */
 class LuaSendFunction extends ThreeArgFunction {
 
     private final OmgsDispatcher dispatcher;

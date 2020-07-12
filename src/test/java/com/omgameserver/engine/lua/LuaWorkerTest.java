@@ -16,6 +16,10 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author Kirill Byvshev (k@byv.sh)
+ * @since 1.0.0
+ */
 public class LuaWorkerTest extends LuaBaseTest {
     static private final Logger logger = LoggerFactory.getLogger(LuaWorkerTest.class);
 

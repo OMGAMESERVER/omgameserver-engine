@@ -15,6 +15,10 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author Kirill Byvshev (k@byv.sh)
+ * @since 1.0.0
+ */
 public class InputServiceTest extends BaseServiceTest {
     static private final Logger logger = LoggerFactory.getLogger(InputServiceTest.class);
 
