@@ -17,23 +17,23 @@ import java.nio.channels.DatagramChannel;
  * @author Kirill Byvshev (k@byv.sh)
  * @since 1.0.0
  */
-public class SendingServiceTest extends BaseServiceTest {
-    static private final Logger logger = LoggerFactory.getLogger(SendingServiceTest.class);
+public class SenderServiceTest extends BaseServiceTest {
+    static private final Logger logger = LoggerFactory.getLogger(SenderServiceTest.class);
 
-    private SendingService sendingService;
+    private SenderService senderService;
     private Channel serverChannel;
 
     @Before
     public void beforeTest() throws IOException {
         createComponents();
         serverChannel = new Channel(properties);
-        sendingService = new SendingService(properties, executors, dispatcher, serverChannel);
-        sendingService.postConstruct();
+        senderService = new SenderService(properties, executors, dispatcher, serverChannel);
+        senderService.postConstruct();
     }
 
     @After
     public void afterTest() throws IOException {
-        sendingService.finish();
+        senderService.finish();
         serverChannel.close();
     }
 

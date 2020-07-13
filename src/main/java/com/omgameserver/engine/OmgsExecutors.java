@@ -27,24 +27,24 @@ public class OmgsExecutors {
     public void executeInInternalPool(Worker worker) {
         internalExecutor.execute(worker);
         if (logger.isDebugEnabled()) {
-            logger.debug("{} executed in internal thread pool, used {}/{} threads", worker,
-                    internalExecutor.getActiveCount(), internalExecutor.getCorePoolSize());
+            logger.debug("{} executed in internal thread pool, used {}/{} threads",
+                    worker, internalExecutor.getActiveCount(), internalExecutor.getCorePoolSize());
         }
     }
 
     public void executeInUserPool(Worker worker) {
         userExecutor.execute(worker);
         if (logger.isDebugEnabled()) {
-            logger.debug("{} executed in user thread pool, used {}/{} threads", worker, userExecutor.getActiveCount(),
-                    userExecutor.getCorePoolSize());
+            logger.debug("{} executed in user thread pool, used {}/{} threads",
+                    worker, userExecutor.getActiveCount(), userExecutor.getCorePoolSize());
         }
     }
 
     private ThreadPoolTaskExecutor createExecutor(int size) {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(INTERNAL_THREAD_POOL_SIZE);
+        executor.setCorePoolSize(size);
         executor.initialize();
-        logger.info("Executor with size={} created", INTERNAL_THREAD_POOL_SIZE);
+        logger.info("Executor with size={} created", size);
         return executor;
     }
 }

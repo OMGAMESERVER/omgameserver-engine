@@ -8,9 +8,9 @@ public interface OmgsConstants {
     // Header size = seq + ack + bit + sys
     int HEADER_SIZE = 3 * Integer.BYTES + Byte.BYTES;
     // No value header
-    byte HEADER_SYS_NOVALUE = 0x00;
-    // Ping request from client
-    byte HEADER_SYS_PINGREQ = 0x01;
-    // Pong response from client
-    byte HEADER_SYS_PONGRES = 0x02;
+    byte HEADER_SYS_NOVALUE = 1;
+    // Ping request
+    byte HEADER_SYS_PINGREQ = 2;
+    // Pong response
+    byte HEADER_SYS_PONGRES = 4;
 }

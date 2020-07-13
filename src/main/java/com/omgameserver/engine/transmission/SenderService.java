@@ -17,15 +17,15 @@ import java.io.IOException;
  * @since 1.0.0
  */
 @Service
-class SendingService extends Bolt implements OutgoingDatagramEvent.Handler {
-    static private final Logger logger = LoggerFactory.getLogger(SendingService.class);
+class SenderService extends Bolt implements OutgoingDatagramEvent.Handler {
+    static private final Logger logger = LoggerFactory.getLogger(SenderService.class);
 
     private final OmgsExecutors executors;
     private final OmgsDispatcher dispatcher;
     private final Channel.Sender sender;
 
-    SendingService(OmgsProperties properties, OmgsExecutors executors, OmgsDispatcher dispatcher,
-                   Channel channel) {
+    SenderService(OmgsProperties properties, OmgsExecutors executors, OmgsDispatcher dispatcher,
+                  Channel channel) {
         super("sender", properties.getQueueSize());
         this.executors = executors;
         this.dispatcher = dispatcher;

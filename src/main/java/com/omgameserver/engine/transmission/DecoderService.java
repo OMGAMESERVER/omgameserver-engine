@@ -19,15 +19,15 @@ import java.nio.ByteBuffer;
  * @since 1.0.0
  */
 @Service
-class DecodingService extends Bolt implements
+class DecoderService extends Bolt implements
         IncomingPayloadEvent.Handler {
-    static private final Logger logger = LoggerFactory.getLogger(DecodingService.class);
+    static private final Logger logger = LoggerFactory.getLogger(DecoderService.class);
 
     private final OmgsProperties properties;
     private final OmgsExecutors executors;
     private final OmgsDispatcher dispatcher;
 
-    DecodingService(OmgsProperties properties, OmgsExecutors executors, OmgsDispatcher dispatcher) {
+    DecoderService(OmgsProperties properties, OmgsExecutors executors, OmgsDispatcher dispatcher) {
         super("decoder", properties.getQueueSize());
         this.properties = properties;
         this.executors = executors;

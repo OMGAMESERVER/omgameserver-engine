@@ -23,10 +23,10 @@ import java.nio.ByteBuffer;
  * @since 1.0.0
  */
 @Service
-class EncodingService extends Bolt implements
+class EncoderService extends Bolt implements
         OutgoingLuaValueEvent.Handler,
         OmgsConstants {
-    static private final Logger logger = LoggerFactory.getLogger(EncodingService.class);
+    static private final Logger logger = LoggerFactory.getLogger(EncoderService.class);
 
     // Use & 0xFF for unsigned byte in int datatype
     private final int MSG_PACK_TRUE = 0xc3 & 0xFF;
@@ -53,7 +53,7 @@ class EncodingService extends Bolt implements
     private final OmgsExecutors executors;
     private final OmgsDispatcher dispatcher;
 
-    EncodingService(OmgsProperties properties, OmgsExecutors executors, OmgsDispatcher dispatcher) {
+    EncoderService(OmgsProperties properties, OmgsExecutors executors, OmgsDispatcher dispatcher) {
         super("encoder", properties.getQueueSize());
         this.properties = properties;
         this.executors = executors;

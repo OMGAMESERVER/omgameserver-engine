@@ -21,18 +21,18 @@ import java.util.concurrent.TimeUnit;
  * @author Kirill Byvshev (k@byv.sh)
  * @since 1.0.0
  */
-public class DecodingServiceTest extends BaseServiceTest {
-    static private final Logger logger = LoggerFactory.getLogger(DecodingServiceTest.class);
+public class DecoderServiceTest extends BaseServiceTest {
+    static private final Logger logger = LoggerFactory.getLogger(DecoderServiceTest.class);
 
-    private DecodingService decodingService;
+    private DecoderService decoderService;
     private BlockingQueue<IncomingLuaValueEvent> incomingLuaValueEvents;
     private ConsumerStub consumerStub;
 
     @Before
     public void beforeTest() throws UnknownHostException {
         createComponents();
-        decodingService = new DecodingService(properties, executors, dispatcher);
-        decodingService.postConstruct();
+        decoderService = new DecoderService(properties, executors, dispatcher);
+        decoderService.postConstruct();
         incomingLuaValueEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
         consumerStub = new ConsumerStub();
         consumerStub.postConstruct();
@@ -40,7 +40,7 @@ public class DecodingServiceTest extends BaseServiceTest {
 
     @After
     public void afterTest() {
-        decodingService.finish();
+        decoderService.finish();
         consumerStub.finish();
     }
 

@@ -1,17 +1,14 @@
 package com.omgameserver.engine;
 
-import com.omgameserver.engine.events.IncomingRawDataEvent;
+import com.omgameserver.engine.events.IncomingDatagramEvent;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 /**
@@ -28,7 +25,7 @@ public class BaseServiceTest extends Assert implements OmgsConstants {
     protected final int PROPERTY_THREAD_POOL_SIZE = 32;
     protected final int PROPERTY_QUEUE_SIZE = 128;
     protected final int PROPERTY_DATAGRAM_SIZE = 508;
-    protected final int PROPERTY_SECRET_KEY_LIFETIME = 1000;
+    protected final int PROPERTY_ACCESS_KEY_LIFETIME = 1000;
     protected final int PROPERTY_TICK_INTERVAL = 100;
     protected final int PROPERTY_DISCONNECT_INTERVAL = 1000;
     protected final int PROPERTY_PING_INTERVAL = 250;
@@ -40,7 +37,7 @@ public class BaseServiceTest extends Assert implements OmgsConstants {
 
     protected void createComponents() throws UnknownHostException {
         properties = new OmgsProperties(PROPERTY_HOST, PROPERTY_PORT, PROPERTY_THREAD_POOL_SIZE, PROPERTY_QUEUE_SIZE,
-                PROPERTY_DATAGRAM_SIZE, PROPERTY_SECRET_KEY_LIFETIME, PROPERTY_TICK_INTERVAL,
+                PROPERTY_DATAGRAM_SIZE, PROPERTY_ACCESS_KEY_LIFETIME, PROPERTY_TICK_INTERVAL,
                 PROPERTY_DISCONNECT_INTERVAL, PROPERTY_PING_INTERVAL, PROPERTY_MAIN_SCRIPT);
         dispatcher = new OmgsDispatcher();
         executors = new OmgsExecutors(properties);
@@ -59,8 +56,20 @@ public class BaseServiceTest extends Assert implements OmgsConstants {
         return clientUid;
     }
 
-    protected IncomingRawDataEvent createIncomingRawDataEvent(SocketAddress sourceAddress, int seq, int ack, int bit,
-                                                              byte sys, String payload) {
+    protected IncomingDatagramEvent createAccessRequestDatagram(SocketAddress sourceAddress, int seq, int ack, int bit,
+                                                                byte sys, long accessKey) {
+        ByteBuffer datagram = ByteBuffer.allocate(properties.getDatagramSize());
+        datagram.putInt(seq);
+        datagram.putInt(ack);
+        datagram.putInt(bit);
+        datagram.put(sys);
+        datagram.putLong(accessKey);
+        datagram.flip();
+        return new IncomingDatagramEvent(sourceAddress, datagram);
+    }
+
+    protected IncomingDatagramEvent createPayloadDatagram(SocketAddress sourceAddress, int seq, int ack, int bit,
+                                                          byte sys, String payload) {
         ByteBuffer rawData = ByteBuffer.allocate(properties.getDatagramSize());
         rawData.putInt(seq);
         rawData.putInt(ack);
@@ -68,14 +77,12 @@ public class BaseServiceTest extends Assert implements OmgsConstants {
         rawData.put(sys);
         rawData.put(payload.getBytes());
         rawData.flip();
-        return new IncomingRawDataEvent(sourceAddress, rawData);
+        return new IncomingDatagramEvent(sourceAddress, rawData);
     }
 
-    protected SecretKey createSecretKey() throws NoSuchAlgorithmException {
-        KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+    protected long generateAccessKey() {
         SecureRandom secureRandom = new SecureRandom();
-        keyGenerator.init(128, secureRandom);
-        return keyGenerator.generateKey();
+        return secureRandom.nextLong();
     }
 
     protected ByteBuffer skipHeader(ByteBuffer byteBuffer) {

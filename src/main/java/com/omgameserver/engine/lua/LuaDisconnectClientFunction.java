@@ -2,15 +2,11 @@ package com.omgameserver.engine.lua;
 
 import com.omgameserver.engine.OmgsDispatcher;
 import com.omgameserver.engine.events.DisconnectClientRequestEvent;
-import org.luaj.vm2.*;
+import org.luaj.vm2.LuaBoolean;
+import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.OneArgFunction;
-import org.luaj.vm2.lib.TwoArgFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Kirill Byvshev (k@byv.sh)

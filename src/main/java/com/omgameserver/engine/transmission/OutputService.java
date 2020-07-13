@@ -4,10 +4,7 @@ import com.crionuke.bolts.Bolt;
 import com.omgameserver.engine.OmgsDispatcher;
 import com.omgameserver.engine.OmgsExecutors;
 import com.omgameserver.engine.OmgsProperties;
-import com.omgameserver.engine.events.ClientDisconnectedEvent;
-import com.omgameserver.engine.events.IncomingHeaderEvent;
-import com.omgameserver.engine.events.OutgoingPayloadEvent;
-import com.omgameserver.engine.events.TickEvent;
+import com.omgameserver.engine.events.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,11 +54,13 @@ class OutputService extends Bolt implements
             clientByUid.put(clientUid, outputClient);
             logger.debug("New output client for {} with uid={}", socketAddress, clientUid);
         }
-        outputClient.handleHeader(event.getSeq(), event.getAck(), event.getBit(), event.getSys());
+        if (!outputClient.handleHeader(event.getSeq(), event.getAck(), event.getBit(), event.getSys())) {
+            dispatcher.getDispatcher().dispatch(new DisconnectClientRequestEvent(outputClient.getClientUid()));
+        }
     }
 
     @Override
-    public void handleOutgoingPayload(OutgoingPayloadEvent event) throws InterruptedException {
+    public void handleOutgoingPayload(OutgoingPayloadEvent event) {
         if (logger.isTraceEnabled()) {
             logger.trace("Handle {}", event);
         }
@@ -77,16 +76,17 @@ class OutputService extends Bolt implements
     }
 
     @Override
-    public void handleClientDisconnected(ClientDisconnectedEvent event) throws InterruptedException {
+    public void handleClientDisconnected(ClientDisconnectedEvent event) {
         if (logger.isTraceEnabled()) {
             logger.trace("Handle {}", event);
         }
         SocketAddress socketAddress = event.getSocketAddress();
+        long clientUid = event.getClientUid();
         OutputClient removedClient = clientBySocket.remove(socketAddress);
         if (removedClient != null) {
             logger.debug("{} removed", removedClient);
         }
-        clientByUid.remove(removedClient.getClientUid());
+        clientByUid.remove(clientUid);
     }
 
     @Override

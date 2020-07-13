@@ -5,8 +5,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.security.NoSuchAlgorithmException;
-
 /**
  * @author Kirill Byvshev (k@byv.sh)
  * @since 1.0.0
@@ -21,28 +19,23 @@ class WebController {
         this.webService = webService;
     }
 
-    @PostMapping(path = "/authorizations", consumes = MediaType.APPLICATION_JSON_VALUE,
+    @PostMapping(path = "/access", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public AuthorizationResponse createAuthorization() throws NoSuchAlgorithmException, InterruptedException {
-        WebService.Authorization authorization = webService.createAuthorization();
-        return new AuthorizationResponse(authorization.getKeyUid(), authorization.getSecretKey().getEncoded());
+    public AccessResponse createAccess() throws InterruptedException {
+        WebService.Access access = webService.createAccess();
+        return new AccessResponse(access.getAccessKey());
     }
 
-    class AuthorizationResponse {
-        private final long keyUid;
-        private final byte[] secretKey;
+    class AccessResponse {
 
-        AuthorizationResponse(long keyUid, byte[] secretKey) {
-            this.keyUid = keyUid;
-            this.secretKey = secretKey;
+        private final long accessKey;
+
+        AccessResponse(long accessKey) {
+            this.accessKey = accessKey;
         }
 
-        public long getKeyUid() {
-            return keyUid;
-        }
-
-        public byte[] getSecretKey() {
-            return secretKey;
+        public long getAccessKey() {
+            return accessKey;
         }
     }
 }

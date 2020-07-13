@@ -79,7 +79,7 @@ class Channel implements OmgsConstants {
         }
 
         void send(OutgoingDatagramEvent outgoingDatagramEvent) throws IOException {
-            datagramChannel.send(outgoingDatagramEvent.getByteBuffer(), outgoingDatagramEvent.getTargetAddress());
+            datagramChannel.send(outgoingDatagramEvent.getDatagram(), outgoingDatagramEvent.getTargetAddress());
         }
     }
 }

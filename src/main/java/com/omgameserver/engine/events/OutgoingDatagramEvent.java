@@ -12,18 +12,18 @@ import java.nio.ByteBuffer;
 public final class OutgoingDatagramEvent extends Event<OutgoingDatagramEvent.Handler> {
 
     private final SocketAddress targetAddress;
-    private final ByteBuffer byteBuffer;
+    private final ByteBuffer datagram;
 
-    public OutgoingDatagramEvent(SocketAddress targetAddress, ByteBuffer byteBuffer) {
+    public OutgoingDatagramEvent(SocketAddress targetAddress, ByteBuffer datagram) {
         super();
         if (targetAddress == null) {
             throw new NullPointerException("targetAddress is null");
         }
-        if (byteBuffer == null) {
-            throw new NullPointerException("byteBuffer is null");
+        if (datagram == null) {
+            throw new NullPointerException("datagram is null");
         }
         this.targetAddress = targetAddress;
-        this.byteBuffer = byteBuffer;
+        this.datagram = datagram;
     }
 
     @Override
@@ -35,13 +35,13 @@ public final class OutgoingDatagramEvent extends Event<OutgoingDatagramEvent.Han
         return targetAddress;
     }
 
-    public ByteBuffer getByteBuffer() {
-        return byteBuffer;
+    public ByteBuffer getDatagram() {
+        return datagram;
     }
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(targetAddress=" + targetAddress + ", byteBuffer=" + byteBuffer + ")";
+        return getClass().getSimpleName() + "(targetAddress=" + targetAddress + ", datagram=" + datagram + ")";
     }
 
     public interface Handler {

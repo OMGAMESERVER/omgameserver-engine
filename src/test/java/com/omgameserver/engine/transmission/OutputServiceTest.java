@@ -4,8 +4,8 @@ import com.crionuke.bolts.Bolt;
 import com.omgameserver.engine.BaseServiceTest;
 import com.omgameserver.engine.OmgsConstants;
 import com.omgameserver.engine.events.IncomingHeaderEvent;
+import com.omgameserver.engine.events.OutgoingDatagramEvent;
 import com.omgameserver.engine.events.OutgoingPayloadEvent;
-import com.omgameserver.engine.events.OutgoingRawDataEvent;
 import com.omgameserver.engine.events.TickEvent;
 import org.junit.After;
 import org.junit.Before;
@@ -33,7 +33,7 @@ public class OutputServiceTest extends BaseServiceTest implements OmgsConstants 
     private OutputService outputService;
     private ConsumerStub consumerStub;
 
-    private BlockingQueue<OutgoingRawDataEvent> outgoingRawDataEvents;
+    private BlockingQueue<OutgoingDatagramEvent> outgoingDatagramEvents;
 
     @Before
     public void beforeTest() throws IOException {
@@ -42,7 +42,7 @@ public class OutputServiceTest extends BaseServiceTest implements OmgsConstants 
         outputService.postConstruct();
         consumerStub = new ConsumerStub();
         consumerStub.postConstruct();
-        outgoingRawDataEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
+        outgoingDatagramEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
     }
 
     @After
@@ -52,50 +52,47 @@ public class OutputServiceTest extends BaseServiceTest implements OmgsConstants 
     }
 
     @Test
-    public void testPong() throws InterruptedException {
-        // Send ping request
+    public void testClientPingRequest() throws InterruptedException {
+        // Send header
+        long clientUid = generateClientUid();
         SocketAddress socketAddress = generateSocketAddress();
-        IncomingHeaderEvent headerEvent = new IncomingHeaderEvent(socketAddress, generateClientUid(),
-                1, 0, 0, HEADER_SYS_PINGREQ);
-        dispatcher.getDispatcher().dispatch(headerEvent);
-        // Waiting pong response
-        OutgoingRawDataEvent pongEvent =
-                outgoingRawDataEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        dispatcher.getDispatcher().dispatch(new IncomingHeaderEvent(socketAddress, clientUid,
+                1, 0, 0, HEADER_SYS_PINGREQ));
+        // Get pong response
+        OutgoingDatagramEvent outgoingDatagramEvent =
+                outgoingDatagramEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         // Read header
-        ByteBuffer rawData = pongEvent.getRawData();
-        int seq = rawData.getInt();
-        int ack = rawData.getInt();
-        int bit = rawData.getInt();
-        int sys = rawData.get();
-        logger.info("Got datagram with seq={}, ack={}, bit={}, sys={}", seq, ack, Integer.toBinaryString(bit), sys);
-        // Asserts
-        assertEquals(socketAddress, pongEvent.getTargetAddress());
-        assertTrue((sys & HEADER_SYS_PONGRES) > 0);
+        ByteBuffer datagram = outgoingDatagramEvent.getDatagram();
+        int seq = datagram.getInt();
+        int ack = datagram.getInt();
+        int bit = datagram.getInt();
+        int sys = datagram.get();
+        // Check
+        assertEquals(HEADER_SYS_PONGRES, sys);
     }
 
     @Test
-    public void testPing() throws InterruptedException {
-        // Send header event for client creation
+    public void testServerPingRequest() throws InterruptedException {
+        // Send header
+        long clientUid = generateClientUid();
         SocketAddress socketAddress = generateSocketAddress();
-        IncomingHeaderEvent headerEvent = new IncomingHeaderEvent(socketAddress, generateClientUid(),
-                1, 0, 0, HEADER_SYS_NOVALUE);
-        dispatcher.getDispatcher().dispatch(headerEvent);
-        // Output client check ping interval every tick event
+        dispatcher.getDispatcher().dispatch(new IncomingHeaderEvent(socketAddress, clientUid,
+                1, 0, 0, HEADER_SYS_NOVALUE));
+        // Send tick after ping interval
         Thread.sleep(properties.getPingInterval() * 2);
-        TickEvent tickEvent = new TickEvent(1, 0);
-        dispatcher.getDispatcher().dispatch(tickEvent);
+        dispatcher.getDispatcher().dispatch(new TickEvent(1, 0));
         // Waiting ping request
-        OutgoingRawDataEvent outgoingDatagramEvent =
-                outgoingRawDataEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        OutgoingDatagramEvent outgoingDatagramEvent =
+                outgoingDatagramEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         // Read header
-        ByteBuffer rawData = outgoingDatagramEvent.getRawData();
-        int seq = rawData.getInt();
-        int ack = rawData.getInt();
-        int bit = rawData.getInt();
-        int sys = rawData.get();
-        logger.info("Got datagram with seq={}, ack={}, bit={}, sys={}", seq, ack, Integer.toBinaryString(bit), sys);
+        ByteBuffer datagram = outgoingDatagramEvent.getDatagram();
+        int seq = datagram.getInt();
+        int ack = datagram.getInt();
+        int bit = datagram.getInt();
+        int sys = datagram.get();
+        // Checks
         assertEquals(socketAddress, outgoingDatagramEvent.getTargetAddress());
-        assertTrue((sys & HEADER_SYS_PINGREQ) > 0);
+        assertEquals(HEADER_SYS_PINGREQ, sys);
     }
 
     @Test
@@ -131,14 +128,14 @@ public class OutputServiceTest extends BaseServiceTest implements OmgsConstants 
                 dispatcher.getDispatcher().dispatch(new TickEvent(iteration, 0));
                 iteration++;
                 // Handle server datagrams
-                OutgoingRawDataEvent event =
-                        outgoingRawDataEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+                OutgoingDatagramEvent event =
+                        outgoingDatagramEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
                 if (event != null) {
-                    int incomingSeq = event.getRawData().getInt();
-                    int incomingAck = event.getRawData().getInt();
-                    int incomingBit = event.getRawData().getInt();
-                    int incomingSys = event.getRawData().get();
-                    if ((incomingSys & HEADER_SYS_PINGREQ) > 0) {
+                    int incomingSeq = event.getDatagram().getInt();
+                    int incomingAck = event.getDatagram().getInt();
+                    int incomingBit = event.getDatagram().getInt();
+                    int incomingSys = event.getDatagram().get();
+                    if (incomingSys == HEADER_SYS_PINGREQ) {
                         // Apply header
                         lastIncomingBit = (lastIncomingBit << incomingSeq - lastIncomingSeq) | 1;
                         lastIncomingSeq = incomingSeq;
@@ -153,8 +150,8 @@ public class OutputServiceTest extends BaseServiceTest implements OmgsConstants 
                     lastIncomingSeq = incomingSeq;
                     Set payload = new HashSet();
                     // Remove data from waiting list
-                    ByteBuffer incomingByteBuffer = event.getRawData();
-                    while (event.getRawData().hasRemaining()) {
+                    ByteBuffer incomingByteBuffer = event.getDatagram();
+                    while (event.getDatagram().hasRemaining()) {
                         int number = incomingByteBuffer.getInt();
                         payload.add(number);
                         waiting.remove(number);
@@ -173,20 +170,20 @@ public class OutputServiceTest extends BaseServiceTest implements OmgsConstants 
     }
 
     private class ConsumerStub extends Bolt implements
-            OutgoingRawDataEvent.Handler {
+            OutgoingDatagramEvent.Handler {
 
         public ConsumerStub() {
             super("consumer-stub", PROPERTY_QUEUE_SIZE);
         }
 
         @Override
-        public void handleOutgoingRawData(OutgoingRawDataEvent event) throws InterruptedException {
-            outgoingRawDataEvents.put(event);
+        public void handleOutgoingDatagram(OutgoingDatagramEvent event) throws InterruptedException {
+            outgoingDatagramEvents.put(event);
         }
 
         public void postConstruct() {
             executors.executeInInternalPool(this);
-            dispatcher.getDispatcher().subscribe(this, OutgoingRawDataEvent.class);
+            dispatcher.getDispatcher().subscribe(this, OutgoingDatagramEvent.class);
         }
     }
 }

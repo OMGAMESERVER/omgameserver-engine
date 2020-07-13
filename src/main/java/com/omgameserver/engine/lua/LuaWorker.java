@@ -47,7 +47,7 @@ class LuaWorker extends Bolt implements
     }
 
     @Override
-    public void handleClientConnected(ClientConnectedEvent event) throws InterruptedException {
+    public void handleClientConnected(ClientConnectedEvent event) {
         if (logger.isTraceEnabled()) {
             logger.trace("Handle {}", event);
         }
@@ -58,7 +58,7 @@ class LuaWorker extends Bolt implements
     }
 
     @Override
-    public void handleClientDisconnected(ClientDisconnectedEvent event) throws InterruptedException {
+    public void handleClientDisconnected(ClientDisconnectedEvent event) {
         if (logger.isTraceEnabled()) {
             logger.trace("Handle {}", event);
         }

@@ -1,12 +1,9 @@
 package com.omgameserver.engine.web;
 
 import com.omgameserver.engine.OmgsDispatcher;
-import com.omgameserver.engine.events.SecretKeyCreatedEvent;
+import com.omgameserver.engine.events.AccessKeyCreatedEvent;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -19,37 +16,29 @@ class WebService {
     static private final AtomicLong uidCounter = new AtomicLong();
 
     private final OmgsDispatcher dispatcher;
+    private final SecureRandom secureRandom;
 
     WebService(OmgsDispatcher dispatcher) {
         this.dispatcher = dispatcher;
+        secureRandom = new SecureRandom();
     }
 
-    Authorization createAuthorization() throws NoSuchAlgorithmException, InterruptedException {
-        KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
-        SecureRandom secureRandom = new SecureRandom();
-        keyGenerator.init(128, secureRandom);
-        long keyUid = uidCounter.incrementAndGet();
-        SecretKey secretKey = keyGenerator.generateKey();
-        dispatcher.getDispatcher().dispatch(new SecretKeyCreatedEvent(keyUid, secretKey));
-        return new Authorization(keyUid, secretKey);
+    Access createAccess() throws InterruptedException {
+        long accessKey = secureRandom.nextLong();
+        dispatcher.getDispatcher().dispatch(new AccessKeyCreatedEvent(accessKey));
+        return new Access(accessKey);
     }
 
-    class Authorization {
+    class Access {
 
-        private final long keyUid;
-        private final SecretKey secretKey;
+        private final long accessKey;
 
-        public Authorization(long keyUid, SecretKey secretKey) {
-            this.keyUid = keyUid;
-            this.secretKey = secretKey;
+        public Access(long accessKey) {
+            this.accessKey = accessKey;
         }
 
-        public long getKeyUid() {
-            return keyUid;
-        }
-
-        public SecretKey getSecretKey() {
-            return secretKey;
+        public long getAccessKey() {
+            return accessKey;
         }
     }
 }

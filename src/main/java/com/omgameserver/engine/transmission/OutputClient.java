@@ -3,8 +3,8 @@ package com.omgameserver.engine.transmission;
 import com.omgameserver.engine.OmgsConstants;
 import com.omgameserver.engine.OmgsDispatcher;
 import com.omgameserver.engine.OmgsProperties;
+import com.omgameserver.engine.events.OutgoingDatagramEvent;
 import com.omgameserver.engine.events.OutgoingPayloadEvent;
-import com.omgameserver.engine.events.OutgoingRawDataEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,16 +57,20 @@ class OutputClient implements OmgsConstants {
         return clientUid;
     }
 
-    void handleHeader(int seq, int ack, int bit, int sys) throws InterruptedException {
+    boolean handleHeader(int seq, int ack, int bit, int sys) throws InterruptedException {
         if (seq <= lastIncomingSeq) {
-            logger.debug("Wrong header's incomingSeq={} from {}, lastIncomingSeq={}",
-                    seq, socketAddress, lastIncomingSeq);
-            return;
+            if (logger.isDebugEnabled()) {
+                logger.debug("Wrong header's incomingSeq={} from {}, lastIncomingSeq={}",
+                        seq, socketAddress, lastIncomingSeq);
+            }
+            return false;
         }
         if (ack > lastOutgoingSeq || ack < 0) {
-            logger.debug("Wrong header's incomingAck={} from {}, lastOutgoingSeq={}",
-                    ack, socketAddress, lastOutgoingSeq);
-            return;
+            if (logger.isDebugEnabled()) {
+                logger.debug("Wrong header's incomingAck={} from {}, lastOutgoingSeq={}",
+                        ack, socketAddress, lastOutgoingSeq);
+            }
+            return false;
         }
         if (logger.isTraceEnabled()) {
             logger.trace("Got datagram from {} with seq={}, ack={}, bit={}, sys={}",
@@ -74,15 +78,14 @@ class OutputClient implements OmgsConstants {
         }
         lastIncomingBit = (lastIncomingBit << seq - lastIncomingSeq) | 1;
         lastIncomingSeq = seq;
-        detectMissingSeq(ack, bit);
-        if ((sys & HEADER_SYS_PONGRES) > 0) {
+        if ((sys & HEADER_SYS_PINGREQ) > 0) {
+            pong();
+        } else if ((sys & HEADER_SYS_PONGRES) > 0) {
             // Calc latency every pong response
             lastLatency = System.currentTimeMillis() - lastPingRequest;
         }
-        if ((sys & HEADER_SYS_PINGREQ) > 0) {
-            // Response pong to ping request
-            pong();
-        }
+        detectMissingSeq(ack, bit);
+        return true;
     }
 
     void send(OutgoingPayloadEvent event) {
@@ -93,23 +96,23 @@ class OutputClient implements OmgsConstants {
         if (payloadEvents.size() == 0) {
             return;
         } else {
-            OutgoingRawDataEvent nextEvent = createNextEvent();
+            OutgoingDatagramEvent nextEvent = createNextEvent();
             for (OutgoingPayloadEvent payloadEvent : payloadEvents) {
                 ByteBuffer payload = payloadEvent.getPayload();
-                if (nextEvent.getRawData().remaining() < payload.remaining()) {
+                if (nextEvent.getDatagram().remaining() < payload.remaining()) {
                     // Flush
-                    nextEvent.getRawData().flip();
+                    nextEvent.getDatagram().flip();
                     dispatcher.getDispatcher().dispatch(nextEvent);
                     // Next event
                     nextEvent = createNextEvent();
                 }
-                nextEvent.getRawData().put(payload);
+                nextEvent.getDatagram().put(payload);
                 if (payloadEvent.isReliable()) {
                     saveEvent(lastOutgoingSeq, payloadEvent);
                 }
             }
             // Flush
-            nextEvent.getRawData().flip();
+            nextEvent.getDatagram().flip();
             dispatcher.getDispatcher().dispatch(nextEvent);
             // Clear
             payloadEvents.clear();
@@ -121,16 +124,16 @@ class OutputClient implements OmgsConstants {
     }
 
     void ping() throws InterruptedException {
+        lastPingRequest = System.currentTimeMillis();
         ByteBuffer datagram = writeHeader(ByteBuffer.allocate(HEADER_SIZE), HEADER_SYS_PINGREQ);
         datagram.flip();
-        dispatcher.getDispatcher().dispatch(new OutgoingRawDataEvent(socketAddress, datagram));
-        lastPingRequest = System.currentTimeMillis();
+        dispatcher.getDispatcher().dispatch(new OutgoingDatagramEvent(socketAddress, datagram));
     }
 
-    private void pong() throws InterruptedException {
+    void pong() throws InterruptedException {
         ByteBuffer datagram = writeHeader(ByteBuffer.allocate(HEADER_SIZE), HEADER_SYS_PONGRES);
         datagram.flip();
-        dispatcher.getDispatcher().dispatch(new OutgoingRawDataEvent(socketAddress, datagram));
+        dispatcher.getDispatcher().dispatch(new OutgoingDatagramEvent(socketAddress, datagram));
     }
 
     private void saveEvent(int seq, OutgoingPayloadEvent event) {
@@ -174,9 +177,9 @@ class OutputClient implements OmgsConstants {
         }
     }
 
-    private OutgoingRawDataEvent createNextEvent() {
-        ByteBuffer rawData = writeHeader(ByteBuffer.allocate(properties.getDatagramSize()), HEADER_SYS_NOVALUE);
-        return new OutgoingRawDataEvent(socketAddress, rawData);
+    private OutgoingDatagramEvent createNextEvent() {
+        ByteBuffer datagram = writeHeader(ByteBuffer.allocate(properties.getDatagramSize()), HEADER_SYS_NOVALUE);
+        return new OutgoingDatagramEvent(socketAddress, datagram);
     }
 
     private ByteBuffer writeHeader(ByteBuffer byteBuffer, byte sysFlags) {
