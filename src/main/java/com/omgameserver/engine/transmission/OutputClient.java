@@ -1,6 +1,5 @@
 package com.omgameserver.engine.transmission;
 
-import com.omgameserver.engine.OmgsConstants;
 import com.omgameserver.engine.OmgsDispatcher;
 import com.omgameserver.engine.OmgsProperties;
 import com.omgameserver.engine.events.OutgoingDatagramEvent;
@@ -16,7 +15,7 @@ import java.util.*;
  * @author Kirill Byvshev (k@byv.sh)
  * @since 1.0.0
  */
-class OutputClient implements OmgsConstants {
+class OutputClient implements Header {
     static private final Logger logger = LoggerFactory.getLogger(OutputClient.class);
 
     private OmgsProperties properties;

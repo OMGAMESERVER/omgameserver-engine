@@ -2,7 +2,6 @@ package com.omgameserver.engine.transmission;
 
 import com.crionuke.bolts.Bolt;
 import com.omgameserver.engine.BaseServiceTest;
-import com.omgameserver.engine.OmgsConstants;
 import com.omgameserver.engine.events.IncomingHeaderEvent;
 import com.omgameserver.engine.events.OutgoingDatagramEvent;
 import com.omgameserver.engine.events.OutgoingPayloadEvent;
@@ -27,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  * @author Kirill Byvshev (k@byv.sh)
  * @since 1.0.0
  */
-public class OutputServiceTest extends BaseServiceTest implements OmgsConstants {
+public class OutputServiceTest extends BaseServiceTest implements Header {
     static private final Logger logger = LoggerFactory.getLogger(OutputServiceTest.class);
 
     private OutputService outputService;

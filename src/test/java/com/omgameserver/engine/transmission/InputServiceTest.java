@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
  * @author Kirill Byvshev (k@byv.sh)
  * @since 1.0.0
  */
-public class InputServiceTest extends BaseServiceTest {
+public class InputServiceTest extends BaseServiceTest implements Header {
     static private final Logger logger = LoggerFactory.getLogger(InputServiceTest.class);
 
     private InputService inputService;

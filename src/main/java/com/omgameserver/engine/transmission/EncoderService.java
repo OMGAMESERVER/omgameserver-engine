@@ -1,7 +1,6 @@
 package com.omgameserver.engine.transmission;
 
 import com.crionuke.bolts.Bolt;
-import com.omgameserver.engine.OmgsConstants;
 import com.omgameserver.engine.OmgsDispatcher;
 import com.omgameserver.engine.OmgsExecutors;
 import com.omgameserver.engine.OmgsProperties;
@@ -25,7 +24,7 @@ import java.nio.ByteBuffer;
 @Service
 class EncoderService extends Bolt implements
         OutgoingLuaValueEvent.Handler,
-        OmgsConstants {
+        Header {
     static private final Logger logger = LoggerFactory.getLogger(EncoderService.class);
 
     // Use & 0xFF for unsigned byte in int datatype

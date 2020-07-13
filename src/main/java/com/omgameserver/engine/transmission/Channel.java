@@ -1,6 +1,5 @@
 package com.omgameserver.engine.transmission;
 
-import com.omgameserver.engine.OmgsConstants;
 import com.omgameserver.engine.OmgsProperties;
 import com.omgameserver.engine.events.IncomingDatagramEvent;
 import com.omgameserver.engine.events.OutgoingDatagramEvent;
@@ -19,7 +18,7 @@ import java.nio.channels.DatagramChannel;
  * @since 1.0.0
  */
 @Component
-class Channel implements OmgsConstants {
+class Channel implements Header {
     static private final Logger logger = LoggerFactory.getLogger(Channel.class);
 
     private final OmgsProperties properties;

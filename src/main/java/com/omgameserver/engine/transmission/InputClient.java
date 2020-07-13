@@ -1,6 +1,5 @@
 package com.omgameserver.engine.transmission;
 
-import com.omgameserver.engine.OmgsConstants;
 import com.omgameserver.engine.OmgsDispatcher;
 import com.omgameserver.engine.OmgsProperties;
 import com.omgameserver.engine.events.ClientAccessRequestEvent;
@@ -17,7 +16,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author Kirill Byvshev (k@byv.sh)
  * @since 1.0.0
  */
-class InputClient implements OmgsConstants {
+class InputClient implements Header {
     static private final Logger logger = LoggerFactory.getLogger(InputClient.class);
     static private final AtomicLong uidCounter = new AtomicLong();
 
