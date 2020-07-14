@@ -29,7 +29,7 @@ class LuaWorker extends Bolt implements
     private final LuaGlobals luaGlobals;
     private final LuaRuntime luaRuntime;
 
-    private final String EVENT_CLIENT_CONNTECTED = "client_connected";
+    private final String EVENT_CLIENT_CONNECTED = "client_connected";
     private final String EVENT_CLIENT_DISCONNECTED = "client_disconnected";
     private final String EVENT_RECEIVED = "received";
     private final String EVENT_TICK = "tick";
@@ -52,9 +52,9 @@ class LuaWorker extends Bolt implements
             logger.trace("Handle {}", event);
         }
         LuaTable luaEvent = new LuaTable();
-        luaEvent.set("id", EVENT_CLIENT_CONNTECTED);
+        luaEvent.set("id", EVENT_CLIENT_CONNECTED);
         luaEvent.set("client_uid", event.getClientUid());
-        luaRuntime.dispatch(EVENT_CLIENT_CONNTECTED, luaEvent);
+        luaRuntime.dispatch(EVENT_CLIENT_CONNECTED, luaEvent);
     }
 
     @Override
