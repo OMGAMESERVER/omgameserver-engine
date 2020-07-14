@@ -40,7 +40,7 @@ class TickService extends Worker {
         try {
             while (looping) {
                 number++;
-                dispatcher.getDispatcher().dispatch(new TickEvent(number, System.currentTimeMillis() - lastTime));
+                dispatcher.dispatch(new TickEvent(number, System.currentTimeMillis() - lastTime));
                 lastTime = System.currentTimeMillis();
                 Thread.sleep(properties.getTickInterval());
             }

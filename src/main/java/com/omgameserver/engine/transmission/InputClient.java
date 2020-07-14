@@ -62,7 +62,7 @@ class InputClient implements Header {
             int bit = datagram.getInt();
             int sys = datagram.get();
             lastActivity = System.currentTimeMillis();
-            dispatcher.getDispatcher().dispatch(new IncomingHeaderEvent(socketAddress, clientUid, seq, ack, bit, sys));
+            dispatcher.dispatch(new IncomingHeaderEvent(socketAddress, clientUid, seq, ack, bit, sys));
             return handleRawData(datagram);
         }
         return false;
@@ -92,7 +92,7 @@ class InputClient implements Header {
             ByteBuffer payload = ByteBuffer.allocate(byteBuffer.remaining());
             payload.put(byteBuffer);
             payload.flip();
-            dispatcher.getDispatcher().dispatch(new IncomingPayloadEvent(clientUid, payload));
+            dispatcher.dispatch(new IncomingPayloadEvent(clientUid, payload));
         } else {
             if (logger.isDebugEnabled()) {
                 logger.debug("Datagram from {} has no payload", socketAddress);
@@ -104,7 +104,7 @@ class InputClient implements Header {
     private boolean handleAccessRequest(ByteBuffer byteBuffer) throws InterruptedException {
         if (byteBuffer.remaining() >= Long.BYTES) {
             Long accessKey = byteBuffer.getLong();
-            dispatcher.getDispatcher().dispatch(new ClientAccessRequestEvent(socketAddress, clientUid, accessKey));
+            dispatcher.dispatch(new ClientAccessRequestEvent(socketAddress, clientUid, accessKey));
             return true;
         } else {
             if (logger.isDebugEnabled()) {

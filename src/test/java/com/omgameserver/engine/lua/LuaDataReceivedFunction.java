@@ -23,7 +23,7 @@ class LuaDataReceivedFunction extends TwoArgFunction {
         try {
             long clientUid = arg1.tolong();
             String data = arg2.tojstring();
-            dispatcher.getDispatcher().dispatch(new LuaDataReceivedEvent(clientUid, data));
+            dispatcher.dispatch(new LuaDataReceivedEvent(clientUid, data));
             return LuaBoolean.TRUE;
         } catch (InterruptedException e) {
             return LuaBoolean.FALSE;

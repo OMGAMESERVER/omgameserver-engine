@@ -23,7 +23,7 @@ class LuaTickReceivedFunction extends TwoArgFunction {
         try {
             long number = arg1.tolong();
             long deltaTime = arg2.tolong();
-            dispatcher.getDispatcher().dispatch(new LuaTickReceivedEvent(number, deltaTime));
+            dispatcher.dispatch(new LuaTickReceivedEvent(number, deltaTime));
             return LuaBoolean.TRUE;
         } catch (InterruptedException e) {
             return LuaBoolean.FALSE;

@@ -23,7 +23,7 @@ class LuaSendFunction extends ThreeArgFunction {
         Long clientUid = luaClientUid.checklong();
         boolean reliable = luaReliable.checkboolean();
         try {
-            dispatcher.getDispatcher().dispatch(new OutgoingLuaValueEvent(clientUid, luaValue, reliable));
+            dispatcher.dispatch(new OutgoingLuaValueEvent(clientUid, luaValue, reliable));
             return LuaBoolean.TRUE;
         } catch (InterruptedException e) {
             return LuaBoolean.FALSE;

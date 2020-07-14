@@ -101,7 +101,7 @@ class OutputClient implements Header {
                 if (nextEvent.getDatagram().remaining() < payload.remaining()) {
                     // Flush
                     nextEvent.getDatagram().flip();
-                    dispatcher.getDispatcher().dispatch(nextEvent);
+                    dispatcher.dispatch(nextEvent);
                     // Next event
                     nextEvent = createNextEvent();
                 }
@@ -112,7 +112,7 @@ class OutputClient implements Header {
             }
             // Flush
             nextEvent.getDatagram().flip();
-            dispatcher.getDispatcher().dispatch(nextEvent);
+            dispatcher.dispatch(nextEvent);
             // Clear
             payloadEvents.clear();
         }
@@ -126,13 +126,13 @@ class OutputClient implements Header {
         lastPingRequest = System.currentTimeMillis();
         ByteBuffer datagram = writeHeader(ByteBuffer.allocate(HEADER_SIZE), HEADER_SYS_PINGREQ);
         datagram.flip();
-        dispatcher.getDispatcher().dispatch(new OutgoingDatagramEvent(socketAddress, datagram));
+        dispatcher.dispatch(new OutgoingDatagramEvent(socketAddress, datagram));
     }
 
     void pong() throws InterruptedException {
         ByteBuffer datagram = writeHeader(ByteBuffer.allocate(HEADER_SIZE), HEADER_SYS_PONGRES);
         datagram.flip();
-        dispatcher.getDispatcher().dispatch(new OutgoingDatagramEvent(socketAddress, datagram));
+        dispatcher.dispatch(new OutgoingDatagramEvent(socketAddress, datagram));
     }
 
     private void saveEvent(int seq, OutgoingPayloadEvent event) {

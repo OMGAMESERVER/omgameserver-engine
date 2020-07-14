@@ -60,7 +60,7 @@ class InputService extends Bolt implements
             }
         }
         if (!inputClient.handleDatagram(byteBuffer)) {
-            dispatcher.getDispatcher().dispatch(new DisconnectClientRequestEvent(inputClient.getClientUid()));
+            dispatcher.dispatch(new DisconnectClientRequestEvent(inputClient.getClientUid()));
         }
     }
 
@@ -74,7 +74,7 @@ class InputService extends Bolt implements
         InputClient inputClient = clientByUid.get(clientUid);
         if (inputClient != null) {
             inputClient.grantAccess();
-            dispatcher.getDispatcher().dispatch(new ClientConnectedEvent(socketAddress, clientUid));
+            dispatcher.dispatch(new ClientConnectedEvent(socketAddress, clientUid));
             if (logger.isInfoEnabled()) {
                 logger.info("Client from {} with clientUid={} connected", socketAddress, clientUid);
             }
@@ -97,7 +97,7 @@ class InputService extends Bolt implements
             clientByUid.remove(clientUid);
             SocketAddress socketAddress = inputClient.getSocketAddress();
             clientBySocket.remove(socketAddress);
-            dispatcher.getDispatcher().dispatch(new ClientDisconnectedEvent(inputClient.getSocketAddress(), clientUid));
+            dispatcher.dispatch(new ClientDisconnectedEvent(inputClient.getSocketAddress(), clientUid));
             logger.info("{} disconnected by server", inputClient);
         } else {
             if (logger.isInfoEnabled()) {
@@ -119,7 +119,7 @@ class InputService extends Bolt implements
             if (inputClient.isDisconnected(currentTimeMillis)) {
                 clientByUid.remove(inputClient.getClientUid());
                 iterator.remove();
-                dispatcher.getDispatcher().dispatch(
+                dispatcher.dispatch(
                         new ClientDisconnectedEvent(inputClient.getSocketAddress(), inputClient.getClientUid()));
                 logger.info("{} timed out", inputClient);
             }

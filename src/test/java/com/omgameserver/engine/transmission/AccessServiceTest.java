@@ -51,11 +51,11 @@ public class AccessServiceTest extends BaseServiceTest {
     public void testGotAccess() throws InterruptedException {
         // Create accessKey
         long accessKey = generateAccessKey();
-        dispatcher.getDispatcher().dispatch(new AccessKeyCreatedEvent(accessKey));
+        dispatcher.dispatch(new AccessKeyCreatedEvent(accessKey));
         // Request access
         SocketAddress socketAddress = generateSocketAddress();
         long clientUid = generateClientUid();
-        dispatcher.getDispatcher().dispatch(new ClientAccessRequestEvent(socketAddress, clientUid, accessKey));
+        dispatcher.dispatch(new ClientAccessRequestEvent(socketAddress, clientUid, accessKey));
         // Wait event
         GrantAccessToClient event = grantAccessToClients.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         // Checks
@@ -68,11 +68,11 @@ public class AccessServiceTest extends BaseServiceTest {
     public void testAccessForbidden() throws InterruptedException {
         // Create accessKey
         long accessKey = generateAccessKey();
-        dispatcher.getDispatcher().dispatch(new AccessKeyCreatedEvent(accessKey));
+        dispatcher.dispatch(new AccessKeyCreatedEvent(accessKey));
         // Request access
         SocketAddress socketAddress = generateSocketAddress();
         long clientUid = generateClientUid();
-        dispatcher.getDispatcher().dispatch(new ClientAccessRequestEvent(socketAddress, clientUid, accessKey + 1));
+        dispatcher.dispatch(new ClientAccessRequestEvent(socketAddress, clientUid, accessKey + 1));
         // Wait event
         DisconnectClientRequestEvent event = disconnectClientRequestEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         // Checks
@@ -83,10 +83,10 @@ public class AccessServiceTest extends BaseServiceTest {
     @Test
     public void testAccessKeyExpire() throws InterruptedException {
         long accessKey = generateAccessKey();
-        dispatcher.getDispatcher().dispatch(new AccessKeyCreatedEvent(accessKey));
+        dispatcher.dispatch(new AccessKeyCreatedEvent(accessKey));
         Thread.sleep(PROPERTY_ACCESS_KEY_LIFETIME);
         // Expiration interval tracked every tick event
-        dispatcher.getDispatcher().dispatch(new TickEvent(1, 0));
+        dispatcher.dispatch(new TickEvent(1, 0));
         // Wait event
         AccessKeyExpiredEvent event = accessKeyExpiredEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         assertNotNull(event);

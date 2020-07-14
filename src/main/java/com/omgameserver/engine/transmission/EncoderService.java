@@ -72,7 +72,7 @@ class EncoderService extends Bolt implements
             // Encode LuaValue to MsgPack
             encode(payload, luaValue);
             payload.flip();
-            dispatcher.getDispatcher().dispatch(new OutgoingPayloadEvent(clientUid, payload, reliable));
+            dispatcher.dispatch(new OutgoingPayloadEvent(clientUid, payload, reliable));
         } catch (Exception e) {
             if (logger.isWarnEnabled()) {
                 logger.warn("Encoding LuaValue to RawData for {} failed with {}", event.getClientUid(), e);

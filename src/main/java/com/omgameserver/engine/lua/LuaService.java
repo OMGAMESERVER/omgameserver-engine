@@ -47,7 +47,7 @@ class LuaService extends Bolt implements
         long clientUid = event.getClientUid();
         // Routing event to worker
         LuaWorker targetWorker = routes.getOrDefault(clientUid, defaultWorker);
-        dispatcher.getDispatcher().dispatch(event, targetWorker);
+        dispatcher.dispatch(event, targetWorker);
     }
 
     @PostConstruct

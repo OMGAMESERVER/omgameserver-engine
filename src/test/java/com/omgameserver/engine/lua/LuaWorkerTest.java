@@ -56,7 +56,7 @@ public class LuaWorkerTest extends LuaBaseTest {
         luaWorker.postConstruct();
         long clientUid = 1;
         SocketAddress socketAddress = generateSocketAddress();
-        dispatcher.getDispatcher().dispatch(new ClientConnectedEvent(socketAddress, clientUid));
+        dispatcher.dispatch(new ClientConnectedEvent(socketAddress, clientUid));
         LuaClientConnectedReceivedEvent luaClientConnectedReceivedEvent =
                 luaClientConnectedReceivedEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         luaWorker.finish();
@@ -71,7 +71,7 @@ public class LuaWorkerTest extends LuaBaseTest {
         luaWorker.postConstruct();
         long clientUid = 1;
         SocketAddress socketAddress = generateSocketAddress();
-        dispatcher.getDispatcher().dispatch(new ClientDisconnectedEvent(socketAddress, clientUid));
+        dispatcher.dispatch(new ClientDisconnectedEvent(socketAddress, clientUid));
         LuaClientDisconnectedReceivedEvent luaClientDisconnectedReceivedEvent =
                 luaClientDisconnectedReceivedEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         luaWorker.finish();
@@ -87,7 +87,7 @@ public class LuaWorkerTest extends LuaBaseTest {
         long clientUid = 1;
         String data = "helloworld";
         LuaValue luaValue = LuaString.valueOf(data);
-        dispatcher.getDispatcher().dispatch(new IncomingLuaValueEvent(clientUid, luaValue), luaWorker);
+        dispatcher.dispatch(new IncomingLuaValueEvent(clientUid, luaValue), luaWorker);
         LuaDataReceivedEvent luaDataReceivedEvent = luaDataReceivedEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         luaWorker.finish();
         assertNotNull(luaDataReceivedEvent);
@@ -102,7 +102,7 @@ public class LuaWorkerTest extends LuaBaseTest {
         luaWorker.postConstruct();
         long tickNumber = 1;
         long tickDeltaTime = 100;
-        dispatcher.getDispatcher().dispatch(new TickEvent(tickNumber, tickDeltaTime));
+        dispatcher.dispatch(new TickEvent(tickNumber, tickDeltaTime));
         LuaTickReceivedEvent luaTickReceivedEvent = luaTickReceivedEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         luaWorker.finish();
         assertNotNull(luaTickReceivedEvent);

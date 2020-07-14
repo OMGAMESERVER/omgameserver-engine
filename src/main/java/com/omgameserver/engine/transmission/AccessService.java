@@ -59,9 +59,9 @@ class AccessService extends Bolt implements
         long clientUid = event.getClientUid();
         long accessKey = event.getAccessKey();
         if (temporaryKeys.remove(accessKey) != null) {
-            dispatcher.getDispatcher().dispatch(new GrantAccessToClient(socketAddress, clientUid));
+            dispatcher.dispatch(new GrantAccessToClient(socketAddress, clientUid));
         } else {
-            dispatcher.getDispatcher().dispatch(new DisconnectClientRequestEvent(clientUid));
+            dispatcher.dispatch(new DisconnectClientRequestEvent(clientUid));
             if (logger.isDebugEnabled()) {
                 logger.debug("Unknown accessKey={} from {}, access forbidden and client will be disconnected",
                         accessKey, socketAddress);
@@ -85,7 +85,7 @@ class AccessService extends Bolt implements
                 if (logger.isDebugEnabled()) {
                     logger.debug("AccessKey={} expired", accessKey);
                 }
-                dispatcher.getDispatcher().dispatch(new AccessKeyExpiredEvent(accessKey));
+                dispatcher.dispatch(new AccessKeyExpiredEvent(accessKey));
                 iterator.remove();
             }
         }

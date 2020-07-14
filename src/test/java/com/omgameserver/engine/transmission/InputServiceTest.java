@@ -56,7 +56,7 @@ public class InputServiceTest extends BaseServiceTest implements Header {
         // Send datagram
         long accessKey = generateAccessKey();
         SocketAddress socketAddress = generateSocketAddress();
-        dispatcher.getDispatcher().dispatch(createAccessRequestDatagram(socketAddress,
+        dispatcher.dispatch(createAccessRequestDatagram(socketAddress,
                 1, 2, 3, HEADER_SYS_NOVALUE, accessKey));
         // Waiting header event
         IncomingHeaderEvent incomingHeaderEvent = incomingHeaderEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
@@ -74,7 +74,7 @@ public class InputServiceTest extends BaseServiceTest implements Header {
         // Send datagram
         long accessKey = generateAccessKey();
         SocketAddress socketAddress = generateSocketAddress();
-        dispatcher.getDispatcher().dispatch(createAccessRequestDatagram(socketAddress,
+        dispatcher.dispatch(createAccessRequestDatagram(socketAddress,
                 1, 2, 3, HEADER_SYS_NOVALUE, accessKey));
         // Wait result event
         ClientAccessRequestEvent clientAccessRequestEvent =
@@ -91,7 +91,7 @@ public class InputServiceTest extends BaseServiceTest implements Header {
         // Send datagram
         long accessKey = generateAccessKey();
         SocketAddress socketAddress = generateSocketAddress();
-        dispatcher.getDispatcher().dispatch(createAccessRequestDatagram(socketAddress,
+        dispatcher.dispatch(createAccessRequestDatagram(socketAddress,
                 1, 2, 3, HEADER_SYS_NOVALUE, accessKey));
         // As result get header and access request events
         IncomingHeaderEvent incomingHeaderEvent =
@@ -100,12 +100,12 @@ public class InputServiceTest extends BaseServiceTest implements Header {
                 clientAccessRequestEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         long clientUid = clientAccessRequestEvent.getClientUid();
         // Grant access to client
-        dispatcher.getDispatcher().dispatch(new GrantAccessToClient(socketAddress, clientUid));
+        dispatcher.dispatch(new GrantAccessToClient(socketAddress, clientUid));
         // Waiting client connected event
         ClientConnectedEvent clientConnectedEvent = clientConnectedEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         // Send test datagram
         String payload = "helloworld";
-        dispatcher.getDispatcher().dispatch(createPayloadDatagram(socketAddress,
+        dispatcher.dispatch(createPayloadDatagram(socketAddress,
                 1, 2, 3, HEADER_SYS_NOVALUE, payload));
         // Get payload
         IncomingPayloadEvent incomingPayloadEvent =
@@ -128,11 +128,11 @@ public class InputServiceTest extends BaseServiceTest implements Header {
         // Send accessKey first
         long accessKey = generateAccessKey();
         SocketAddress socketAddress = generateSocketAddress();
-        dispatcher.getDispatcher().dispatch(createAccessRequestDatagram(socketAddress,
+        dispatcher.dispatch(createAccessRequestDatagram(socketAddress,
                 1, 0, 0, HEADER_SYS_NOVALUE, accessKey));
         // InputService check disconnect interval for clients every tick
         Thread.sleep(PROPERTY_DISCONNECT_INTERVAL * 2);
-        dispatcher.getDispatcher().dispatch(new TickEvent(1, 0));
+        dispatcher.dispatch(new TickEvent(1, 0));
         // Waiting disconnect event
         ClientDisconnectedEvent clientDisconnectedEvent =
                 clientDisconnectedEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
@@ -147,13 +147,13 @@ public class InputServiceTest extends BaseServiceTest implements Header {
         // Send accessKey first
         long accessKey = generateAccessKey();
         SocketAddress socketAddress = generateSocketAddress();
-        dispatcher.getDispatcher().dispatch(createAccessRequestDatagram(socketAddress,
+        dispatcher.dispatch(createAccessRequestDatagram(socketAddress,
                 1, 0, 0, HEADER_SYS_NOVALUE, accessKey));
         IncomingHeaderEvent incomingHeaderEvent =
                 incomingHeaderEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         long clientUid = incomingHeaderEvent.getClientUid();
         // Send disconnect call for clientUid
-        dispatcher.getDispatcher().dispatch(new DisconnectClientRequestEvent(clientUid));
+        dispatcher.dispatch(new DisconnectClientRequestEvent(clientUid));
         // Waiting for disconnection event
         ClientDisconnectedEvent clientDisconnectedEvent =
                 clientDisconnectedEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);

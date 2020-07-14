@@ -1,6 +1,7 @@
 package com.omgameserver.engine;
 
 import com.crionuke.bolts.Dispatcher;
+import com.crionuke.bolts.Event;
 import org.springframework.stereotype.Component;
 
 /**
@@ -18,5 +19,13 @@ public class OmgsDispatcher {
 
     public Dispatcher getDispatcher() {
         return dispatcher;
+    }
+
+    public boolean dispatch(Event event) throws InterruptedException {
+        return dispatcher.dispatch(event);
+    }
+
+    public boolean dispatch(Event event, Object topic) throws InterruptedException {
+        return dispatcher.dispatch(event, topic);
     }
 }

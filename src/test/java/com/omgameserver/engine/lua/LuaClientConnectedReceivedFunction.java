@@ -21,7 +21,7 @@ class LuaClientConnectedReceivedFunction extends OneArgFunction {
     @Override public LuaValue call(LuaValue arg) {
         try {
             long clientUid = arg.tolong();
-            dispatcher.getDispatcher().dispatch(new LuaClientConnectedReceivedEvent(clientUid));
+            dispatcher.dispatch(new LuaClientConnectedReceivedEvent(clientUid));
             return LuaBoolean.TRUE;
         } catch (InterruptedException e) {
             return LuaBoolean.FALSE;

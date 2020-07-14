@@ -27,7 +27,7 @@ class LuaDisconnectClientFunction extends OneArgFunction {
         if (arg.islong()) {
             long clientUid = arg.tolong();
             try {
-                dispatcher.getDispatcher().dispatch(new DisconnectClientRequestEvent(clientUid));
+                dispatcher.dispatch(new DisconnectClientRequestEvent(clientUid));
                 if (logger.isDebugEnabled()) {
                     logger.debug("Request to disconnect client with uid={}", clientUid);
                 }

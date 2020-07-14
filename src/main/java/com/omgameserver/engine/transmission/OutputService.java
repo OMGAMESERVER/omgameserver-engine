@@ -55,7 +55,7 @@ class OutputService extends Bolt implements
             logger.debug("New output client for {} with uid={}", socketAddress, clientUid);
         }
         if (!outputClient.handleHeader(event.getSeq(), event.getAck(), event.getBit(), event.getSys())) {
-            dispatcher.getDispatcher().dispatch(new DisconnectClientRequestEvent(outputClient.getClientUid()));
+            dispatcher.dispatch(new DisconnectClientRequestEvent(outputClient.getClientUid()));
         }
     }
 

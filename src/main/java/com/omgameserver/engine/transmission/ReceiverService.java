@@ -41,7 +41,7 @@ class ReceiverService extends Worker {
             looping = true;
             while (looping) {
                 IncomingDatagramEvent incomingDatagramEvent = receiver.receive();
-                dispatcher.getDispatcher().dispatch(incomingDatagramEvent);
+                dispatcher.dispatch(incomingDatagramEvent);
             }
         } catch (InterruptedException | AsynchronousCloseException e) {
             logger.debug("{} interrupted", this);

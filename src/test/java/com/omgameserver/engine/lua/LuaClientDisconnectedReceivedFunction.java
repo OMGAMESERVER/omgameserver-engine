@@ -21,7 +21,7 @@ class LuaClientDisconnectedReceivedFunction extends OneArgFunction {
     @Override public LuaValue call(LuaValue arg) {
         try {
             long clientUid = arg.tolong();
-            dispatcher.getDispatcher().dispatch(new LuaClientDisconnectedReceivedEvent(clientUid));
+            dispatcher.dispatch(new LuaClientDisconnectedReceivedEvent(clientUid));
             return LuaBoolean.TRUE;
         } catch (InterruptedException e) {
             return LuaBoolean.FALSE;

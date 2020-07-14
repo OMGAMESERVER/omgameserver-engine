@@ -45,7 +45,7 @@ class DecoderService extends Bolt implements
         while (payload.hasRemaining()) {
             try {
                 LuaValue luaValue = decode(payload);
-                dispatcher.getDispatcher().dispatch(new IncomingLuaValueEvent(clientUid, luaValue));
+                dispatcher.dispatch(new IncomingLuaValueEvent(clientUid, luaValue));
             } catch (Exception e) {
                 logger.debug("Decoding payload from {} failed with {}", event.getClientUid(), e);
             }

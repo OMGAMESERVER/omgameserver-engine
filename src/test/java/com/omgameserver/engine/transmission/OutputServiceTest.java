@@ -55,7 +55,7 @@ public class OutputServiceTest extends BaseServiceTest implements Header {
         // Send header
         long clientUid = generateClientUid();
         SocketAddress socketAddress = generateSocketAddress();
-        dispatcher.getDispatcher().dispatch(new IncomingHeaderEvent(socketAddress, clientUid,
+        dispatcher.dispatch(new IncomingHeaderEvent(socketAddress, clientUid,
                 1, 0, 0, HEADER_SYS_PINGREQ));
         // Get pong response
         OutgoingDatagramEvent outgoingDatagramEvent =
@@ -75,11 +75,11 @@ public class OutputServiceTest extends BaseServiceTest implements Header {
         // Send header
         long clientUid = generateClientUid();
         SocketAddress socketAddress = generateSocketAddress();
-        dispatcher.getDispatcher().dispatch(new IncomingHeaderEvent(socketAddress, clientUid,
+        dispatcher.dispatch(new IncomingHeaderEvent(socketAddress, clientUid,
                 1, 0, 0, HEADER_SYS_NOVALUE));
         // Send tick after ping interval
         Thread.sleep(properties.getPingInterval() * 2);
-        dispatcher.getDispatcher().dispatch(new TickEvent(1, 0));
+        dispatcher.dispatch(new TickEvent(1, 0));
         // Waiting ping request
         OutgoingDatagramEvent outgoingDatagramEvent =
                 outgoingDatagramEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
@@ -101,7 +101,7 @@ public class OutputServiceTest extends BaseServiceTest implements Header {
             SocketAddress socketAddress = new InetSocketAddress("0.0.0.0", 10000 + clientUid);
             logger.info("socketAddress={}", socketAddress);
             // Initialize connection
-            dispatcher.getDispatcher().dispatch(
+            dispatcher.dispatch(
                     new IncomingHeaderEvent(socketAddress, clientUid, 1, 0, 0, HEADER_SYS_NOVALUE));
             double lossSimulationLevel = 0.1 + Math.random() * 0.4;
             logger.info("lossSimulationLevel={}", lossSimulationLevel);
@@ -119,12 +119,12 @@ public class OutputServiceTest extends BaseServiceTest implements Header {
                     ByteBuffer outgoingByteBuffer = ByteBuffer.allocate(Integer.BYTES);
                     outgoingByteBuffer.putInt(iteration);
                     outgoingByteBuffer.flip();
-                    dispatcher.getDispatcher().dispatch(new OutgoingPayloadEvent(clientUid, outgoingByteBuffer, true));
+                    dispatcher.dispatch(new OutgoingPayloadEvent(clientUid, outgoingByteBuffer, true));
                     // Save data to waiting on client
                     waiting.add(iteration);
                 }
                 // Flush on server works every tick
-                dispatcher.getDispatcher().dispatch(new TickEvent(iteration, 0));
+                dispatcher.dispatch(new TickEvent(iteration, 0));
                 iteration++;
                 // Handle server datagrams
                 OutgoingDatagramEvent event =
@@ -160,7 +160,7 @@ public class OutputServiceTest extends BaseServiceTest implements Header {
                     // Notify server about incoming and missing datagrams
                     lastOutgoingSeq++;
                     logger.info("Outgoing seq={}, ack={}, bit={}", lastOutgoingSeq, lastIncomingSeq, Integer.toBinaryString(lastIncomingBit));
-                    dispatcher.getDispatcher().dispatch(new IncomingHeaderEvent(socketAddress, clientUid, lastOutgoingSeq, lastIncomingSeq,
+                    dispatcher.dispatch(new IncomingHeaderEvent(socketAddress, clientUid, lastOutgoingSeq, lastIncomingSeq,
                             lastIncomingBit, HEADER_SYS_NOVALUE));
                 }
             }

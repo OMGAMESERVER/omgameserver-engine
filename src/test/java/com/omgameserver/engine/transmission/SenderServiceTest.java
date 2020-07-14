@@ -50,7 +50,7 @@ public class SenderServiceTest extends BaseServiceTest {
         outgoingDatagram.flip();
         SocketAddress targetAddress = clientChannel.getLocalAddress();
         logger.info("Server send '{}' to {}", outgoingPayload, targetAddress);
-        dispatcher.getDispatcher().dispatch(new OutgoingDatagramEvent(targetAddress, outgoingDatagram));
+        dispatcher.dispatch(new OutgoingDatagramEvent(targetAddress, outgoingDatagram));
         // Receive on test client
         ByteBuffer incomingDatagram = ByteBuffer.allocate(1024);
         clientChannel.receive(incomingDatagram);

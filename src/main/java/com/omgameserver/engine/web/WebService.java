@@ -25,7 +25,7 @@ class WebService {
 
     Access createAccess() throws InterruptedException {
         long accessKey = secureRandom.nextLong();
-        dispatcher.getDispatcher().dispatch(new AccessKeyCreatedEvent(accessKey));
+        dispatcher.dispatch(new AccessKeyCreatedEvent(accessKey));
         return new Access(accessKey);
     }
 
