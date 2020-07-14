@@ -27,7 +27,7 @@ class LuaWorker extends Bolt implements
     private final OmgsExecutors executors;
     private final OmgsDispatcher dispatcher;
     private final LuaGlobals luaGlobals;
-    private final LuaRuntime luaRuntime;
+    private final LuaEngine luaEngine;
 
     private final String EVENT_CLIENT_CONNECTED = "client_connected";
     private final String EVENT_CLIENT_DISCONNECTED = "client_disconnected";
@@ -41,8 +41,8 @@ class LuaWorker extends Bolt implements
         this.dispatcher = dispatcher;
         this.luaGlobals = luaGlobals;
         Globals globals = luaGlobals.getGlobals();
-        luaRuntime = new LuaRuntime(dispatcher, globals);
-        globals.set("runtime", luaRuntime);
+        luaEngine = new LuaEngine(dispatcher, globals);
+        globals.set("engine", luaEngine);
         globals.loadfile(luaScript).call();
     }
 
@@ -54,7 +54,7 @@ class LuaWorker extends Bolt implements
         LuaTable luaEvent = new LuaTable();
         luaEvent.set("id", EVENT_CLIENT_CONNECTED);
         luaEvent.set("client_uid", event.getClientUid());
-        luaRuntime.dispatch(EVENT_CLIENT_CONNECTED, luaEvent);
+        luaEngine.dispatch(EVENT_CLIENT_CONNECTED, luaEvent);
     }
 
     @Override
@@ -65,7 +65,7 @@ class LuaWorker extends Bolt implements
         LuaTable luaEvent = new LuaTable();
         luaEvent.set("id", EVENT_CLIENT_DISCONNECTED);
         luaEvent.set("client_uid", event.getClientUid());
-        luaRuntime.dispatch(EVENT_CLIENT_DISCONNECTED, luaEvent);
+        luaEngine.dispatch(EVENT_CLIENT_DISCONNECTED, luaEvent);
     }
 
     @Override
@@ -77,7 +77,7 @@ class LuaWorker extends Bolt implements
         luaEvent.set("id", EVENT_RECEIVED);
         luaEvent.set("client_uid", event.getClientUid());
         luaEvent.set("data", event.getLuaValue());
-        luaRuntime.dispatch(EVENT_RECEIVED, luaEvent);
+        luaEngine.dispatch(EVENT_RECEIVED, luaEvent);
     }
 
     @Override
@@ -89,7 +89,7 @@ class LuaWorker extends Bolt implements
         luaEvent.set("id", EVENT_TICK);
         luaEvent.set("tick_number", event.getNumber());
         luaEvent.set("delta_time", event.getDeltaTime());
-        luaRuntime.dispatch(EVENT_TICK, luaEvent);
+        luaEngine.dispatch(EVENT_TICK, luaEvent);
     }
 
     void postConstruct() {
