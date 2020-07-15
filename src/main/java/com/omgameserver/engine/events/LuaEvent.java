@@ -7,12 +7,12 @@ import org.luaj.vm2.LuaValue;
  * @author Kirill Byvshev (k@byv.sh)
  * @since 1.0.0
  */
-public final class IncomingLuaEvent extends Event<IncomingLuaEvent.Handler> {
+public final class LuaEvent extends Event<LuaEvent.Handler> {
 
     private final String eventId;
     private final LuaValue luaEvent;
 
-    public IncomingLuaEvent(String eventId, LuaValue luaEvent) {
+    public LuaEvent(String eventId, LuaValue luaEvent) {
         super();
         if (eventId == null) {
             throw new NullPointerException("eventId is null");
@@ -26,7 +26,7 @@ public final class IncomingLuaEvent extends Event<IncomingLuaEvent.Handler> {
 
     @Override
     public void handle(Handler handler) throws InterruptedException {
-        handler.handleIncomingLuaEvent(this);
+        handler.handleLuaEvent(this);
     }
 
     public String getEventId() {
@@ -43,6 +43,6 @@ public final class IncomingLuaEvent extends Event<IncomingLuaEvent.Handler> {
     }
 
     public interface Handler {
-        void handleIncomingLuaEvent(IncomingLuaEvent event) throws InterruptedException;
+        void handleLuaEvent(LuaEvent event) throws InterruptedException;
     }
 }

@@ -19,7 +19,7 @@ class LuaWorker extends Bolt implements
         ClientConnectedEvent.Handler,
         ClientDisconnectedEvent.Handler,
         IncomingLuaValueEvent.Handler,
-        IncomingLuaEvent.Handler,
+        LuaEvent.Handler,
         TickEvent.Handler {
     static private final Logger logger = LoggerFactory.getLogger(LuaWorker.class);
 
@@ -92,7 +92,7 @@ class LuaWorker extends Bolt implements
     }
 
     @Override
-    public void handleIncomingLuaEvent(IncomingLuaEvent event) {
+    public void handleLuaEvent(LuaEvent event) {
         if (logger.isTraceEnabled()) {
             logger.trace("Handle {}", event);
         }
@@ -109,7 +109,7 @@ class LuaWorker extends Bolt implements
         dispatcher.getDispatcher().subscribe(this, ClientConnectedEvent.class);
         dispatcher.getDispatcher().subscribe(this, ClientDisconnectedEvent.class);
         dispatcher.getDispatcher().subscribe(this, TickEvent.class);
-        dispatcher.getDispatcher().subscribe(this, IncomingLuaEvent.class);
+        dispatcher.getDispatcher().subscribe(this, LuaEvent.class);
         // Subscribe to all event dispatched directly to this bolt
         dispatcher.getDispatcher().subscribe(this);
     }

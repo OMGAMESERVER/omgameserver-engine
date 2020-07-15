@@ -145,7 +145,7 @@ public class LuaWorkerTest extends LuaBaseTest {
         LuaValue luaEvent = new LuaTable();
         luaEvent.set("id", eventId);
         luaEvent.set("data", eventData);
-        dispatcher.dispatch(new IncomingLuaEvent(eventId, luaEvent));
+        dispatcher.dispatch(new LuaEvent(eventId, luaEvent));
         LuaEventReceivedEvent luaEventReceivedEvent = luaEventReceivedEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         luaWorker.finish();
         assertNotNull(luaEventReceivedEvent);
