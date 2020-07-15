@@ -26,7 +26,7 @@ public class EngineProperties {
 
     EngineProperties(@Value("${omgameserver.engine.host:0.0.0.0}") String host,
                      @Value("${omgameserver.engine.port:12345}") int port,
-                     @Value("${omgameserver.engine.userThreadPoolSize:16}") int internalThreadPoolSize,
+                     @Value("${omgameserver.engine.internalThreadPoolSize:16}") int internalThreadPoolSize,
                      @Value("${omgameserver.engine.userThreadPoolSize:32}") int userThreadPoolSize,
                      @Value("${omgameserver.engine.queueSize:128}") int queueSize,
                      @Value("${omgameserver.engine.datagramSize:1024}") int datagramSize,
