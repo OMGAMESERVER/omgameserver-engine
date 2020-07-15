@@ -26,7 +26,6 @@ public class InputServiceTest extends BaseServiceTest implements Header {
     private ConsumerStub consumerStub;
 
     private BlockingQueue<IncomingHeaderEvent> incomingHeaderEvents;
-    private BlockingQueue<ClientAccessRequestEvent> clientAccessRequestEvents;
     private BlockingQueue<IncomingPayloadEvent> incomingPayloadEvents;
     private BlockingQueue<ClientConnectedEvent> clientConnectedEvents;
     private BlockingQueue<ClientDisconnectedEvent> clientDisconnectedEvents;
@@ -39,7 +38,6 @@ public class InputServiceTest extends BaseServiceTest implements Header {
         consumerStub = new ConsumerStub();
         consumerStub.postConstruct();
         incomingHeaderEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
-        clientAccessRequestEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
         incomingPayloadEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
         clientConnectedEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
         clientDisconnectedEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
@@ -52,14 +50,27 @@ public class InputServiceTest extends BaseServiceTest implements Header {
     }
 
     @Test
-    public void testHeaderSplit() throws InterruptedException {
+    public void testInput() throws InterruptedException {
         // Send datagram
-        long accessKey = generateAccessKey();
         SocketAddress socketAddress = generateSocketAddress();
-        dispatcher.dispatch(createAccessRequestDatagram(socketAddress,
-                1, 2, 3, HEADER_SYS_NOVALUE, accessKey));
-        // Waiting header event
-        IncomingHeaderEvent incomingHeaderEvent = incomingHeaderEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        String payload = "payload";
+        dispatcher.dispatch(createIncomingDatagramEvent(socketAddress,
+                1, 2, 3, HEADER_SYS_NOVALUE, payload));
+        // Get header event
+        IncomingHeaderEvent incomingHeaderEvent =
+                incomingHeaderEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        long clientUid = incomingHeaderEvent.getClientUid();
+        // Get client connected event
+        ClientConnectedEvent clientConnectedEvent = clientConnectedEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        // Get payload event
+        IncomingPayloadEvent incomingPayloadEvent =
+                incomingPayloadEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        // Send tick after disconnect interval
+        Thread.sleep(PROPERTY_DISCONNECT_INTERVAL * 2);
+        dispatcher.dispatch(new TickEvent(1, 0));
+        // Get disconnect event
+        ClientDisconnectedEvent clientDisconnectedEvent =
+                clientDisconnectedEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         // Checks
         assertNotNull(incomingHeaderEvent);
         assertEquals(socketAddress, incomingHeaderEvent.getSocketAddress());
@@ -67,105 +78,44 @@ public class InputServiceTest extends BaseServiceTest implements Header {
         assertTrue(incomingHeaderEvent.getAck() == 2);
         assertTrue(incomingHeaderEvent.getBit() == 3);
         assertTrue(incomingHeaderEvent.getSys() == HEADER_SYS_NOVALUE);
-    }
-
-    @Test
-    public void testAccessRequest() throws InterruptedException {
-        // Send datagram
-        long accessKey = generateAccessKey();
-        SocketAddress socketAddress = generateSocketAddress();
-        dispatcher.dispatch(createAccessRequestDatagram(socketAddress,
-                1, 2, 3, HEADER_SYS_NOVALUE, accessKey));
-        // Wait result event
-        ClientAccessRequestEvent clientAccessRequestEvent =
-                clientAccessRequestEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        // Checks
-        assertNotNull(clientAccessRequestEvent);
-        assertEquals(socketAddress, clientAccessRequestEvent.getSocketAddress());
-        assertEquals(accessKey, clientAccessRequestEvent.getAccessKey());
-    }
-
-
-    @Test
-    public void testGrantAccessAndPayloadSplit() throws InterruptedException {
-        // Send datagram
-        long accessKey = generateAccessKey();
-        SocketAddress socketAddress = generateSocketAddress();
-        dispatcher.dispatch(createAccessRequestDatagram(socketAddress,
-                1, 2, 3, HEADER_SYS_NOVALUE, accessKey));
-        // As result get header and access request events
-        IncomingHeaderEvent incomingHeaderEvent =
-                incomingHeaderEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        ClientAccessRequestEvent clientAccessRequestEvent =
-                clientAccessRequestEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        long clientUid = clientAccessRequestEvent.getClientUid();
-        // Grant access to client
-        dispatcher.dispatch(new GrantAccessToClient(socketAddress, clientUid));
-        // Waiting client connected event
-        ClientConnectedEvent clientConnectedEvent = clientConnectedEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        // Send test datagram
-        String payload = "helloworld";
-        dispatcher.dispatch(createPayloadDatagram(socketAddress,
-                1, 2, 3, HEADER_SYS_NOVALUE, payload));
-        // Get payload
-        IncomingPayloadEvent incomingPayloadEvent =
-                incomingPayloadEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        // Checks
-        assertNotNull(incomingHeaderEvent);
-        assertEquals(socketAddress, incomingHeaderEvent.getSocketAddress());
-        assertNotNull(clientAccessRequestEvent);
-        assertEquals(socketAddress, clientAccessRequestEvent.getSocketAddress());
         assertNotNull(clientConnectedEvent);
         assertEquals(socketAddress, clientConnectedEvent.getSocketAddress());
         assertEquals(clientUid, clientConnectedEvent.getClientUid());
         assertNotNull(incomingPayloadEvent);
+        assertEquals(socketAddress, incomingPayloadEvent.getSocketAddress());
         assertEquals(clientUid, incomingPayloadEvent.getClientUid());
         assertEquals(payload, readPayload(incomingPayloadEvent.getPayload()));
-    }
-
-    @Test
-    public void testDisconnectInterval() throws InterruptedException {
-        // Send accessKey first
-        long accessKey = generateAccessKey();
-        SocketAddress socketAddress = generateSocketAddress();
-        dispatcher.dispatch(createAccessRequestDatagram(socketAddress,
-                1, 0, 0, HEADER_SYS_NOVALUE, accessKey));
-        // InputService check disconnect interval for clients every tick
-        Thread.sleep(PROPERTY_DISCONNECT_INTERVAL * 2);
-        dispatcher.dispatch(new TickEvent(1, 0));
-        // Waiting disconnect event
-        ClientDisconnectedEvent clientDisconnectedEvent =
-                clientDisconnectedEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        logger.info("Got {}", clientDisconnectedEvent);
-        // Assertss
+        // Checks
         assertNotNull(clientDisconnectedEvent);
         assertEquals(socketAddress, clientDisconnectedEvent.getSocketAddress());
+        assertEquals(clientUid, clientDisconnectedEvent.getClientUid());
     }
 
     @Test
     public void testDisconnectRequest() throws InterruptedException {
-        // Send accessKey first
-        long accessKey = generateAccessKey();
+        // Send datagram
         SocketAddress socketAddress = generateSocketAddress();
-        dispatcher.dispatch(createAccessRequestDatagram(socketAddress,
-                1, 0, 0, HEADER_SYS_NOVALUE, accessKey));
+        String payload = "payload";
+        dispatcher.dispatch(createIncomingDatagramEvent(socketAddress,
+                1, 2, 3, HEADER_SYS_NOVALUE, payload));
+        // Get header event
         IncomingHeaderEvent incomingHeaderEvent =
                 incomingHeaderEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         long clientUid = incomingHeaderEvent.getClientUid();
-        // Send disconnect call for clientUid
+        // Send disconnect request
         dispatcher.dispatch(new DisconnectClientRequestEvent(clientUid));
-        // Waiting for disconnection event
+        // Get client disconnected event
         ClientDisconnectedEvent clientDisconnectedEvent =
                 clientDisconnectedEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         logger.info("Got {}", clientDisconnectedEvent);
         // Asserts
         assertNotNull(clientDisconnectedEvent);
         assertEquals(socketAddress, clientDisconnectedEvent.getSocketAddress());
+        assertEquals(clientUid, clientDisconnectedEvent.getClientUid());
     }
 
     private class ConsumerStub extends Bolt implements
             IncomingHeaderEvent.Handler,
-            ClientAccessRequestEvent.Handler,
             IncomingPayloadEvent.Handler,
             ClientConnectedEvent.Handler,
             ClientDisconnectedEvent.Handler {
@@ -177,11 +127,6 @@ public class InputServiceTest extends BaseServiceTest implements Header {
         @Override
         public void handleIncomingHeader(IncomingHeaderEvent event) throws InterruptedException {
             incomingHeaderEvents.put(event);
-        }
-
-        @Override
-        public void handleClientAccessRequest(ClientAccessRequestEvent event) throws InterruptedException {
-            clientAccessRequestEvents.put(event);
         }
 
         @Override
@@ -202,7 +147,6 @@ public class InputServiceTest extends BaseServiceTest implements Header {
         public void postConstruct() {
             executors.executeInInternalPool(this);
             dispatcher.getDispatcher().subscribe(this, IncomingHeaderEvent.class);
-            dispatcher.getDispatcher().subscribe(this, ClientAccessRequestEvent.class);
             dispatcher.getDispatcher().subscribe(this, IncomingPayloadEvent.class);
             dispatcher.getDispatcher().subscribe(this, ClientConnectedEvent.class);
             dispatcher.getDispatcher().subscribe(this, ClientDisconnectedEvent.class);

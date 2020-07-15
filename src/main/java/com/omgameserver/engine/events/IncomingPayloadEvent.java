@@ -2,6 +2,7 @@ package com.omgameserver.engine.events;
 
 import com.crionuke.bolts.Event;
 
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 
 /**
@@ -10,14 +11,19 @@ import java.nio.ByteBuffer;
  */
 public final class IncomingPayloadEvent extends Event<IncomingPayloadEvent.Handler> {
 
+    private final SocketAddress socketAddress;
     private final long clientUid;
     private final ByteBuffer payload;
 
-    public IncomingPayloadEvent(long clientUid, ByteBuffer payload) {
+    public IncomingPayloadEvent(SocketAddress socketAddress, long clientUid, ByteBuffer payload) {
         super();
+        if (socketAddress == null) {
+            throw new NullPointerException("socketAddress is null");
+        }
         if (payload == null) {
             throw new NullPointerException("payload is null");
         }
+        this.socketAddress = socketAddress;
         this.clientUid = clientUid;
         this.payload = payload;
     }
@@ -25,6 +31,10 @@ public final class IncomingPayloadEvent extends Event<IncomingPayloadEvent.Handl
     @Override
     public void handle(Handler handler) throws InterruptedException {
         handler.handleIncomingPayload(this);
+    }
+
+    public SocketAddress getSocketAddress() {
+        return socketAddress;
     }
 
     public long getClientUid() {
@@ -37,7 +47,8 @@ public final class IncomingPayloadEvent extends Event<IncomingPayloadEvent.Handl
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(clientUid=" + clientUid + ", payload=" + payload + ")";
+        return getClass().getSimpleName() + "(socetAddress=" + socketAddress + ", clientUid=" + clientUid +
+                ", payload=" + payload + ")";
     }
 
     public interface Handler {

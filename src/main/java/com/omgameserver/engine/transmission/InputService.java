@@ -23,7 +23,6 @@ import java.util.Map;
 @Service
 class InputService extends Bolt implements
         IncomingDatagramEvent.Handler,
-        GrantAccessToClient.Handler,
         DisconnectClientRequestEvent.Handler,
         TickEvent.Handler {
     static private final Logger logger = LoggerFactory.getLogger(InputService.class);
@@ -53,36 +52,16 @@ class InputService extends Bolt implements
         InputClient inputClient = clientBySocket.get(socketAddress);
         if (inputClient == null) {
             inputClient = new InputClient(properties, dispatcher, socketAddress);
+            long clientUid = inputClient.getClientUid();
             clientBySocket.put(socketAddress, inputClient);
             clientByUid.put(inputClient.getClientUid(), inputClient);
             if (logger.isInfoEnabled()) {
-                logger.info("New input client from {} with uid={} created", socketAddress, inputClient.getClientUid());
+                logger.info("New input client from {} with uid={} created", socketAddress, clientUid);
             }
+            dispatcher.dispatch(new ClientConnectedEvent(socketAddress, clientUid));
         }
         if (!inputClient.handleDatagram(byteBuffer)) {
             dispatcher.dispatch(new DisconnectClientRequestEvent(inputClient.getClientUid()));
-        }
-    }
-
-    @Override
-    public void handleGrantAccessToClient(GrantAccessToClient event) throws InterruptedException {
-        if (logger.isTraceEnabled()) {
-            logger.trace("Handle {}", event);
-        }
-        SocketAddress socketAddress = event.getSocketAddress();
-        long clientUid = event.getClientUid();
-        InputClient inputClient = clientByUid.get(clientUid);
-        if (inputClient != null) {
-            inputClient.grantAccess();
-            dispatcher.dispatch(new ClientConnectedEvent(socketAddress, clientUid));
-            if (logger.isInfoEnabled()) {
-                logger.info("Client from {} with clientUid={} connected", socketAddress, clientUid);
-            }
-        } else {
-            if (logger.isWarnEnabled()) {
-                logger.info("Not found client for socketAddress={} with clientUid={} to grant access",
-                        socketAddress, clientUid);
-            }
         }
     }
 
@@ -130,7 +109,6 @@ class InputService extends Bolt implements
     void postConstruct() {
         executors.executeInInternalPool(this);
         dispatcher.getDispatcher().subscribe(this, IncomingDatagramEvent.class);
-        dispatcher.getDispatcher().subscribe(this, GrantAccessToClient.class);
         dispatcher.getDispatcher().subscribe(this, DisconnectClientRequestEvent.class);
         dispatcher.getDispatcher().subscribe(this, TickEvent.class);
     }

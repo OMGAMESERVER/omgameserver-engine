@@ -9,7 +9,6 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
-import java.security.SecureRandom;
 
 /**
  * @author Kirill Byvshev (k@byv.sh)
@@ -56,20 +55,8 @@ public class BaseServiceTest extends Assert {
         return clientUid;
     }
 
-    protected IncomingDatagramEvent createAccessRequestDatagram(SocketAddress sourceAddress, int seq, int ack, int bit,
-                                                                byte sys, long accessKey) {
-        ByteBuffer datagram = ByteBuffer.allocate(properties.getDatagramSize());
-        datagram.putInt(seq);
-        datagram.putInt(ack);
-        datagram.putInt(bit);
-        datagram.put(sys);
-        datagram.putLong(accessKey);
-        datagram.flip();
-        return new IncomingDatagramEvent(sourceAddress, datagram);
-    }
-
-    protected IncomingDatagramEvent createPayloadDatagram(SocketAddress sourceAddress, int seq, int ack, int bit,
-                                                          byte sys, String payload) {
+    protected IncomingDatagramEvent createIncomingDatagramEvent(SocketAddress sourceAddress, int seq, int ack, int bit,
+                                                                byte sys, String payload) {
         ByteBuffer rawData = ByteBuffer.allocate(properties.getDatagramSize());
         rawData.putInt(seq);
         rawData.putInt(ack);
@@ -78,19 +65,6 @@ public class BaseServiceTest extends Assert {
         rawData.put(payload.getBytes());
         rawData.flip();
         return new IncomingDatagramEvent(sourceAddress, rawData);
-    }
-
-    protected long generateAccessKey() {
-        SecureRandom secureRandom = new SecureRandom();
-        return secureRandom.nextLong();
-    }
-
-    protected ByteBuffer skipHeader(ByteBuffer byteBuffer) {
-        byteBuffer.getInt();
-        byteBuffer.getInt();
-        byteBuffer.getInt();
-        byteBuffer.get();
-        return byteBuffer;
     }
 
     protected String readPayload(ByteBuffer byteBuffer) {
