@@ -30,16 +30,16 @@ public class BaseServiceTest extends Assert {
     protected final int PROPERTY_PING_INTERVAL = 250;
     protected final String PROPERTY_MAIN_SCRIPT = "main.lua";
 
-    protected OmgsProperties properties;
-    protected OmgsDispatcher dispatcher;
-    protected OmgsExecutors executors;
+    protected EngineProperties properties;
+    protected EngineDispatcher dispatcher;
+    protected EngineExecutors executors;
 
     protected void createComponents() throws UnknownHostException {
-        properties = new OmgsProperties(PROPERTY_HOST, PROPERTY_PORT, PROPERTY_THREAD_POOL_SIZE, PROPERTY_QUEUE_SIZE,
+        properties = new EngineProperties(PROPERTY_HOST, PROPERTY_PORT, PROPERTY_THREAD_POOL_SIZE, PROPERTY_QUEUE_SIZE,
                 PROPERTY_DATAGRAM_SIZE, PROPERTY_ACCESS_KEY_LIFETIME, PROPERTY_TICK_INTERVAL,
                 PROPERTY_DISCONNECT_INTERVAL, PROPERTY_PING_INTERVAL, PROPERTY_MAIN_SCRIPT);
-        dispatcher = new OmgsDispatcher();
-        executors = new OmgsExecutors(properties);
+        dispatcher = new EngineDispatcher();
+        executors = new EngineExecutors(properties);
         logger.info("Thread pool with size={} created", properties.getThreadPoolSize());
     }
 

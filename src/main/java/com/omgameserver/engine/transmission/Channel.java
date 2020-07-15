@@ -1,6 +1,6 @@
 package com.omgameserver.engine.transmission;
 
-import com.omgameserver.engine.OmgsProperties;
+import com.omgameserver.engine.EngineProperties;
 import com.omgameserver.engine.events.IncomingDatagramEvent;
 import com.omgameserver.engine.events.OutgoingDatagramEvent;
 import org.slf4j.Logger;
@@ -21,12 +21,12 @@ import java.nio.channels.DatagramChannel;
 class Channel implements Header {
     static private final Logger logger = LoggerFactory.getLogger(Channel.class);
 
-    private final OmgsProperties properties;
+    private final EngineProperties properties;
     private final DatagramChannel datagramChannel;
     private final Receiver receiver;
     private final Sender sender;
 
-    Channel(OmgsProperties properties) throws IOException {
+    Channel(EngineProperties properties) throws IOException {
         this.properties = properties;
         datagramChannel = DatagramChannel.open();
         datagramChannel.bind(new InetSocketAddress(properties.getHost(), properties.getPort()));

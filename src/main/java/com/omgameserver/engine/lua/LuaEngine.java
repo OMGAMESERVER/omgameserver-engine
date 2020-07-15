@@ -1,6 +1,6 @@
 package com.omgameserver.engine.lua;
 
-import com.omgameserver.engine.OmgsDispatcher;
+import com.omgameserver.engine.EngineDispatcher;
 import org.luaj.vm2.Globals;
 
 /**
@@ -18,7 +18,7 @@ class LuaEngine extends LuaEventListener {
     private final String FUNCTION_SEND = "send";
     private final String FUNCTION_DISCONNECT = "disconnect";
 
-    LuaEngine(OmgsDispatcher dispatcher, Globals globals) {
+    LuaEngine(EngineDispatcher dispatcher, Globals globals) {
         super();
         set(FUNCTION_LOG_ERROR, new LuaLogFunction(globals, LuaLogFunction.LEVEL.ERROR));
         set(FUNCTION_LOG_WARN, new LuaLogFunction(globals, LuaLogFunction.LEVEL.WARN));

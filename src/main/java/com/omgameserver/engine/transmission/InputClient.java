@@ -1,7 +1,7 @@
 package com.omgameserver.engine.transmission;
 
-import com.omgameserver.engine.OmgsDispatcher;
-import com.omgameserver.engine.OmgsProperties;
+import com.omgameserver.engine.EngineDispatcher;
+import com.omgameserver.engine.EngineProperties;
 import com.omgameserver.engine.events.IncomingHeaderEvent;
 import com.omgameserver.engine.events.IncomingPayloadEvent;
 import org.slf4j.Logger;
@@ -19,13 +19,13 @@ class InputClient implements Header {
     static private final Logger logger = LoggerFactory.getLogger(InputClient.class);
     static private final AtomicLong uidCounter = new AtomicLong();
 
-    private final OmgsProperties properties;
-    private final OmgsDispatcher dispatcher;
+    private final EngineProperties properties;
+    private final EngineDispatcher dispatcher;
     private final SocketAddress socketAddress;
     private final long clientUid;
     private long lastActivity;
 
-    InputClient(OmgsProperties properties, OmgsDispatcher dispatcher, SocketAddress socketAddress) {
+    InputClient(EngineProperties properties, EngineDispatcher dispatcher, SocketAddress socketAddress) {
         super();
         this.properties = properties;
         this.dispatcher = dispatcher;

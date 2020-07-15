@@ -1,6 +1,6 @@
 package com.omgameserver.engine.lua;
 
-import com.omgameserver.engine.OmgsDispatcher;
+import com.omgameserver.engine.EngineDispatcher;
 import org.luaj.vm2.LuaTable;
 
 /**
@@ -14,7 +14,7 @@ public class LuaTesting extends LuaTable {
     private final String FUNCTION_DATA_RECEIVED = "data_received";
     private final String FUNCTION_TICK_RECEIVED = "tick_received";
 
-    public LuaTesting(OmgsDispatcher dispatcher) {
+    public LuaTesting(EngineDispatcher dispatcher) {
         set(FUNCTION_CLIENT_CONNECTED_RECEIVED, new LuaClientConnectedReceivedFunction(dispatcher));
         set(FUNCTION_CLIENT_DISCONNECTED_RECEIVED, new LuaClientDisconnectedReceivedFunction(dispatcher));
         set(FUNCTION_DATA_RECEIVED, new LuaDataReceivedFunction(dispatcher));

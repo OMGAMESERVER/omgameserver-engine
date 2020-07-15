@@ -11,7 +11,7 @@ import java.net.UnknownHostException;
  * @since 1.0.0
  */
 @Component
-public class OmgsProperties {
+public class EngineProperties {
 
     private final InetAddress host;
     private final int port;
@@ -24,16 +24,16 @@ public class OmgsProperties {
     private final int pingInterval;
     private final String mainScript;
 
-    OmgsProperties(@Value("${omgameserver.host:0.0.0.0}") String host,
-                   @Value("${omgameserver.port:12345}") int port,
-                   @Value("${omgameserver.threadPoolSize:32}") int threadPoolSize,
-                   @Value("${omgameserver.queueSize:128}") int queueSize,
-                   @Value("${omgameserver.datagramSize:508}") int datagramSize,
-                   @Value("${omgameserver.accessKeyLifetime:5000}") int accessKeyLifetime,
-                   @Value("${omgameserver.tickInterval:100}") int tickInterval,
-                   @Value("${omgameserver.disconnectInterval:5000}") int disconnectInterval,
-                   @Value("${omgameserver.pingInterval:1000}") int pingInterval,
-                   @Value("${omgameserver.mainScript:main.lua}") String mainScript) throws UnknownHostException {
+    EngineProperties(@Value("${omgameserver.host:0.0.0.0}") String host,
+                     @Value("${omgameserver.port:12345}") int port,
+                     @Value("${omgameserver.threadPoolSize:32}") int threadPoolSize,
+                     @Value("${omgameserver.queueSize:128}") int queueSize,
+                     @Value("${omgameserver.datagramSize:508}") int datagramSize,
+                     @Value("${omgameserver.accessKeyLifetime:5000}") int accessKeyLifetime,
+                     @Value("${omgameserver.tickInterval:100}") int tickInterval,
+                     @Value("${omgameserver.disconnectInterval:5000}") int disconnectInterval,
+                     @Value("${omgameserver.pingInterval:1000}") int pingInterval,
+                     @Value("${omgameserver.mainScript:main.lua}") String mainScript) throws UnknownHostException {
         this.host = InetAddress.getByName(host);
         this.port = port;
         this.threadPoolSize = threadPoolSize;

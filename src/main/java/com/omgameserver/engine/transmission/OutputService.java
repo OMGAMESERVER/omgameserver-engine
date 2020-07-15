@@ -1,9 +1,9 @@
 package com.omgameserver.engine.transmission;
 
 import com.crionuke.bolts.Bolt;
-import com.omgameserver.engine.OmgsDispatcher;
-import com.omgameserver.engine.OmgsExecutors;
-import com.omgameserver.engine.OmgsProperties;
+import com.omgameserver.engine.EngineDispatcher;
+import com.omgameserver.engine.EngineExecutors;
+import com.omgameserver.engine.EngineProperties;
 import com.omgameserver.engine.events.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,13 +25,13 @@ class OutputService extends Bolt implements
         TickEvent.Handler {
     static private final Logger logger = LoggerFactory.getLogger(OutputService.class);
 
-    private final OmgsProperties properties;
-    private final OmgsExecutors executors;
-    private final OmgsDispatcher dispatcher;
+    private final EngineProperties properties;
+    private final EngineExecutors executors;
+    private final EngineDispatcher dispatcher;
     private final Map<SocketAddress, OutputClient> clientBySocket;
     private final Map<Long, OutputClient> clientByUid;
 
-    OutputService(OmgsProperties properties, OmgsExecutors executors, OmgsDispatcher dispatcher) {
+    OutputService(EngineProperties properties, EngineExecutors executors, EngineDispatcher dispatcher) {
         super("output", properties.getQueueSize());
         this.properties = properties;
         this.executors = executors;

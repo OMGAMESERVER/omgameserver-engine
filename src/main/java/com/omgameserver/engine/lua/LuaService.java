@@ -1,9 +1,9 @@
 package com.omgameserver.engine.lua;
 
 import com.crionuke.bolts.Bolt;
-import com.omgameserver.engine.OmgsDispatcher;
-import com.omgameserver.engine.OmgsExecutors;
-import com.omgameserver.engine.OmgsProperties;
+import com.omgameserver.engine.EngineDispatcher;
+import com.omgameserver.engine.EngineExecutors;
+import com.omgameserver.engine.EngineProperties;
 import com.omgameserver.engine.events.IncomingLuaValueEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,13 +22,13 @@ class LuaService extends Bolt implements
         IncomingLuaValueEvent.Handler {
     static private final Logger logger = LoggerFactory.getLogger(LuaService.class);
 
-    private final OmgsProperties properties;
-    private final OmgsExecutors executors;
-    private final OmgsDispatcher dispatcher;
+    private final EngineProperties properties;
+    private final EngineExecutors executors;
+    private final EngineDispatcher dispatcher;
     private final LuaWorker defaultWorker;
     private final Map<Long, LuaWorker> routes;
 
-    LuaService(OmgsProperties properties, OmgsExecutors executors, OmgsDispatcher dispatcher,
+    LuaService(EngineProperties properties, EngineExecutors executors, EngineDispatcher dispatcher,
                LuaGlobals luaGlobals) {
         super("lua", properties.getQueueSize());
         this.properties = properties;

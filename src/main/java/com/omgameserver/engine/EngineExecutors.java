@@ -11,15 +11,15 @@ import org.springframework.stereotype.Component;
  * @since 1.0.0
  */
 @Component
-public class OmgsExecutors {
-    static private final Logger logger = LoggerFactory.getLogger(OmgsExecutors.class);
+public class EngineExecutors {
+    static private final Logger logger = LoggerFactory.getLogger(EngineExecutors.class);
 
     private final int INTERNAL_THREAD_POOL_SIZE = 16;
 
     private final ThreadPoolTaskExecutor internalExecutor;
     private final ThreadPoolTaskExecutor userExecutor;
 
-    OmgsExecutors(OmgsProperties properties) {
+    EngineExecutors(EngineProperties properties) {
         internalExecutor = createExecutor(INTERNAL_THREAD_POOL_SIZE);
         userExecutor = createExecutor(properties.getThreadPoolSize());
     }

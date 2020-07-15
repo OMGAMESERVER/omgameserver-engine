@@ -1,8 +1,8 @@
 package com.omgameserver.engine.transmission;
 
 import com.crionuke.bolts.Worker;
-import com.omgameserver.engine.OmgsDispatcher;
-import com.omgameserver.engine.OmgsExecutors;
+import com.omgameserver.engine.EngineDispatcher;
+import com.omgameserver.engine.EngineExecutors;
 import com.omgameserver.engine.events.IncomingDatagramEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,11 +20,11 @@ import java.nio.channels.AsynchronousCloseException;
 class ReceiverService extends Worker {
     static private final Logger logger = LoggerFactory.getLogger(ReceiverService.class);
 
-    private final OmgsExecutors executors;
-    private final OmgsDispatcher dispatcher;
+    private final EngineExecutors executors;
+    private final EngineDispatcher dispatcher;
     private final Channel.Receiver receiver;
 
-    ReceiverService(OmgsExecutors executors, OmgsDispatcher dispatcher,
+    ReceiverService(EngineExecutors executors, EngineDispatcher dispatcher,
                     Channel channel) {
         super();
         this.executors = executors;

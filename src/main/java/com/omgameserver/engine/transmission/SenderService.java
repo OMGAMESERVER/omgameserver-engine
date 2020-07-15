@@ -1,9 +1,9 @@
 package com.omgameserver.engine.transmission;
 
 import com.crionuke.bolts.Bolt;
-import com.omgameserver.engine.OmgsDispatcher;
-import com.omgameserver.engine.OmgsExecutors;
-import com.omgameserver.engine.OmgsProperties;
+import com.omgameserver.engine.EngineDispatcher;
+import com.omgameserver.engine.EngineExecutors;
+import com.omgameserver.engine.EngineProperties;
 import com.omgameserver.engine.events.OutgoingDatagramEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,11 +20,11 @@ import java.io.IOException;
 class SenderService extends Bolt implements OutgoingDatagramEvent.Handler {
     static private final Logger logger = LoggerFactory.getLogger(SenderService.class);
 
-    private final OmgsExecutors executors;
-    private final OmgsDispatcher dispatcher;
+    private final EngineExecutors executors;
+    private final EngineDispatcher dispatcher;
     private final Channel.Sender sender;
 
-    SenderService(OmgsProperties properties, OmgsExecutors executors, OmgsDispatcher dispatcher,
+    SenderService(EngineProperties properties, EngineExecutors executors, EngineDispatcher dispatcher,
                   Channel channel) {
         super("sender", properties.getQueueSize());
         this.executors = executors;

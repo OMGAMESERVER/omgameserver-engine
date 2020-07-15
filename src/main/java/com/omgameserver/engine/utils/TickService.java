@@ -1,9 +1,9 @@
 package com.omgameserver.engine.utils;
 
 import com.crionuke.bolts.Worker;
-import com.omgameserver.engine.OmgsDispatcher;
-import com.omgameserver.engine.OmgsExecutors;
-import com.omgameserver.engine.OmgsProperties;
+import com.omgameserver.engine.EngineDispatcher;
+import com.omgameserver.engine.EngineExecutors;
+import com.omgameserver.engine.EngineProperties;
 import com.omgameserver.engine.events.TickEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,11 +19,11 @@ import javax.annotation.PostConstruct;
 class TickService extends Worker {
     static private final Logger logger = LoggerFactory.getLogger(TickService.class);
 
-    private final OmgsProperties properties;
-    private final OmgsDispatcher dispatcher;
-    private final OmgsExecutors executors;
+    private final EngineProperties properties;
+    private final EngineDispatcher dispatcher;
+    private final EngineExecutors executors;
 
-    TickService(OmgsProperties properties, OmgsDispatcher dispatcher, OmgsExecutors executors) {
+    TickService(EngineProperties properties, EngineDispatcher dispatcher, EngineExecutors executors) {
         this.properties = properties;
         this.dispatcher = dispatcher;
         this.executors = executors;

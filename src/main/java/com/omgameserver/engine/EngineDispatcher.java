@@ -9,11 +9,11 @@ import org.springframework.stereotype.Component;
  * @since 1.0.0
  */
 @Component
-public class OmgsDispatcher {
+public class EngineDispatcher {
 
     private final Dispatcher dispatcher;
 
-    OmgsDispatcher() {
+    EngineDispatcher() {
         dispatcher = new Dispatcher();
     }
 

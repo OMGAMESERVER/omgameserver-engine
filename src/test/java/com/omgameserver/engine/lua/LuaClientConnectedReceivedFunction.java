@@ -1,6 +1,6 @@
 package com.omgameserver.engine.lua;
 
-import com.omgameserver.engine.OmgsDispatcher;
+import com.omgameserver.engine.EngineDispatcher;
 import com.omgameserver.engine.events.LuaClientConnectedReceivedEvent;
 import org.luaj.vm2.LuaBoolean;
 import org.luaj.vm2.LuaValue;
@@ -12,9 +12,9 @@ import org.luaj.vm2.lib.OneArgFunction;
  */
 class LuaClientConnectedReceivedFunction extends OneArgFunction {
 
-    private final OmgsDispatcher dispatcher;
+    private final EngineDispatcher dispatcher;
 
-    LuaClientConnectedReceivedFunction(OmgsDispatcher dispatcher) {
+    LuaClientConnectedReceivedFunction(EngineDispatcher dispatcher) {
         this.dispatcher = dispatcher;
     }
 

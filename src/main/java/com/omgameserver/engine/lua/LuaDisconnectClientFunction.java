@@ -1,6 +1,6 @@
 package com.omgameserver.engine.lua;
 
-import com.omgameserver.engine.OmgsDispatcher;
+import com.omgameserver.engine.EngineDispatcher;
 import com.omgameserver.engine.events.DisconnectClientRequestEvent;
 import org.luaj.vm2.LuaBoolean;
 import org.luaj.vm2.LuaValue;
@@ -15,9 +15,9 @@ import org.slf4j.LoggerFactory;
 class LuaDisconnectClientFunction extends OneArgFunction {
     static private final Logger logger = LoggerFactory.getLogger(LuaDisconnectClientFunction.class);
 
-    private final OmgsDispatcher dispatcher;
+    private final EngineDispatcher dispatcher;
 
-    LuaDisconnectClientFunction(OmgsDispatcher dispatcher) {
+    LuaDisconnectClientFunction(EngineDispatcher dispatcher) {
         super();
         this.dispatcher = dispatcher;
     }

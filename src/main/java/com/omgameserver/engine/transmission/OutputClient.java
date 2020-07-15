@@ -1,7 +1,7 @@
 package com.omgameserver.engine.transmission;
 
-import com.omgameserver.engine.OmgsDispatcher;
-import com.omgameserver.engine.OmgsProperties;
+import com.omgameserver.engine.EngineDispatcher;
+import com.omgameserver.engine.EngineProperties;
 import com.omgameserver.engine.events.OutgoingDatagramEvent;
 import com.omgameserver.engine.events.OutgoingPayloadEvent;
 import org.slf4j.Logger;
@@ -18,8 +18,8 @@ import java.util.*;
 class OutputClient implements Header {
     static private final Logger logger = LoggerFactory.getLogger(OutputClient.class);
 
-    private OmgsProperties properties;
-    private OmgsDispatcher dispatcher;
+    private EngineProperties properties;
+    private EngineDispatcher dispatcher;
     private SocketAddress socketAddress;
     private long clientUid;
     private List<OutgoingPayloadEvent> payloadEvents;
@@ -31,7 +31,7 @@ class OutputClient implements Header {
     private long lastPingRequest;
     private long lastLatency;
 
-    OutputClient(OmgsProperties properties, OmgsDispatcher dispatcher, SocketAddress socketAddress, long clientUid) {
+    OutputClient(EngineProperties properties, EngineDispatcher dispatcher, SocketAddress socketAddress, long clientUid) {
         super();
         this.properties = properties;
         this.dispatcher = dispatcher;

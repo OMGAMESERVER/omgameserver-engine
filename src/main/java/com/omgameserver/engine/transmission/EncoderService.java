@@ -1,9 +1,9 @@
 package com.omgameserver.engine.transmission;
 
 import com.crionuke.bolts.Bolt;
-import com.omgameserver.engine.OmgsDispatcher;
-import com.omgameserver.engine.OmgsExecutors;
-import com.omgameserver.engine.OmgsProperties;
+import com.omgameserver.engine.EngineDispatcher;
+import com.omgameserver.engine.EngineExecutors;
+import com.omgameserver.engine.EngineProperties;
 import com.omgameserver.engine.events.OutgoingLuaValueEvent;
 import com.omgameserver.engine.events.OutgoingPayloadEvent;
 import org.luaj.vm2.LuaString;
@@ -48,11 +48,11 @@ class EncoderService extends Bolt implements
     private final int MSG_PACK_MAP32 = 0xdf & 0xFF;
     private final int MSG_PACK_MAP16 = 0xde & 0xFF;
 
-    private final OmgsProperties properties;
-    private final OmgsExecutors executors;
-    private final OmgsDispatcher dispatcher;
+    private final EngineProperties properties;
+    private final EngineExecutors executors;
+    private final EngineDispatcher dispatcher;
 
-    EncoderService(OmgsProperties properties, OmgsExecutors executors, OmgsDispatcher dispatcher) {
+    EncoderService(EngineProperties properties, EngineExecutors executors, EngineDispatcher dispatcher) {
         super("encoder", properties.getQueueSize());
         this.properties = properties;
         this.executors = executors;

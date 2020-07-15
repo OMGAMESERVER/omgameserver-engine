@@ -1,9 +1,9 @@
 package com.omgameserver.engine.lua;
 
 import com.crionuke.bolts.Bolt;
-import com.omgameserver.engine.OmgsDispatcher;
-import com.omgameserver.engine.OmgsExecutors;
-import com.omgameserver.engine.OmgsProperties;
+import com.omgameserver.engine.EngineDispatcher;
+import com.omgameserver.engine.EngineExecutors;
+import com.omgameserver.engine.EngineProperties;
 import com.omgameserver.engine.events.ClientConnectedEvent;
 import com.omgameserver.engine.events.ClientDisconnectedEvent;
 import com.omgameserver.engine.events.IncomingLuaValueEvent;
@@ -24,8 +24,8 @@ class LuaWorker extends Bolt implements
         TickEvent.Handler {
     static private final Logger logger = LoggerFactory.getLogger(LuaWorker.class);
 
-    private final OmgsExecutors executors;
-    private final OmgsDispatcher dispatcher;
+    private final EngineExecutors executors;
+    private final EngineDispatcher dispatcher;
     private final LuaGlobals luaGlobals;
     private final LuaEngine luaEngine;
 
@@ -34,7 +34,7 @@ class LuaWorker extends Bolt implements
     private final String EVENT_RECEIVED = "received";
     private final String EVENT_TICK = "tick";
 
-    LuaWorker(OmgsProperties properties, OmgsExecutors executors, OmgsDispatcher dispatcher,
+    LuaWorker(EngineProperties properties, EngineExecutors executors, EngineDispatcher dispatcher,
               LuaGlobals luaGlobals, String luaScript) {
         super(luaScript, properties.getQueueSize());
         this.executors = executors;
