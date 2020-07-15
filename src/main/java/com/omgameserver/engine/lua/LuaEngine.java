@@ -15,6 +15,7 @@ class LuaEngine extends LuaEventListener {
     private final String FUNCTION_LOG_DEBUG = "log_debug";
     private final String FUNCTION_LOG_TRACE = "log_trace";
 
+    private final String FUNCTION_DISPATCH = "dispatch";
     private final String FUNCTION_SEND = "send";
     private final String FUNCTION_DISCONNECT = "disconnect";
 
@@ -25,6 +26,7 @@ class LuaEngine extends LuaEventListener {
         set(FUNCTION_LOG_INFO, new LuaLogFunction(globals, LuaLogFunction.LEVEL.INFO));
         set(FUNCTION_LOG_DEBUG, new LuaLogFunction(globals, LuaLogFunction.LEVEL.DEBUG));
         set(FUNCTION_LOG_TRACE, new LuaLogFunction(globals, LuaLogFunction.LEVEL.TRACE));
+        set(FUNCTION_DISPATCH, new LuaDispatchFunction(dispatcher));
         set(FUNCTION_SEND, new LuaSendFunction(dispatcher));
         set(FUNCTION_DISCONNECT, new LuaDisconnectClientFunction(dispatcher));
     }

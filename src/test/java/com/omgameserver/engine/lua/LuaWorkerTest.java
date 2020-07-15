@@ -30,6 +30,7 @@ public class LuaWorkerTest extends LuaBaseTest {
     private BlockingQueue<LuaTickReceivedEvent> luaTickReceivedEvents;
     private BlockingQueue<OutgoingLuaValueEvent> outgoingLuaValueEvents;
     private BlockingQueue<DisconnectClientRequestEvent> disconnectClientRequestEvents;
+    private BlockingQueue<LuaEvent> luaEvents;
     private BlockingQueue<LuaEventReceivedEvent> luaEventReceivedEvents;
     private ConsumerStub consumerStub;
 
@@ -42,6 +43,7 @@ public class LuaWorkerTest extends LuaBaseTest {
         luaTickReceivedEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
         outgoingLuaValueEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
         disconnectClientRequestEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
+        luaEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
         luaEventReceivedEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
         consumerStub = new ConsumerStub();
         consumerStub.postConstruct();
@@ -114,6 +116,18 @@ public class LuaWorkerTest extends LuaBaseTest {
     }
 
     @Test
+    public void testDispatchFunction() throws InterruptedException {
+        LuaWorker luaWorker = new LuaWorker(properties, executors, dispatcher, luaGlobals,
+                "lua_dispatch_function_test.lua");
+        LuaEvent luaEvent = luaEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        assertNotNull(luaEvent);
+        assertEquals("lua_event", luaEvent.getId());
+        LuaValue event = luaEvent.getEvent();
+        assertEquals("lua_event", event.get("id").tojstring());
+        assertEquals("helloworld", event.get("data").tojstring());
+    }
+
+    @Test
     public void testSendFunction() throws InterruptedException {
         LuaWorker luaWorker = new LuaWorker(properties, executors, dispatcher, luaGlobals,
                 "lua_send_function_test.lua");
@@ -160,6 +174,7 @@ public class LuaWorkerTest extends LuaBaseTest {
             LuaTickReceivedEvent.Handler,
             OutgoingLuaValueEvent.Handler,
             DisconnectClientRequestEvent.Handler,
+            LuaEvent.Handler,
             LuaEventReceivedEvent.Handler {
 
         ConsumerStub() {
@@ -197,6 +212,11 @@ public class LuaWorkerTest extends LuaBaseTest {
         }
 
         @Override
+        public void handleLuaEvent(LuaEvent event) throws InterruptedException {
+            luaEvents.put(event);
+        }
+
+        @Override
         public void handleLuaEventReceivedEvent(LuaEventReceivedEvent event) throws InterruptedException {
             luaEventReceivedEvents.put(event);
         }
@@ -209,6 +229,7 @@ public class LuaWorkerTest extends LuaBaseTest {
             dispatcher.getDispatcher().subscribe(this, LuaTickReceivedEvent.class);
             dispatcher.getDispatcher().subscribe(this, OutgoingLuaValueEvent.class);
             dispatcher.getDispatcher().subscribe(this, DisconnectClientRequestEvent.class);
+            dispatcher.getDispatcher().subscribe(this, LuaEvent.class);
             dispatcher.getDispatcher().subscribe(this, LuaEventReceivedEvent.class);
         }
     }

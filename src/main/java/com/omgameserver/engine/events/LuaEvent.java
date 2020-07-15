@@ -9,19 +9,19 @@ import org.luaj.vm2.LuaValue;
  */
 public final class LuaEvent extends Event<LuaEvent.Handler> {
 
-    private final String eventId;
-    private final LuaValue luaEvent;
+    private final String id;
+    private final LuaValue event;
 
-    public LuaEvent(String eventId, LuaValue luaEvent) {
+    public LuaEvent(String id, LuaValue event) {
         super();
-        if (eventId == null) {
-            throw new NullPointerException("eventId is null");
+        if (id == null) {
+            throw new NullPointerException("id is null");
         }
-        if (luaEvent == null) {
-            throw new NullPointerException("luaEvent is null");
+        if (event == null) {
+            throw new NullPointerException("event is null");
         }
-        this.eventId = eventId;
-        this.luaEvent = luaEvent;
+        this.id = id;
+        this.event = event;
     }
 
     @Override
@@ -29,17 +29,17 @@ public final class LuaEvent extends Event<LuaEvent.Handler> {
         handler.handleLuaEvent(this);
     }
 
-    public String getEventId() {
-        return eventId;
+    public String getId() {
+        return id;
     }
 
-    public LuaValue getLuaEvent() {
-        return luaEvent;
+    public LuaValue getEvent() {
+        return event;
     }
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(eventId=" + eventId + ", luaEvent=" + luaEvent + ")";
+        return getClass().getSimpleName() + "(id=" + id + ", event=" + event + ")";
     }
 
     public interface Handler {
