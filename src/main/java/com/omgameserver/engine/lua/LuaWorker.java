@@ -4,12 +4,10 @@ import com.crionuke.bolts.Bolt;
 import com.omgameserver.engine.EngineDispatcher;
 import com.omgameserver.engine.EngineExecutors;
 import com.omgameserver.engine.EngineProperties;
-import com.omgameserver.engine.events.ClientConnectedEvent;
-import com.omgameserver.engine.events.ClientDisconnectedEvent;
-import com.omgameserver.engine.events.IncomingLuaValueEvent;
-import com.omgameserver.engine.events.TickEvent;
+import com.omgameserver.engine.events.*;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +19,7 @@ class LuaWorker extends Bolt implements
         ClientConnectedEvent.Handler,
         ClientDisconnectedEvent.Handler,
         IncomingLuaValueEvent.Handler,
+        LuaEvent.Handler,
         TickEvent.Handler {
     static private final Logger logger = LoggerFactory.getLogger(LuaWorker.class);
 
@@ -92,11 +91,25 @@ class LuaWorker extends Bolt implements
         luaEngine.dispatch(EVENT_TICK, luaEvent);
     }
 
+    @Override
+    public void handleLuaEvent(LuaEvent event) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("Handle {}", event);
+        }
+        String eventId = event.getEventId();
+        LuaValue luaEvent = event.getLuaEvent();
+        luaEngine.dispatch(eventId, luaEvent);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Event with id={} was dispatched", eventId);
+        }
+    }
+
     void postConstruct() {
         executors.executeInUserPool(this);
         dispatcher.getDispatcher().subscribe(this, ClientConnectedEvent.class);
         dispatcher.getDispatcher().subscribe(this, ClientDisconnectedEvent.class);
         dispatcher.getDispatcher().subscribe(this, TickEvent.class);
+        dispatcher.getDispatcher().subscribe(this, LuaEvent.class);
         // Subscribe to all event dispatched directly to this bolt
         dispatcher.getDispatcher().subscribe(this);
     }

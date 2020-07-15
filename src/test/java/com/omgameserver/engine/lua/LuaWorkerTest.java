@@ -6,6 +6,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.luaj.vm2.LuaString;
+import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,7 @@ public class LuaWorkerTest extends LuaBaseTest {
     private BlockingQueue<LuaTickReceivedEvent> luaTickReceivedEvents;
     private BlockingQueue<OutgoingLuaValueEvent> outgoingLuaValueEvents;
     private BlockingQueue<DisconnectClientRequestEvent> disconnectClientRequestEvents;
+    private BlockingQueue<LuaEventReceivedEvent> luaEventReceivedEvents;
     private ConsumerStub consumerStub;
 
     @Before
@@ -40,6 +42,7 @@ public class LuaWorkerTest extends LuaBaseTest {
         luaTickReceivedEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
         outgoingLuaValueEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
         disconnectClientRequestEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
+        luaEventReceivedEvents = new LinkedBlockingQueue<>(PROPERTY_QUEUE_SIZE);
         consumerStub = new ConsumerStub();
         consumerStub.postConstruct();
     }
@@ -132,13 +135,32 @@ public class LuaWorkerTest extends LuaBaseTest {
         assertEquals(1, disconnectClientRequestEvent.getClientUid());
     }
 
+    @Test
+    public void testLuaEventListener() throws InterruptedException {
+        LuaWorker luaWorker = new LuaWorker(properties, executors, dispatcher, luaGlobals,
+                "lua_event_listener_test.lua");
+        luaWorker.postConstruct();
+        String eventId = "lua_event";
+        String eventData = "helloworld";
+        LuaValue luaEvent = new LuaTable();
+        luaEvent.set("id", eventId);
+        luaEvent.set("data", eventData);
+        dispatcher.dispatch(new LuaEvent(eventId, luaEvent));
+        LuaEventReceivedEvent luaEventReceivedEvent = luaEventReceivedEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        luaWorker.finish();
+        assertNotNull(luaEventReceivedEvent);
+        assertEquals(eventId, luaEventReceivedEvent.getEventId());
+        assertEquals(eventData, luaEventReceivedEvent.getData());
+    }
+
     private class ConsumerStub extends Bolt implements
             LuaClientConnectedReceivedEvent.Handler,
             LuaClientDisconnectedReceivedEvent.Handler,
             LuaDataReceivedEvent.Handler,
             LuaTickReceivedEvent.Handler,
             OutgoingLuaValueEvent.Handler,
-            DisconnectClientRequestEvent.Handler {
+            DisconnectClientRequestEvent.Handler,
+            LuaEventReceivedEvent.Handler {
 
         ConsumerStub() {
             super("consumer-stub", PROPERTY_QUEUE_SIZE);
@@ -174,6 +196,11 @@ public class LuaWorkerTest extends LuaBaseTest {
             disconnectClientRequestEvents.put(event);
         }
 
+        @Override
+        public void handleLuaEventReceivedEvent(LuaEventReceivedEvent event) throws InterruptedException {
+            luaEventReceivedEvents.put(event);
+        }
+
         void postConstruct() {
             executors.executeInInternalPool(this);
             dispatcher.getDispatcher().subscribe(this, LuaClientConnectedReceivedEvent.class);
@@ -182,6 +209,7 @@ public class LuaWorkerTest extends LuaBaseTest {
             dispatcher.getDispatcher().subscribe(this, LuaTickReceivedEvent.class);
             dispatcher.getDispatcher().subscribe(this, OutgoingLuaValueEvent.class);
             dispatcher.getDispatcher().subscribe(this, DisconnectClientRequestEvent.class);
+            dispatcher.getDispatcher().subscribe(this, LuaEventReceivedEvent.class);
         }
     }
 }
