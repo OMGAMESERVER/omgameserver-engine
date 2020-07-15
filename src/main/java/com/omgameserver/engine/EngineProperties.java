@@ -15,31 +15,31 @@ public class EngineProperties {
 
     private final InetAddress host;
     private final int port;
-    private final int threadPoolSize;
+    private final int internalThreadPoolSize;
+    private final int userThreadPoolSize;
     private final int queueSize;
     private final int datagramSize;
-    private final int accessKeyLifetime;
     private final int tickInterval;
     private final int disconnectInterval;
     private final int pingInterval;
     private final String mainScript;
 
-    EngineProperties(@Value("${omgameserver.host:0.0.0.0}") String host,
-                     @Value("${omgameserver.port:12345}") int port,
-                     @Value("${omgameserver.threadPoolSize:32}") int threadPoolSize,
-                     @Value("${omgameserver.queueSize:128}") int queueSize,
-                     @Value("${omgameserver.datagramSize:508}") int datagramSize,
-                     @Value("${omgameserver.accessKeyLifetime:5000}") int accessKeyLifetime,
-                     @Value("${omgameserver.tickInterval:100}") int tickInterval,
-                     @Value("${omgameserver.disconnectInterval:5000}") int disconnectInterval,
-                     @Value("${omgameserver.pingInterval:1000}") int pingInterval,
-                     @Value("${omgameserver.mainScript:main.lua}") String mainScript) throws UnknownHostException {
+    EngineProperties(@Value("${omgameserver.engine.host:0.0.0.0}") String host,
+                     @Value("${omgameserver.engine.port:12345}") int port,
+                     @Value("${omgameserver.engine.userThreadPoolSize:16}") int internalThreadPoolSize,
+                     @Value("${omgameserver.engine.userThreadPoolSize:32}") int userThreadPoolSize,
+                     @Value("${omgameserver.engine.queueSize:128}") int queueSize,
+                     @Value("${omgameserver.engine.datagramSize:1024}") int datagramSize,
+                     @Value("${omgameserver.engine.tickInterval:100}") int tickInterval,
+                     @Value("${omgameserver.engine.disconnectInterval:5000}") int disconnectInterval,
+                     @Value("${omgameserver.engine.pingInterval:500}") int pingInterval,
+                     @Value("${omgameserver.engine.mainScript:main.lua}") String mainScript) throws UnknownHostException {
         this.host = InetAddress.getByName(host);
         this.port = port;
-        this.threadPoolSize = threadPoolSize;
+        this.internalThreadPoolSize = internalThreadPoolSize;
+        this.userThreadPoolSize = userThreadPoolSize;
         this.queueSize = queueSize;
         this.datagramSize = datagramSize;
-        this.accessKeyLifetime = accessKeyLifetime;
         this.tickInterval = tickInterval;
         this.disconnectInterval = disconnectInterval;
         this.pingInterval = pingInterval;
@@ -54,8 +54,12 @@ public class EngineProperties {
         return port;
     }
 
-    public int getThreadPoolSize() {
-        return threadPoolSize;
+    public int getInternalThreadPoolSize() {
+        return internalThreadPoolSize;
+    }
+
+    public int getUserThreadPoolSize() {
+        return userThreadPoolSize;
     }
 
     public int getQueueSize() {
@@ -64,10 +68,6 @@ public class EngineProperties {
 
     public int getDatagramSize() {
         return datagramSize;
-    }
-
-    public int getAccessKeyLifetime() {
-        return accessKeyLifetime;
     }
 
     public int getTickInterval() {

@@ -21,10 +21,10 @@ public class BaseServiceTest extends Assert {
 
     protected final String PROPERTY_HOST = "0.0.0.0";
     protected final int PROPERTY_PORT = 0;
-    protected final int PROPERTY_THREAD_POOL_SIZE = 32;
+    protected final int PROPERTY_INTERNAL_THREAD_POOL_SIZE = 16;
+    protected final int PROPERTY_USER_THREAD_POOL_SIZE = 32;
     protected final int PROPERTY_QUEUE_SIZE = 128;
-    protected final int PROPERTY_DATAGRAM_SIZE = 508;
-    protected final int PROPERTY_ACCESS_KEY_LIFETIME = 1000;
+    protected final int PROPERTY_DATAGRAM_SIZE = 1024;
     protected final int PROPERTY_TICK_INTERVAL = 100;
     protected final int PROPERTY_DISCONNECT_INTERVAL = 1000;
     protected final int PROPERTY_PING_INTERVAL = 250;
@@ -35,12 +35,13 @@ public class BaseServiceTest extends Assert {
     protected EngineExecutors executors;
 
     protected void createComponents() throws UnknownHostException {
-        properties = new EngineProperties(PROPERTY_HOST, PROPERTY_PORT, PROPERTY_THREAD_POOL_SIZE, PROPERTY_QUEUE_SIZE,
-                PROPERTY_DATAGRAM_SIZE, PROPERTY_ACCESS_KEY_LIFETIME, PROPERTY_TICK_INTERVAL,
+        properties = new EngineProperties(PROPERTY_HOST, PROPERTY_PORT, PROPERTY_INTERNAL_THREAD_POOL_SIZE,
+                PROPERTY_USER_THREAD_POOL_SIZE, PROPERTY_QUEUE_SIZE,
+                PROPERTY_DATAGRAM_SIZE, PROPERTY_TICK_INTERVAL,
                 PROPERTY_DISCONNECT_INTERVAL, PROPERTY_PING_INTERVAL, PROPERTY_MAIN_SCRIPT);
         dispatcher = new EngineDispatcher();
         executors = new EngineExecutors(properties);
-        logger.info("Thread pool with size={} created", properties.getThreadPoolSize());
+        logger.info("Thread pool with size={} created", properties.getUserThreadPoolSize());
     }
 
     protected SocketAddress generateSocketAddress() {
