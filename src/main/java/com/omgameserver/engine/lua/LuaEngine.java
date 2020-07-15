@@ -15,6 +15,8 @@ class LuaEngine extends LuaEventListener {
     private final String FUNCTION_LOG_DEBUG = "log_debug";
     private final String FUNCTION_LOG_TRACE = "log_trace";
 
+    private final String FUNCTION_DISPATCH = "dispatch";
+
     private final String FUNCTION_SEND = "send";
     private final String FUNCTION_DISCONNECT = "disconnect";
 
