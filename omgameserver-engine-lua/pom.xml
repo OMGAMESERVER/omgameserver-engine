@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.omgameserver.engine</groupId>
+        <artifactId>omgameserver-engine</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>omgameserver-engine-lua</artifactId>
+
+    <name>omgameserver-engine-lua</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.omgameserver.engine</groupId>
+            <artifactId>omgameserver-engine-core</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.omgameserver.engine</groupId>
+            <artifactId>omgameserver-engine-udp</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.luaj</groupId>
+            <artifactId>luaj-jse</artifactId>
+            <version>${luaj.jse.version}</version>
+        </dependency>
+    </dependencies>
+</project>
