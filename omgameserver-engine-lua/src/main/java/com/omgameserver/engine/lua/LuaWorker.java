@@ -39,9 +39,6 @@ class LuaWorker extends Bolt implements LuaCustomEvent.Handler {
         String eventId = event.getId();
         LuaValue luaEvent = event.getEvent();
         luaEngine.dispatch(eventId, luaEvent);
-        if (logger.isDebugEnabled()) {
-            logger.debug("Event with id={} was dispatched to lua", eventId);
-        }
     }
 
     void postConstruct() {
