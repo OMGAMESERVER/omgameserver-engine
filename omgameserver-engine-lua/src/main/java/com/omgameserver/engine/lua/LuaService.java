@@ -35,11 +35,11 @@ class LuaService extends Bolt implements
     private final Map<Long, LuaWorker> routes;
 
     LuaService(CoreExecutors executors, CoreDispatcher dispatcher, LuaProperties properties,
-               LuaGlobals luaGlobals) {
+               LuaGlobalsFactory luaGlobalsFactory) {
         super("lua", properties.getQueueSize());
         this.executors = executors;
         this.dispatcher = dispatcher;
-        defaultWorker = new LuaWorker(executors, dispatcher, properties, luaGlobals, properties.getMainScript());
+        defaultWorker = new LuaWorker(executors, dispatcher, properties, luaGlobalsFactory, properties.getMainScript());
         defaultWorker.postConstruct();
         routes = new HashMap<>();
     }

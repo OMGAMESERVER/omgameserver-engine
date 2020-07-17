@@ -31,7 +31,7 @@ class LuaServiceTest extends LuaBaseTest implements LuaEventConstants {
     @BeforeEach
     void beforeEach() throws UnknownHostException {
         createComponents("lua_service_test.lua");
-        luaService = new LuaService(coreExecutors, coreDispatcher, luaProperties, luaGlobals);
+        luaService = new LuaService(coreExecutors, coreDispatcher, luaProperties, luaGlobalsFactory);
         luaService.postConstruct();
         luaTickReceivedEvents = new LinkedBlockingQueue<>(LUA_QUEUE_SIZE);
         luaConnectedReceivedEvents = new LinkedBlockingQueue<>(LUA_QUEUE_SIZE);

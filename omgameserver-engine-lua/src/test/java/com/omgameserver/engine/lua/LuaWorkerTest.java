@@ -46,7 +46,7 @@ class LuaWorkerTest extends LuaBaseTest {
 
     @Test
     void testCustomLuaEventListener() throws InterruptedException {
-        LuaWorker luaWorker = new LuaWorker(coreExecutors, coreDispatcher, luaProperties, luaGlobals,
+        LuaWorker luaWorker = new LuaWorker(coreExecutors, coreDispatcher, luaProperties, luaGlobalsFactory,
                 "lua_custom_event_listener_test.lua");
         luaWorker.postConstruct();
         String eventId = "custom_event";
@@ -64,7 +64,7 @@ class LuaWorkerTest extends LuaBaseTest {
 
     @Test
     void testDispatchFunction() throws InterruptedException {
-        LuaWorker luaWorker = new LuaWorker(coreExecutors, coreDispatcher, luaProperties, luaGlobals,
+        LuaWorker luaWorker = new LuaWorker(coreExecutors, coreDispatcher, luaProperties, luaGlobalsFactory,
                 "lua_dispatch_function_test.lua");
         LuaCustomEvent luaCustomEvent = luaCustomEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         assertNotNull(luaCustomEvent);
@@ -76,7 +76,7 @@ class LuaWorkerTest extends LuaBaseTest {
 
     @Test
     void testSendFunction() throws InterruptedException {
-        LuaWorker luaWorker = new LuaWorker(coreExecutors, coreDispatcher, luaProperties, luaGlobals,
+        LuaWorker luaWorker = new LuaWorker(coreExecutors, coreDispatcher, luaProperties, luaGlobalsFactory,
                 "lua_send_function_test.lua");
         LuaOutgoingValueEvent luaOutgoingValueEvent = luaOutgoingValueEvents.poll(POLL_TIMEOUT_MS,
                 TimeUnit.MILLISECONDS);

@@ -21,11 +21,11 @@ class LuaWorker extends Bolt implements LuaCustomEvent.Handler {
     private final LuaEngine luaEngine;
 
     LuaWorker(CoreExecutors executors, CoreDispatcher dispatcher, LuaProperties properties,
-              LuaGlobals luaGlobals, String luaScript) {
+              LuaGlobalsFactory luaGlobalsFactory, String luaScript) {
         super(luaScript, properties.getQueueSize());
         this.executors = executors;
         this.dispatcher = dispatcher;
-        Globals globals = luaGlobals.getGlobals();
+        Globals globals = luaGlobalsFactory.createGlobals();
         luaEngine = new LuaEngine(dispatcher, globals);
         globals.set("engine", luaEngine);
         globals.loadfile(luaScript).call();

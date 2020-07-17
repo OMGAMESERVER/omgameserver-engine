@@ -1,5 +1,7 @@
 package com.omgameserver.engine.lua;
 
+import org.luaj.vm2.Globals;
+
 import java.net.UnknownHostException;
 
 /**
@@ -8,12 +10,21 @@ import java.net.UnknownHostException;
  */
 class LuaBaseTest extends BaseServiceTest {
 
-    protected LuaGlobals luaGlobals;
+    protected LuaGlobalsFactory luaGlobalsFactory;
 
     @Override
     protected void createComponents(String mainScript) throws UnknownHostException {
         super.createComponents(mainScript);
-        luaGlobals = new LuaGlobals();
-        luaGlobals.getGlobals().set("testing", new LuaTesting(coreDispatcher));
+        luaGlobalsFactory = new LuaTestingGlobalsFactory();
+    }
+
+    class LuaTestingGlobalsFactory extends LuaGlobalsFactory {
+
+        @Override
+        Globals createGlobals() {
+            Globals globals = super.createGlobals();
+            globals.set("testing", new LuaTesting(coreDispatcher));
+            return globals;
+        }
     }
 }

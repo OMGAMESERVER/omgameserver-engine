@@ -12,12 +12,10 @@ import org.springframework.stereotype.Component;
  * @since 1.0.0
  */
 @Component
-class LuaGlobals {
+class LuaGlobalsFactory {
 
-    private final Globals globals;
-
-    LuaGlobals() {
-        globals = new Globals();
+    Globals createGlobals() {
+        Globals globals = new Globals();
         // TODO: actualize lib list
         globals.load(new JseBaseLib());
         globals.load(new PackageLib());
@@ -32,9 +30,6 @@ class LuaGlobals {
         LoadState.install(globals);
         LuaC.install(globals);
         globals.finder = new LuaScriptFinder();
-    }
-
-    Globals getGlobals() {
         return globals;
     }
 }
