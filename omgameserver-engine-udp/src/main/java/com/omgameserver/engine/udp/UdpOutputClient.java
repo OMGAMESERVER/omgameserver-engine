@@ -14,8 +14,8 @@ import java.util.*;
  * @author Kirill Byvshev (k@byv.sh)
  * @since 1.0.0
  */
-class UdpOutputClientConstants implements UdpHeaderConstants {
-    static private final Logger logger = LoggerFactory.getLogger(UdpOutputClientConstants.class);
+class UdpOutputClient implements UdpHeaderConstants {
+    static private final Logger logger = LoggerFactory.getLogger(UdpOutputClient.class);
 
     private UdpProperties properties;
     private CoreDispatcher dispatcher;
@@ -30,7 +30,7 @@ class UdpOutputClientConstants implements UdpHeaderConstants {
     private long lastPingRequest;
     private long lastLatency;
 
-    UdpOutputClientConstants(UdpProperties properties, CoreDispatcher dispatcher, SocketAddress socketAddress, long clientUid) {
+    UdpOutputClient(UdpProperties properties, CoreDispatcher dispatcher, SocketAddress socketAddress, long clientUid) {
         super();
         this.properties = properties;
         this.dispatcher = dispatcher;

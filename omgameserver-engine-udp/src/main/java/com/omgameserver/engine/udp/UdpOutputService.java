@@ -30,8 +30,8 @@ class UdpOutputService extends Bolt implements
     private final CoreExecutors executors;
     private final CoreDispatcher dispatcher;
     private final UdpProperties properties;
-    private final Map<SocketAddress, UdpOutputClientConstants> clientBySocket;
-    private final Map<Long, UdpOutputClientConstants> clientByUid;
+    private final Map<SocketAddress, UdpOutputClient> clientBySocket;
+    private final Map<Long, UdpOutputClient> clientByUid;
 
     UdpOutputService(CoreExecutors executors, CoreDispatcher dispatcher, UdpProperties properties) {
         super("output", properties.getQueueSize());
@@ -49,9 +49,9 @@ class UdpOutputService extends Bolt implements
         }
         SocketAddress socketAddress = event.getSocketAddress();
         long clientUid = event.getClientUid();
-        UdpOutputClientConstants udpOutputClient = clientBySocket.get(socketAddress);
+        UdpOutputClient udpOutputClient = clientBySocket.get(socketAddress);
         if (udpOutputClient == null) {
-            udpOutputClient = new UdpOutputClientConstants(properties, dispatcher, socketAddress, clientUid);
+            udpOutputClient = new UdpOutputClient(properties, dispatcher, socketAddress, clientUid);
             clientBySocket.put(socketAddress, udpOutputClient);
             clientByUid.put(clientUid, udpOutputClient);
             logger.debug("New output client for {} with uid={}", socketAddress, clientUid);
@@ -65,7 +65,7 @@ class UdpOutputService extends Bolt implements
             logger.trace("Handle {}", event);
         }
         long clientUid = event.getClientUid();
-        UdpOutputClientConstants udpOutputClient = clientByUid.get(clientUid);
+        UdpOutputClient udpOutputClient = clientByUid.get(clientUid);
         if (udpOutputClient != null) {
             udpOutputClient.send(event);
         } else {
@@ -82,7 +82,7 @@ class UdpOutputService extends Bolt implements
         }
         SocketAddress socketAddress = event.getSocketAddress();
         long clientUid = event.getClientUid();
-        UdpOutputClientConstants removedClient = clientBySocket.remove(socketAddress);
+        UdpOutputClient removedClient = clientBySocket.remove(socketAddress);
         if (removedClient != null) {
             logger.debug("{} removed", removedClient);
         }
@@ -95,10 +95,10 @@ class UdpOutputService extends Bolt implements
             logger.trace("Handle {}", event);
         }
         long currentTimeMillis = System.currentTimeMillis();
-        Iterator<Map.Entry<SocketAddress, UdpOutputClientConstants>> iterator = clientBySocket.entrySet().iterator();
+        Iterator<Map.Entry<SocketAddress, UdpOutputClient>> iterator = clientBySocket.entrySet().iterator();
         while (iterator.hasNext()) {
-            Map.Entry<SocketAddress, UdpOutputClientConstants> entry = iterator.next();
-            UdpOutputClientConstants client = entry.getValue();
+            Map.Entry<SocketAddress, UdpOutputClient> entry = iterator.next();
+            UdpOutputClient client = entry.getValue();
             if (client.isPingTime(currentTimeMillis)) {
                 client.ping();
             }

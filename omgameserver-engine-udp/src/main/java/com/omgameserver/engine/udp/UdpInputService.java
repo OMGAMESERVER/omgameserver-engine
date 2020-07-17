@@ -31,8 +31,8 @@ class UdpInputService extends Bolt implements
     private final CoreExecutors executors;
     private final CoreDispatcher dispatcher;
     private final UdpProperties properties;
-    private final Map<SocketAddress, UdpInputClientConstants> clientBySocket;
-    private final Map<Long, UdpInputClientConstants> clientByUid;
+    private final Map<SocketAddress, UdpInputClient> clientBySocket;
+    private final Map<Long, UdpInputClient> clientByUid;
 
     UdpInputService(CoreExecutors executors, CoreDispatcher dispatcher, UdpProperties properties) {
         super("input", properties.getQueueSize());
@@ -50,9 +50,9 @@ class UdpInputService extends Bolt implements
         }
         SocketAddress socketAddress = event.getSocketAddress();
         ByteBuffer byteBuffer = event.getByteBuffer();
-        UdpInputClientConstants udpInputClient = clientBySocket.get(socketAddress);
+        UdpInputClient udpInputClient = clientBySocket.get(socketAddress);
         if (udpInputClient == null) {
-            udpInputClient = new UdpInputClientConstants(properties, dispatcher, socketAddress);
+            udpInputClient = new UdpInputClient(properties, dispatcher, socketAddress);
             long clientUid = udpInputClient.getClientUid();
             clientBySocket.put(socketAddress, udpInputClient);
             clientByUid.put(udpInputClient.getClientUid(), udpInputClient);
@@ -70,10 +70,10 @@ class UdpInputService extends Bolt implements
             logger.trace("Handle {}", event);
         }
         long currentTimeMillis = System.currentTimeMillis();
-        Iterator<Map.Entry<SocketAddress, UdpInputClientConstants>> iterator = clientBySocket.entrySet().iterator();
+        Iterator<Map.Entry<SocketAddress, UdpInputClient>> iterator = clientBySocket.entrySet().iterator();
         while (iterator.hasNext()) {
-            Map.Entry<SocketAddress, UdpInputClientConstants> entry = iterator.next();
-            UdpInputClientConstants udpInputClient = entry.getValue();
+            Map.Entry<SocketAddress, UdpInputClient> entry = iterator.next();
+            UdpInputClient udpInputClient = entry.getValue();
             if (udpInputClient.isDisconnected(currentTimeMillis)) {
                 clientByUid.remove(udpInputClient.getClientUid());
                 iterator.remove();

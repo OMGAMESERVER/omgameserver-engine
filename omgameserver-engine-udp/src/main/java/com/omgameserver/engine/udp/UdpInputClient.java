@@ -14,8 +14,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author Kirill Byvshev (k@byv.sh)
  * @since 1.0.0
  */
-class UdpInputClientConstants implements UdpHeaderConstants {
-    static private final Logger logger = LoggerFactory.getLogger(UdpInputClientConstants.class);
+class UdpInputClient implements UdpHeaderConstants {
+    static private final Logger logger = LoggerFactory.getLogger(UdpInputClient.class);
     static private final AtomicLong uidCounter = new AtomicLong();
 
     private final UdpProperties properties;
@@ -24,7 +24,7 @@ class UdpInputClientConstants implements UdpHeaderConstants {
     private final long clientUid;
     private long lastActivity;
 
-    UdpInputClientConstants(UdpProperties properties, CoreDispatcher dispatcher, SocketAddress socketAddress) {
+    UdpInputClient(UdpProperties properties, CoreDispatcher dispatcher, SocketAddress socketAddress) {
         super();
         this.properties = properties;
         this.dispatcher = dispatcher;
@@ -35,7 +35,7 @@ class UdpInputClientConstants implements UdpHeaderConstants {
 
     @Override
     public String toString() {
-        return UdpInputClientConstants.class.getSimpleName() + "(clientUid=" + clientUid +
+        return UdpInputClient.class.getSimpleName() + "(clientUid=" + clientUid +
                 ", socket=" + socketAddress.toString() + ")";
     }
 
