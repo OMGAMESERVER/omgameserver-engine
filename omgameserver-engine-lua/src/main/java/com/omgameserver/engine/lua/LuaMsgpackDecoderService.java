@@ -18,15 +18,15 @@ import java.nio.ByteBuffer;
  * @since 1.0.0
  */
 @Service
-class LuaDecoderService extends Bolt implements
+class LuaMsgpackDecoderService extends Bolt implements
         UdpIncomingPayloadEvent.Handler {
-    static private final Logger logger = LoggerFactory.getLogger(LuaDecoderService.class);
+    static private final Logger logger = LoggerFactory.getLogger(LuaMsgpackDecoderService.class);
 
     private final CoreExecutors executors;
     private final CoreDispatcher dispatcher;
 
-    LuaDecoderService(CoreExecutors executors, CoreDispatcher dispatcher, LuaProperties properties) {
-        super("lua-decoder", properties.getQueueSize());
+    LuaMsgpackDecoderService(CoreExecutors executors, CoreDispatcher dispatcher, LuaProperties properties) {
+        super("lua-msgpack-decoder", properties.getQueueSize());
         this.executors = executors;
         this.dispatcher = dispatcher;
     }

@@ -21,17 +21,17 @@ import java.util.concurrent.TimeUnit;
  * @author Kirill Byvshev (k@byv.sh)
  * @since 1.0.0
  */
-public class LuaDecoderServiceTest extends BaseServiceTest {
-    static private final Logger logger = LoggerFactory.getLogger(LuaDecoderServiceTest.class);
+public class LuaMsgpackDecoderServiceTest extends BaseServiceTest {
+    static private final Logger logger = LoggerFactory.getLogger(LuaMsgpackDecoderServiceTest.class);
 
-    private LuaDecoderService decoderService;
+    private LuaMsgpackDecoderService decoderService;
     private BlockingQueue<LuaIncomingValueEvent> luaIncomingValueEvents;
     private ConsumerStub consumerStub;
 
     @BeforeEach
     public void beforeEach() throws UnknownHostException {
         createComponents("stub.lua");
-        decoderService = new LuaDecoderService(coreExecutors, coreDispatcher, luaProperties);
+        decoderService = new LuaMsgpackDecoderService(coreExecutors, coreDispatcher, luaProperties);
         decoderService.postConstruct();
         luaIncomingValueEvents = new LinkedBlockingQueue<>(LUA_QUEUE_SIZE);
         consumerStub = new ConsumerStub();

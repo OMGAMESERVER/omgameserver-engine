@@ -21,9 +21,9 @@ import java.nio.ByteBuffer;
  * @since 1.0.0
  */
 @Service
-class LuaEncoderService extends Bolt implements
+class LuaMsgpackEncoderService extends Bolt implements
         LuaOutgoingValueEvent.Handler {
-    static private final Logger logger = LoggerFactory.getLogger(LuaEncoderService.class);
+    static private final Logger logger = LoggerFactory.getLogger(LuaMsgpackEncoderService.class);
 
     // Use & 0xFF for unsigned byte in int datatype
     private final int MSG_PACK_TRUE = 0xc3 & 0xFF;
@@ -50,8 +50,8 @@ class LuaEncoderService extends Bolt implements
     private final CoreDispatcher dispatcher;
     private final LuaProperties properties;
 
-    LuaEncoderService(CoreExecutors executors, CoreDispatcher dispatcher, LuaProperties properties) {
-        super("lua-encoder", properties.getQueueSize());
+    LuaMsgpackEncoderService(CoreExecutors executors, CoreDispatcher dispatcher, LuaProperties properties) {
+        super("lua-msgpack-encoder", properties.getQueueSize());
         this.executors = executors;
         this.dispatcher = dispatcher;
         this.properties = properties;
