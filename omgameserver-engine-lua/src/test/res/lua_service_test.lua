@@ -7,12 +7,12 @@ end
 
 function test:connected(event)
     engine.log_info("id=" .. event.id .. ", client_uid=" .. event.client_uid .. ", type=" .. event.client_type)
-    testing.client_connected_received(event.client_uid, event.client_type)
+    testing.connected_received(event.client_uid, event.client_type)
 end
 
 function test:disconnected(event)
     engine.log_info("id=" .. event.id .. ", client_uid=" .. event.client_uid .. ", type=" .. event.client_type)
-    testing.client_disconnected_received(event.client_uid, event.client_type)
+    testing.disconnected_received(event.client_uid, event.client_type)
 end
 
 function test:received(event)
