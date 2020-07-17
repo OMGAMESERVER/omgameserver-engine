@@ -21,7 +21,7 @@ class UdpOutputClient implements UdpHeaderConstants {
     private CoreDispatcher dispatcher;
     private SocketAddress socketAddress;
     private long clientUid;
-    private List<UdpOutgoingPayloadEvent> payloadEvents;
+    private List<UdpOutgoingPayloadEvent> outgoingEvents;
     private Map<Integer, List<UdpOutgoingPayloadEvent>> savedEvents;
     private List<Integer> outgoingSeq;
     private int lastOutgoingSeq;
@@ -41,7 +41,7 @@ class UdpOutputClient implements UdpHeaderConstants {
         lastIncomingBit = 0;
         lastPingRequest = System.currentTimeMillis();
         lastLatency = 0;
-        payloadEvents = new LinkedList<>();
+        outgoingEvents = new LinkedList<>();
         savedEvents = new HashMap<>();
         outgoingSeq = new LinkedList<>();
     }
@@ -87,15 +87,15 @@ class UdpOutputClient implements UdpHeaderConstants {
     }
 
     void send(UdpOutgoingPayloadEvent event) {
-        payloadEvents.add(event);
+        outgoingEvents.add(event);
     }
 
     void flush() throws InterruptedException {
-        if (payloadEvents.size() == 0) {
+        if (outgoingEvents.size() == 0) {
             return;
         } else {
             UdpOutgoingDatagramEvent nextEvent = createNextEvent();
-            for (UdpOutgoingPayloadEvent payloadEvent : payloadEvents) {
+            for (UdpOutgoingPayloadEvent payloadEvent : outgoingEvents) {
                 ByteBuffer payload = payloadEvent.getPayload();
                 if (nextEvent.getDatagram().remaining() < payload.remaining()) {
                     // Flush
@@ -113,7 +113,7 @@ class UdpOutputClient implements UdpHeaderConstants {
             nextEvent.getDatagram().flip();
             dispatcher.dispatch(nextEvent);
             // Clear
-            payloadEvents.clear();
+            outgoingEvents.clear();
         }
     }
 
