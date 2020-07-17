@@ -46,9 +46,6 @@ class LuaService extends Bolt implements
 
     @Override
     public void handleCoreTick(CoreTickEvent event) throws InterruptedException {
-        if (logger.isTraceEnabled()) {
-            logger.trace("Handle {}", event);
-        }
         LuaTable luaEvent = new LuaTable();
         luaEvent.set("id", EVENT_TICK_ID);
         luaEvent.set("tick_number", event.getNumber());

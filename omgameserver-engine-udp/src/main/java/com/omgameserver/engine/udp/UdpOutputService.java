@@ -91,9 +91,6 @@ class UdpOutputService extends Bolt implements
 
     @Override
     public void handleCoreTick(CoreTickEvent event) throws InterruptedException {
-        if (logger.isTraceEnabled()) {
-            logger.trace("Handle {}", event);
-        }
         long currentTimeMillis = System.currentTimeMillis();
         Iterator<Map.Entry<SocketAddress, UdpOutputClient>> iterator = clientBySocket.entrySet().iterator();
         while (iterator.hasNext()) {

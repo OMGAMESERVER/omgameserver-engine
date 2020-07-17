@@ -66,9 +66,6 @@ class UdpInputService extends Bolt implements
 
     @Override
     public void handleCoreTick(CoreTickEvent event) throws InterruptedException {
-        if (logger.isTraceEnabled()) {
-            logger.trace("Handle {}", event);
-        }
         long currentTimeMillis = System.currentTimeMillis();
         Iterator<Map.Entry<SocketAddress, UdpInputClient>> iterator = clientBySocket.entrySet().iterator();
         while (iterator.hasNext()) {
