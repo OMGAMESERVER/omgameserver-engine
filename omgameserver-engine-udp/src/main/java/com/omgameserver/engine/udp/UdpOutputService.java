@@ -9,6 +9,7 @@ import com.omgameserver.engine.udp.events.UdpIncomingHeaderEvent;
 import com.omgameserver.engine.udp.events.UdpOutgoingPayloadEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.net.SocketAddress;
@@ -20,6 +21,7 @@ import java.util.Map;
  * @author Kirill Byvshev (k@byv.sh)
  * @since 1.0.0
  */
+@Service
 class UdpOutputService extends Bolt implements
         UdpIncomingHeaderEvent.Handler,
         UdpOutgoingPayloadEvent.Handler,
