@@ -81,7 +81,7 @@ class LuaService extends Bolt implements
     }
 
     @Override
-    public void handleLuaIncoming(LuaIncomingValueEvent event) throws InterruptedException {
+    public void handleLuaIncomingValue(LuaIncomingValueEvent event) throws InterruptedException {
         if (logger.isTraceEnabled()) {
             logger.trace("Handle {}", event);
         }

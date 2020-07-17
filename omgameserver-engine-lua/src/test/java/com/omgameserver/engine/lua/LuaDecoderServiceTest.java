@@ -231,7 +231,7 @@ public class LuaDecoderServiceTest extends BaseServiceTest {
         }
 
         @Override
-        public void handleLuaIncoming(LuaIncomingValueEvent event) throws InterruptedException {
+        public void handleLuaIncomingValue(LuaIncomingValueEvent event) throws InterruptedException {
             luaIncomingValueEvents.put(event);
         }
 

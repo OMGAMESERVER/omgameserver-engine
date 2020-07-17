@@ -23,7 +23,7 @@ public final class LuaIncomingValueEvent extends Event<LuaIncomingValueEvent.Han
 
     @Override
     public void handle(Handler handler) throws InterruptedException {
-        handler.handleLuaIncoming(this);
+        handler.handleLuaIncomingValue(this);
     }
 
     public long getClientUid() {
@@ -40,6 +40,6 @@ public final class LuaIncomingValueEvent extends Event<LuaIncomingValueEvent.Han
     }
 
     public interface Handler {
-        void handleLuaIncoming(LuaIncomingValueEvent event) throws InterruptedException;
+        void handleLuaIncomingValue(LuaIncomingValueEvent event) throws InterruptedException;
     }
 }
