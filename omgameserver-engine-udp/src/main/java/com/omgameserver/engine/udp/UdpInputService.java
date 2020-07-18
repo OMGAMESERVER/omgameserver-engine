@@ -3,6 +3,7 @@ package com.omgameserver.engine.udp;
 import com.crionuke.bolts.Bolt;
 import com.omgameserver.engine.core.CoreDispatcher;
 import com.omgameserver.engine.core.CoreExecutors;
+import com.omgameserver.engine.core.CoreUidGenerator;
 import com.omgameserver.engine.core.events.CoreTickEvent;
 import com.omgameserver.engine.udp.events.UdpClientConnectedEvent;
 import com.omgameserver.engine.udp.events.UdpClientDisconnectedEvent;
@@ -30,14 +31,17 @@ class UdpInputService extends Bolt implements
 
     private final CoreExecutors executors;
     private final CoreDispatcher dispatcher;
+    private final CoreUidGenerator uidGenerator;
     private final UdpProperties properties;
     private final Map<SocketAddress, UdpInputClient> clientBySocket;
     private final Map<Long, UdpInputClient> clientByUid;
 
-    UdpInputService(CoreExecutors executors, CoreDispatcher dispatcher, UdpProperties properties) {
+    UdpInputService(CoreExecutors executors, CoreDispatcher dispatcher, CoreUidGenerator uidGenerator,
+                    UdpProperties properties) {
         super("input", properties.getQueueSize());
         this.executors = executors;
         this.dispatcher = dispatcher;
+        this.uidGenerator = uidGenerator;
         this.properties = properties;
         clientBySocket = new HashMap<>();
         clientByUid = new HashMap<>();
@@ -52,7 +56,7 @@ class UdpInputService extends Bolt implements
         ByteBuffer byteBuffer = event.getByteBuffer();
         UdpInputClient udpInputClient = clientBySocket.get(socketAddress);
         if (udpInputClient == null) {
-            udpInputClient = new UdpInputClient(properties, dispatcher, socketAddress);
+            udpInputClient = new UdpInputClient(dispatcher, uidGenerator, socketAddress, properties);
             long clientUid = udpInputClient.getClientUid();
             clientBySocket.put(socketAddress, udpInputClient);
             clientByUid.put(udpInputClient.getClientUid(), udpInputClient);

@@ -1,6 +1,7 @@
 package com.omgameserver.engine.udp;
 
 import com.omgameserver.engine.core.CoreDispatcher;
+import com.omgameserver.engine.core.CoreUidGenerator;
 import com.omgameserver.engine.udp.events.UdpIncomingHeaderEvent;
 import com.omgameserver.engine.udp.events.UdpIncomingPayloadEvent;
 import org.slf4j.Logger;
@@ -8,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author Kirill Byvshev (k@byv.sh)
@@ -16,7 +16,6 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 class UdpInputClient implements UdpHeaderConstants {
     static private final Logger logger = LoggerFactory.getLogger(UdpInputClient.class);
-    static private final AtomicLong uidCounter = new AtomicLong();
 
     private final UdpProperties properties;
     private final CoreDispatcher dispatcher;
@@ -24,12 +23,12 @@ class UdpInputClient implements UdpHeaderConstants {
     private final long clientUid;
     private long lastActivity;
 
-    UdpInputClient(UdpProperties properties, CoreDispatcher dispatcher, SocketAddress socketAddress) {
+    UdpInputClient(CoreDispatcher dispatcher, CoreUidGenerator coreUidGenerator, SocketAddress socketAddress, UdpProperties properties) {
         super();
         this.properties = properties;
         this.dispatcher = dispatcher;
         this.socketAddress = socketAddress;
-        clientUid = uidCounter.incrementAndGet();
+        clientUid = coreUidGenerator.getNext();
         lastActivity = System.currentTimeMillis();
     }
 
