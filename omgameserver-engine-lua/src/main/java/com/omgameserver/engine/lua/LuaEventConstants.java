@@ -1,10 +1,9 @@
 package com.omgameserver.engine.lua;
 
+/**
+ * @author Kirill Byvshev (k@byv.sh)
+ * @since 1.0.0
+ */
 interface LuaEventConstants {
-    String EVENT_TICK_ID = "tick";
-    String EVENT_CONNECTED_ID = "connected";
-    String EVENT_DISCONNECTED_ID = "disconnected";
-    String EVENT_RECEIVED_ID = "received";
-
-    String UDP_CLIENT_TYPE = "udp";
+    String TICK_EVENT_ID = "tick";
 }

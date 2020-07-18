@@ -3,6 +3,7 @@ package com.omgameserver.engine.udp;
 import com.omgameserver.engine.core.CoreDispatcher;
 import com.omgameserver.engine.core.CoreExecutors;
 import com.omgameserver.engine.core.CoreProperties;
+import com.omgameserver.engine.core.CoreUidGenerator;
 import com.omgameserver.engine.udp.events.UdpIncomingDatagramEvent;
 import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
@@ -35,6 +36,7 @@ class BaseServiceTest extends Assertions {
 
     protected CoreProperties coreProperties;
     protected CoreDispatcher coreDispatcher;
+    protected CoreUidGenerator coreUidGenerator;
     protected CoreExecutors coreExecutors;
     protected UdpProperties udpProperties;
 
@@ -42,6 +44,7 @@ class BaseServiceTest extends Assertions {
         coreProperties = new CoreProperties(CORE_INTERNAL_THREAD_POOL_SIZE, CORE_USER_THREAD_POOL_SIZE,
                 CORE_TICK_INTERVAL);
         coreDispatcher = new CoreDispatcher();
+        coreUidGenerator = new CoreUidGenerator();
         coreExecutors = new CoreExecutors(coreProperties);
         udpProperties = new UdpProperties(UDP_QUEUE_SIZE, UDP_HOST, UDP_PORT, UDP_DATAGRAM_SIZE,
                 UDP_DISCONNECT_INTERVAL, UDP_PING_INTERVAL);

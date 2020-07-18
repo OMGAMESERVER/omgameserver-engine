@@ -3,6 +3,10 @@ package com.omgameserver.engine.lua;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author Kirill Byvshev (k@byv.sh)
+ * @since 1.0.0
+ */
 @Component
 class LuaProperties {
 

@@ -36,7 +36,7 @@ class UdpInputServiceTestConstants extends BaseServiceTest implements UdpHeaderC
     @BeforeEach
     void beforeEach() throws IOException {
         createComponents();
-        inputService = new UdpInputService(coreExecutors, coreDispatcher, udpProperties);
+        inputService = new UdpInputService(coreExecutors, coreDispatcher, coreUidGenerator, udpProperties);
         inputService.postConstruct();
         consumerStub = new ConsumerStub();
         consumerStub.postConstruct();

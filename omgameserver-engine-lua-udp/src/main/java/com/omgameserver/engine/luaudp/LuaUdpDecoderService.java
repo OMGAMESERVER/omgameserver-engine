@@ -1,9 +1,9 @@
-package com.omgameserver.engine.lua;
+package com.omgameserver.engine.luaudp;
 
 import com.crionuke.bolts.Bolt;
 import com.omgameserver.engine.core.CoreDispatcher;
 import com.omgameserver.engine.core.CoreExecutors;
-import com.omgameserver.engine.lua.events.LuaIncomingValueEvent;
+import com.omgameserver.engine.luaudp.events.LuaUdpIncomingValueEvent;
 import com.omgameserver.engine.udp.events.UdpIncomingPayloadEvent;
 import org.luaj.vm2.*;
 import org.slf4j.Logger;
@@ -18,15 +18,15 @@ import java.nio.ByteBuffer;
  * @since 1.0.0
  */
 @Service
-class LuaMsgpackDecoderService extends Bolt implements
+class LuaUdpDecoderService extends Bolt implements
         UdpIncomingPayloadEvent.Handler {
-    static private final Logger logger = LoggerFactory.getLogger(LuaMsgpackDecoderService.class);
+    static private final Logger logger = LoggerFactory.getLogger(LuaUdpDecoderService.class);
 
     private final CoreExecutors executors;
     private final CoreDispatcher dispatcher;
 
-    LuaMsgpackDecoderService(CoreExecutors executors, CoreDispatcher dispatcher, LuaProperties properties) {
-        super("lua-msgpack-decoder", properties.getQueueSize());
+    LuaUdpDecoderService(CoreExecutors executors, CoreDispatcher dispatcher, LuaUdpProperties properties) {
+        super("lua-udp-decoder", properties.getQueueSize());
         this.executors = executors;
         this.dispatcher = dispatcher;
     }
@@ -49,7 +49,7 @@ class LuaMsgpackDecoderService extends Bolt implements
                 }
             }
             if (luaValue != null) {
-                dispatcher.dispatch(new LuaIncomingValueEvent(clientUid, luaValue));
+                dispatcher.dispatch(new LuaUdpIncomingValueEvent(clientUid, luaValue));
             }
         }
     }

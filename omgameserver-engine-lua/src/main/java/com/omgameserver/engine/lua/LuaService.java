@@ -1,13 +1,12 @@
 package com.omgameserver.engine.lua;
 
 import com.crionuke.bolts.Bolt;
+import com.crionuke.bolts.Event;
 import com.omgameserver.engine.core.CoreDispatcher;
 import com.omgameserver.engine.core.CoreExecutors;
 import com.omgameserver.engine.core.events.CoreTickEvent;
 import com.omgameserver.engine.lua.events.LuaCustomEvent;
-import com.omgameserver.engine.lua.events.LuaIncomingValueEvent;
-import com.omgameserver.engine.udp.events.UdpClientConnectedEvent;
-import com.omgameserver.engine.udp.events.UdpClientDisconnectedEvent;
+import com.omgameserver.engine.lua.events.LuaDirectEvent;
 import org.luaj.vm2.LuaTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,9 +23,7 @@ import java.util.Map;
 @Service
 class LuaService extends Bolt implements
         CoreTickEvent.Handler,
-        UdpClientConnectedEvent.Handler,
-        UdpClientDisconnectedEvent.Handler,
-        LuaIncomingValueEvent.Handler, LuaEventConstants {
+        LuaDirectEvent.Handler, LuaEventConstants {
     static private final Logger logger = LoggerFactory.getLogger(LuaService.class);
 
     private final CoreExecutors executors;
@@ -47,57 +44,28 @@ class LuaService extends Bolt implements
     @Override
     public void handleCoreTick(CoreTickEvent event) throws InterruptedException {
         LuaTable luaEvent = new LuaTable();
-        luaEvent.set("id", EVENT_TICK_ID);
+        luaEvent.set("id", TICK_EVENT_ID);
         luaEvent.set("tick_number", event.getNumber());
         luaEvent.set("delta_time", event.getDeltaTime());
-        dispatcher.dispatch(new LuaCustomEvent(EVENT_TICK_ID, luaEvent));
+        dispatcher.dispatch(new LuaCustomEvent(TICK_EVENT_ID, luaEvent));
     }
 
     @Override
-    public void handleUdpClientConnected(UdpClientConnectedEvent event) throws InterruptedException {
+    public void handleLuaDirectEvent(LuaDirectEvent event) throws InterruptedException {
         if (logger.isTraceEnabled()) {
             logger.trace("Handle {}", event);
         }
-        LuaTable luaEvent = new LuaTable();
-        luaEvent.set("id", EVENT_CONNECTED_ID);
-        luaEvent.set("client_uid", event.getClientUid());
-        luaEvent.set("client_type", UDP_CLIENT_TYPE);
-        dispatcher.dispatch(new LuaCustomEvent(EVENT_CONNECTED_ID, luaEvent));
-    }
-
-    @Override
-    public void handleUdpClientDisconnected(UdpClientDisconnectedEvent event) throws InterruptedException {
-        if (logger.isTraceEnabled()) {
-            logger.trace("Handle {}", event);
-        }
-        LuaTable luaEvent = new LuaTable();
-        luaEvent.set("id", EVENT_DISCONNECTED_ID);
-        luaEvent.set("client_uid", event.getClientUid());
-        luaEvent.set("client_type", UDP_CLIENT_TYPE);
-        dispatcher.dispatch(new LuaCustomEvent(EVENT_DISCONNECTED_ID, luaEvent));
-    }
-
-    @Override
-    public void handleLuaIncomingValue(LuaIncomingValueEvent event) throws InterruptedException {
-        if (logger.isTraceEnabled()) {
-            logger.trace("Handle {}", event);
-        }
-        long clientUid = event.getClientUid();
-        LuaTable luaEvent = new LuaTable();
-        luaEvent.set("id", EVENT_RECEIVED_ID);
-        luaEvent.set("client_uid", clientUid);
-        luaEvent.set("data", event.getLuaValue());
+        long uid = event.getUid();
+        Event eventToRoute = event.getEvent();
         // Routing event to worker
-        LuaWorker targetWorker = routes.getOrDefault(clientUid, defaultWorker);
-        dispatcher.dispatch(new LuaCustomEvent(EVENT_RECEIVED_ID, luaEvent), targetWorker);
+        LuaWorker targetWorker = routes.getOrDefault(uid, defaultWorker);
+        dispatcher.dispatch(eventToRoute, targetWorker);
     }
 
     @PostConstruct
     void postConstruct() {
         executors.executeInInternalPool(this);
         dispatcher.getDispatcher().subscribe(this, CoreTickEvent.class);
-        dispatcher.getDispatcher().subscribe(this, UdpClientConnectedEvent.class);
-        dispatcher.getDispatcher().subscribe(this, UdpClientDisconnectedEvent.class);
-        dispatcher.getDispatcher().subscribe(this, LuaIncomingValueEvent.class);
+        dispatcher.getDispatcher().subscribe(this, LuaDirectEvent.class);
     }
 }

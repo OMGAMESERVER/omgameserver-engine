@@ -1,9 +1,10 @@
-package com.omgameserver.engine.lua;
+package com.omgameserver.engine.luaudp;
 
 import com.crionuke.bolts.Bolt;
-import com.omgameserver.engine.lua.events.LuaIncomingValueEvent;
+import com.omgameserver.engine.luaudp.events.LuaUdpIncomingValueEvent;
 import com.omgameserver.engine.udp.events.UdpIncomingPayloadEvent;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.luaj.vm2.LuaValue;
@@ -11,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.SocketAddress;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -21,19 +21,19 @@ import java.util.concurrent.TimeUnit;
  * @author Kirill Byvshev (k@byv.sh)
  * @since 1.0.0
  */
-public class LuaMsgpackDecoderServiceTest extends BaseServiceTest {
-    static private final Logger logger = LoggerFactory.getLogger(LuaMsgpackDecoderServiceTest.class);
+public class LuaUdpDecoderServiceTest extends BaseServiceTest {
+    static private final Logger logger = LoggerFactory.getLogger(LuaUdpDecoderServiceTest.class);
 
-    private LuaMsgpackDecoderService decoderService;
-    private BlockingQueue<LuaIncomingValueEvent> luaIncomingValueEvents;
+    private LuaUdpDecoderService decoderService;
+    private BlockingQueue<LuaUdpIncomingValueEvent> luaUdpIncomingValueEvents;
     private ConsumerStub consumerStub;
 
     @BeforeEach
-    public void beforeEach() throws UnknownHostException {
-        createComponents("stub.lua");
-        decoderService = new LuaMsgpackDecoderService(coreExecutors, coreDispatcher, luaProperties);
+    public void beforeEach() {
+        createComponents();
+        decoderService = new LuaUdpDecoderService(coreExecutors, coreDispatcher, luaUdpProperties);
         decoderService.postConstruct();
-        luaIncomingValueEvents = new LinkedBlockingQueue<>(LUA_QUEUE_SIZE);
+        luaUdpIncomingValueEvents = new LinkedBlockingQueue<>(LUA_UDP_QUEUE_SIZE);
         consumerStub = new ConsumerStub();
         consumerStub.postConstruct();
     }
@@ -54,28 +54,28 @@ public class LuaMsgpackDecoderServiceTest extends BaseServiceTest {
         SocketAddress socketAddress = generateSocketAddress();
         long clientUid = generateClientUid();
         coreDispatcher.dispatch(createIncomingPayloadEvent(socketAddress, clientUid, bytes));
-        LuaIncomingValueEvent luaIncomingValueEvent =
-                luaIncomingValueEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        LuaUdpIncomingValueEvent luaUdpIncomingValueEvent =
+                luaUdpIncomingValueEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         // Asserts
-        assertNotNull(luaIncomingValueEvent);
-        assertTrue(luaIncomingValueEvent.getClientUid() == clientUid);
-        LuaValue luaValue = luaIncomingValueEvent.getLuaValue();
-        assertNotNull(luaValue.get("positive_fixint"));
-        assertTrue(luaValue.get("positive_fixint").checkint() == 64);
-        assertNotNull(luaValue.get("unit8"));
-        assertTrue(luaValue.get("unit8").checkint() == 160);
-        assertNotNull(luaValue.get("unit16"));
-        assertTrue(luaValue.get("unit16").checkint() == 1024);
-        assertNotNull(luaValue.get("uint32"));
-        assertTrue(luaValue.get("uint32").checkint() == 1048575);
-        assertNotNull(luaValue.get("negative_fixint"));
-        assertTrue(luaValue.get("negative_fixint").checkint() == -16);
-        assertNotNull(luaValue.get("int8"));
-        assertTrue(luaValue.get("int8").checkint() == -64);
-        assertNotNull(luaValue.get("int16"));
-        assertTrue(luaValue.get("int16").checkint() == -4095);
-        assertNotNull(luaValue.get("int32"));
-        assertTrue(luaValue.get("int32").checkint() == -268435455);
+        Assertions.assertNotNull(luaUdpIncomingValueEvent);
+        Assertions.assertTrue(luaUdpIncomingValueEvent.getClientUid() == clientUid);
+        LuaValue luaValue = luaUdpIncomingValueEvent.getLuaValue();
+        Assertions.assertNotNull(luaValue.get("positive_fixint"));
+        Assertions.assertTrue(luaValue.get("positive_fixint").checkint() == 64);
+        Assertions.assertNotNull(luaValue.get("unit8"));
+        Assertions.assertTrue(luaValue.get("unit8").checkint() == 160);
+        Assertions.assertNotNull(luaValue.get("unit16"));
+        Assertions.assertTrue(luaValue.get("unit16").checkint() == 1024);
+        Assertions.assertNotNull(luaValue.get("uint32"));
+        Assertions.assertTrue(luaValue.get("uint32").checkint() == 1048575);
+        Assertions.assertNotNull(luaValue.get("negative_fixint"));
+        Assertions.assertTrue(luaValue.get("negative_fixint").checkint() == -16);
+        Assertions.assertNotNull(luaValue.get("int8"));
+        Assertions.assertTrue(luaValue.get("int8").checkint() == -64);
+        Assertions.assertNotNull(luaValue.get("int16"));
+        Assertions.assertTrue(luaValue.get("int16").checkint() == -4095);
+        Assertions.assertNotNull(luaValue.get("int32"));
+        Assertions.assertTrue(luaValue.get("int32").checkint() == -268435455);
     }
 
     @Test
@@ -85,18 +85,18 @@ public class LuaMsgpackDecoderServiceTest extends BaseServiceTest {
         SocketAddress socketAddress = generateSocketAddress();
         long clientUid = generateClientUid();
         coreDispatcher.dispatch(createIncomingPayloadEvent(socketAddress, clientUid, bytes));
-        LuaIncomingValueEvent luaIncomingValueEvent =
-                luaIncomingValueEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        LuaUdpIncomingValueEvent luaUdpIncomingValueEvent =
+                luaUdpIncomingValueEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         // Asserts
-        assertNotNull(luaIncomingValueEvent);
-        assertTrue(luaIncomingValueEvent.getClientUid() == clientUid);
-        LuaValue luaValue = luaIncomingValueEvent.getLuaValue();
-        assertNotNull(luaValue.get("uint64"));
+        Assertions.assertNotNull(luaUdpIncomingValueEvent);
+        Assertions.assertTrue(luaUdpIncomingValueEvent.getClientUid() == clientUid);
+        LuaValue luaValue = luaUdpIncomingValueEvent.getLuaValue();
+        Assertions.assertNotNull(luaValue.get("uint64"));
         // uint64 not supported, in client and server replaced by double
-        assertTrue(Math.round(luaValue.get("uint64").checkdouble()) == 12345678901L);
-        assertNotNull(luaValue.get("int64"));
+        Assertions.assertTrue(Math.round(luaValue.get("uint64").checkdouble()) == 12345678901L);
+        Assertions.assertNotNull(luaValue.get("int64"));
         // int64 not supported, in client and server replaced by double
-        assertTrue(Math.round(luaValue.get("int64").checkdouble()) == 98765432109L);
+        Assertions.assertTrue(Math.round(luaValue.get("int64").checkdouble()) == 98765432109L);
     }
 
     @Test
@@ -105,16 +105,16 @@ public class LuaMsgpackDecoderServiceTest extends BaseServiceTest {
         SocketAddress socketAddress = generateSocketAddress();
         long clientUid = generateClientUid();
         coreDispatcher.dispatch(createIncomingPayloadEvent(socketAddress, clientUid, bytes));
-        LuaIncomingValueEvent luaIncomingValueEvent =
-                luaIncomingValueEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        LuaUdpIncomingValueEvent luaUdpIncomingValueEvent =
+                luaUdpIncomingValueEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         // Asserts
-        assertNotNull(luaIncomingValueEvent);
-        assertTrue(luaIncomingValueEvent.getClientUid() == clientUid);
-        LuaValue luaValue = luaIncomingValueEvent.getLuaValue();
-        assertNotNull(luaValue.get("true"));
-        assertTrue(luaValue.get("true").checkboolean());
-        assertNotNull(luaValue.get("false"));
-        assertTrue(!luaValue.get("false").checkboolean());
+        Assertions.assertNotNull(luaUdpIncomingValueEvent);
+        Assertions.assertTrue(luaUdpIncomingValueEvent.getClientUid() == clientUid);
+        LuaValue luaValue = luaUdpIncomingValueEvent.getLuaValue();
+        Assertions.assertNotNull(luaValue.get("true"));
+        Assertions.assertTrue(luaValue.get("true").checkboolean());
+        Assertions.assertNotNull(luaValue.get("false"));
+        Assertions.assertTrue(!luaValue.get("false").checkboolean());
     }
 
     @Test
@@ -139,23 +139,23 @@ public class LuaMsgpackDecoderServiceTest extends BaseServiceTest {
         SocketAddress socketAddress = generateSocketAddress();
         long clientUid = generateClientUid();
         coreDispatcher.dispatch(createIncomingPayloadEvent(socketAddress, clientUid, bytes));
-        LuaIncomingValueEvent luaIncomingValueEvent =
-                luaIncomingValueEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        LuaUdpIncomingValueEvent luaUdpIncomingValueEvent =
+                luaUdpIncomingValueEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         // Asserts
-        assertNotNull(luaIncomingValueEvent);
-        assertTrue(luaIncomingValueEvent.getClientUid() == clientUid);
-        LuaValue luaValue = luaIncomingValueEvent.getLuaValue();
-        assertNotNull(luaValue.get("fixstr"));
-        assertTrue(luaValue.get("fixstr").checkjstring().equals("Fixstr"));
-        assertNotNull(luaValue.get("str8"));
-        assertTrue(luaValue.get("str8").checkjstring().equals("Str8str8str8str8str8str8str8str8str8str8"));
-        assertNotNull(luaValue.get("str16"));
-        assertTrue(luaValue.get("str16").checkjstring().equals("Str16str16str16str16str16str16str16str16str16str16str" +
+        Assertions.assertNotNull(luaUdpIncomingValueEvent);
+        Assertions.assertTrue(luaUdpIncomingValueEvent.getClientUid() == clientUid);
+        LuaValue luaValue = luaUdpIncomingValueEvent.getLuaValue();
+        Assertions.assertNotNull(luaValue.get("fixstr"));
+        Assertions.assertTrue(luaValue.get("fixstr").checkjstring().equals("Fixstr"));
+        Assertions.assertNotNull(luaValue.get("str8"));
+        Assertions.assertTrue(luaValue.get("str8").checkjstring().equals("Str8str8str8str8str8str8str8str8str8str8"));
+        Assertions.assertNotNull(luaValue.get("str16"));
+        Assertions.assertTrue(luaValue.get("str16").checkjstring().equals("Str16str16str16str16str16str16str16str16str16str16str" +
                 "16str16str16str16str16str16str16str16str16str16str16str16str16str16str16str16str16str16str16str16str" +
                 "16str16str16str16str16str16str16str16str16str16str16str16str16str16str16str16str16str16str16str16str" +
                 "16str16str16"));
-        assertNotNull(luaValue.get("ключ"));
-        assertTrue(luaValue.get("ключ").checkjstring().equals("значение"));
+        Assertions.assertNotNull(luaValue.get("ключ"));
+        Assertions.assertTrue(luaValue.get("ключ").checkjstring().equals("значение"));
     }
 
     @Test
@@ -166,21 +166,21 @@ public class LuaMsgpackDecoderServiceTest extends BaseServiceTest {
         SocketAddress socketAddress = generateSocketAddress();
         long clientUid = generateClientUid();
         coreDispatcher.dispatch(createIncomingPayloadEvent(socketAddress, clientUid, bytes));
-        LuaIncomingValueEvent luaIncomingValueEvent =
-                luaIncomingValueEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        LuaUdpIncomingValueEvent luaUdpIncomingValueEvent =
+                luaUdpIncomingValueEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         // Asserts
-        assertNotNull(luaIncomingValueEvent);
-        assertTrue(luaIncomingValueEvent.getClientUid() == clientUid);
-        LuaValue luaValue = luaIncomingValueEvent.getLuaValue();
+        Assertions.assertNotNull(luaUdpIncomingValueEvent);
+        Assertions.assertTrue(luaUdpIncomingValueEvent.getClientUid() == clientUid);
+        LuaValue luaValue = luaUdpIncomingValueEvent.getLuaValue();
         LuaValue fixArray = luaValue.get("fixarray");
-        assertNotNull(fixArray);
+        Assertions.assertNotNull(fixArray);
         for (int i = 1; i <= 9; i++) {
-            assertTrue(fixArray.get(i).checkint() == i);
+            Assertions.assertTrue(fixArray.get(i).checkint() == i);
         }
         LuaValue array16 = luaValue.get("array16");
-        assertNotNull(array16);
+        Assertions.assertNotNull(array16);
         for (int i = 1; i <= 32; i++) {
-            assertTrue(array16.get(i).checkint() == i);
+            Assertions.assertTrue(array16.get(i).checkint() == i);
         }
     }
 
@@ -195,27 +195,27 @@ public class LuaMsgpackDecoderServiceTest extends BaseServiceTest {
         SocketAddress socketAddress = generateSocketAddress();
         long clientUid = generateClientUid();
         coreDispatcher.dispatch(createIncomingPayloadEvent(socketAddress, clientUid, bytes));
-        LuaIncomingValueEvent luaIncomingValueEvent =
-                luaIncomingValueEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        LuaUdpIncomingValueEvent luaUdpIncomingValueEvent =
+                luaUdpIncomingValueEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         // Asserts
-        assertNotNull(luaIncomingValueEvent);
-        assertTrue(luaIncomingValueEvent.getClientUid() == clientUid);
-        LuaValue luaValue = luaIncomingValueEvent.getLuaValue();
+        Assertions.assertNotNull(luaUdpIncomingValueEvent);
+        Assertions.assertTrue(luaUdpIncomingValueEvent.getClientUid() == clientUid);
+        LuaValue luaValue = luaUdpIncomingValueEvent.getLuaValue();
         LuaValue fixMap = luaValue.get("fixmap");
-        assertNotNull(fixMap);
+        Assertions.assertNotNull(fixMap);
         for (int i = 1; i <= 8; i *= 2) {
-            assertTrue(fixMap.get(String.valueOf(i)).checkint() == i);
+            Assertions.assertTrue(fixMap.get(String.valueOf(i)).checkint() == i);
         }
         LuaValue map16 = luaValue.get("map16");
-        assertNotNull(map16);
+        Assertions.assertNotNull(map16);
         for (int i = 1; i <= 65536 + 1; i *= 2) {
-            assertTrue(map16.get(String.valueOf(i)).checkint() == i);
+            Assertions.assertTrue(map16.get(String.valueOf(i)).checkint() == i);
         }
     }
 
     private UdpIncomingPayloadEvent createIncomingPayloadEvent(SocketAddress socketAddress, long clientUid,
                                                                int[] bytes) {
-        ByteBuffer payload = ByteBuffer.allocate(luaProperties.getPayloadSize());
+        ByteBuffer payload = ByteBuffer.allocate(luaUdpProperties.getPayloadSize());
         for (int i = 0; i < bytes.length; i++) {
             payload.put((byte) (bytes[i] & 0xFF));
         }
@@ -224,20 +224,20 @@ public class LuaMsgpackDecoderServiceTest extends BaseServiceTest {
     }
 
     private class ConsumerStub extends Bolt implements
-            LuaIncomingValueEvent.Handler {
+            LuaUdpIncomingValueEvent.Handler {
 
         ConsumerStub() {
-            super("consumer-stub", LUA_QUEUE_SIZE);
+            super("consumer-stub", LUA_UDP_QUEUE_SIZE);
         }
 
         @Override
-        public void handleLuaIncomingValue(LuaIncomingValueEvent event) throws InterruptedException {
-            luaIncomingValueEvents.put(event);
+        public void handleLuaUdpIncomingValue(LuaUdpIncomingValueEvent event) throws InterruptedException {
+            luaUdpIncomingValueEvents.put(event);
         }
 
         void postConstruct() {
             coreExecutors.executeInInternalPool(this);
-            coreDispatcher.getDispatcher().subscribe(this, LuaIncomingValueEvent.class);
+            coreDispatcher.getDispatcher().subscribe(this, LuaUdpIncomingValueEvent.class);
         }
     }
 }

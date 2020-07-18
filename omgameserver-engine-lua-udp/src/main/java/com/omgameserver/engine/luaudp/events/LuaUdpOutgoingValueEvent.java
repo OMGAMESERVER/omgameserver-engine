@@ -1,4 +1,4 @@
-package com.omgameserver.engine.lua.events;
+package com.omgameserver.engine.luaudp.events;
 
 import com.crionuke.bolts.Event;
 import org.luaj.vm2.LuaValue;
@@ -7,23 +7,25 @@ import org.luaj.vm2.LuaValue;
  * @author Kirill Byvshev (k@byv.sh)
  * @since 1.0.0
  */
-public final class LuaIncomingValueEvent extends Event<LuaIncomingValueEvent.Handler> {
+public final class LuaUdpOutgoingValueEvent extends Event<LuaUdpOutgoingValueEvent.Handler> {
 
     private final long clientUid;
     private final LuaValue luaValue;
+    private final boolean reliable;
 
-    public LuaIncomingValueEvent(long clientUid, LuaValue luaValue) {
+    public LuaUdpOutgoingValueEvent(long clientUid, LuaValue luaValue, boolean reliable) {
         super();
         if (luaValue == null) {
             throw new NullPointerException("luaValue is null");
         }
         this.clientUid = clientUid;
         this.luaValue = luaValue;
+        this.reliable = reliable;
     }
 
     @Override
     public void handle(Handler handler) throws InterruptedException {
-        handler.handleLuaIncomingValue(this);
+        handler.handleLuaUdpOutgoingValue(this);
     }
 
     public long getClientUid() {
@@ -34,12 +36,17 @@ public final class LuaIncomingValueEvent extends Event<LuaIncomingValueEvent.Han
         return luaValue;
     }
 
+    public boolean isReliable() {
+        return reliable;
+    }
+
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(clientUid=" + clientUid + ", luaValue=" + luaValue + ")";
+        return getClass().getSimpleName() + "(clientUid=" + clientUid + ", luaValue=" + luaValue +
+                ", reliable=" + reliable + ")";
     }
 
     public interface Handler {
-        void handleLuaIncomingValue(LuaIncomingValueEvent event) throws InterruptedException;
+        void handleLuaUdpOutgoingValue(LuaUdpOutgoingValueEvent event) throws InterruptedException;
     }
 }

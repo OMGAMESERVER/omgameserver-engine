@@ -8,7 +8,6 @@ import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.event.EventConstants;
 
 /**
  * @author Kirill Byvshev (k@byv.sh)
@@ -35,7 +34,7 @@ class LuaWorker extends Bolt implements LuaCustomEvent.Handler {
     @Override
     public void handleLuaCustomEvent(LuaCustomEvent event) {
         if (logger.isTraceEnabled()) {
-            if (event.getId() != LuaEventConstants.EVENT_TICK_ID) {
+            if (event.getId() != LuaEventConstants.TICK_EVENT_ID) {
                 logger.trace("Handle {}", event);
             }
         }

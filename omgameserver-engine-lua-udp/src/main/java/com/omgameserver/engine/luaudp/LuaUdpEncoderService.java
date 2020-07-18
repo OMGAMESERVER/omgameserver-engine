@@ -1,9 +1,9 @@
-package com.omgameserver.engine.lua;
+package com.omgameserver.engine.luaudp;
 
 import com.crionuke.bolts.Bolt;
 import com.omgameserver.engine.core.CoreDispatcher;
 import com.omgameserver.engine.core.CoreExecutors;
-import com.omgameserver.engine.lua.events.LuaOutgoingValueEvent;
+import com.omgameserver.engine.luaudp.events.LuaUdpOutgoingValueEvent;
 import com.omgameserver.engine.udp.events.UdpOutgoingPayloadEvent;
 import org.luaj.vm2.LuaString;
 import org.luaj.vm2.LuaTable;
@@ -21,9 +21,9 @@ import java.nio.ByteBuffer;
  * @since 1.0.0
  */
 @Service
-class LuaMsgpackEncoderService extends Bolt implements
-        LuaOutgoingValueEvent.Handler {
-    static private final Logger logger = LoggerFactory.getLogger(LuaMsgpackEncoderService.class);
+class LuaUdpEncoderService extends Bolt implements
+        LuaUdpOutgoingValueEvent.Handler {
+    static private final Logger logger = LoggerFactory.getLogger(LuaUdpEncoderService.class);
 
     // Use & 0xFF for unsigned byte in int datatype
     private final int MSG_PACK_TRUE = 0xc3 & 0xFF;
@@ -48,17 +48,17 @@ class LuaMsgpackEncoderService extends Bolt implements
 
     private final CoreExecutors executors;
     private final CoreDispatcher dispatcher;
-    private final LuaProperties properties;
+    private final LuaUdpProperties properties;
 
-    LuaMsgpackEncoderService(CoreExecutors executors, CoreDispatcher dispatcher, LuaProperties properties) {
-        super("lua-msgpack-encoder", properties.getQueueSize());
+    LuaUdpEncoderService(CoreExecutors executors, CoreDispatcher dispatcher, LuaUdpProperties properties) {
+        super("lua-udp-encoder", properties.getQueueSize());
         this.executors = executors;
         this.dispatcher = dispatcher;
         this.properties = properties;
     }
 
     @Override
-    public void handleLuaOutgoingValue(LuaOutgoingValueEvent event) throws InterruptedException {
+    public void handleLuaUdpOutgoingValue(LuaUdpOutgoingValueEvent event) throws InterruptedException {
         if (logger.isTraceEnabled()) {
             logger.trace("Handle {}", event);
         }
@@ -85,7 +85,7 @@ class LuaMsgpackEncoderService extends Bolt implements
     @PostConstruct
     void postConstruct() {
         executors.executeInInternalPool(this);
-        dispatcher.getDispatcher().subscribe(this, LuaOutgoingValueEvent.class);
+        dispatcher.getDispatcher().subscribe(this, LuaUdpOutgoingValueEvent.class);
     }
 
     private ByteBuffer encode(ByteBuffer rawData, LuaValue luaValue) {

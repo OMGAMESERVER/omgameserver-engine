@@ -23,6 +23,7 @@
         <module>omgameserver-engine-core</module>
         <module>omgameserver-engine-udp</module>
         <module>omgameserver-engine-lua</module>
+        <module>omgameserver-engine-lua-udp</module>
     </modules>
 
     <properties>
