@@ -18,12 +18,12 @@
         <dependency>
             <groupId>com.omgameserver.engine</groupId>
             <artifactId>omgameserver-engine-core</artifactId>
-            <version>1.0.0</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>com.omgameserver.engine</groupId>
             <artifactId>omgameserver-engine-udp</artifactId>
-            <version>1.0.0</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>org.luaj</groupId>
