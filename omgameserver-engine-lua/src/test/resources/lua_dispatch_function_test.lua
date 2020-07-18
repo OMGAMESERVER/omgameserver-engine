@@ -1,4 +1,4 @@
-engine.dispatch("custom_event", {
+engine.dispatch("custom_topic", "custom_event", {
     id = "custom_event",
     data = "helloworld"
 })

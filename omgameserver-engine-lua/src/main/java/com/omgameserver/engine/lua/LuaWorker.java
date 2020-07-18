@@ -9,6 +9,9 @@ import org.luaj.vm2.LuaValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.omgameserver.engine.lua.LuaEvents.TICK_EVENT_ID;
+import static com.omgameserver.engine.lua.LuaTopics.WORKERS_TOPIC;
+
 /**
  * @author Kirill Byvshev (k@byv.sh)
  * @since 1.0.0
@@ -34,18 +37,18 @@ class LuaWorker extends Bolt implements LuaCustomEvent.Handler {
     @Override
     public void handleLuaCustomEvent(LuaCustomEvent event) {
         if (logger.isTraceEnabled()) {
-            if (event.getId() != LuaEventConstants.TICK_EVENT_ID) {
+            if (event.getEventId() != TICK_EVENT_ID) {
                 logger.trace("Handle {}", event);
             }
         }
-        String eventId = event.getId();
-        LuaValue luaEvent = event.getEvent();
+        String eventId = event.getEventId();
+        LuaValue luaEvent = event.getLuaEvent();
         luaEngine.dispatch(eventId, luaEvent);
     }
 
     void postConstruct() {
         executors.executeInUserPool(this);
-        dispatcher.getDispatcher().subscribe(this, LuaCustomEvent.class);
+        dispatcher.getDispatcher().subscribe(this, WORKERS_TOPIC);
         // Subscribe to all events dispatched directly to this bolt
         dispatcher.getDispatcher().subscribe(this);
     }

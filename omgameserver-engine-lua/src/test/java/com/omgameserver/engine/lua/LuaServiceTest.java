@@ -14,7 +14,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-class LuaServiceTest extends LuaBaseTest implements LuaEventConstants {
+class LuaServiceTest extends LuaBaseTest implements LuaEvents {
     static private final Logger logger = LoggerFactory.getLogger(LuaServiceTest.class);
 
     private LuaService luaService;

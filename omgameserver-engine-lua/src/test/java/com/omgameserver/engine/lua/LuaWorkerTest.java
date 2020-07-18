@@ -51,7 +51,7 @@ class LuaWorkerTest extends LuaBaseTest {
         LuaValue luaEvent = new LuaTable();
         luaEvent.set("id", eventId);
         luaEvent.set("data", eventData);
-        coreDispatcher.dispatch(new LuaCustomEvent(eventId, luaEvent));
+        coreDispatcher.dispatch(new LuaCustomEvent(eventId, luaEvent), LuaTopics.WORKERS_TOPIC);
         LuaCustomEventReceivedEvent luaCustomEventReceivedEvent = luaCustomEventReceivedEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         luaWorker.finish();
         assertNotNull(luaCustomEventReceivedEvent);
@@ -65,8 +65,8 @@ class LuaWorkerTest extends LuaBaseTest {
                 "lua_dispatch_function_test.lua");
         LuaCustomEvent luaCustomEvent = luaCustomEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         assertNotNull(luaCustomEvent);
-        assertEquals("custom_event", luaCustomEvent.getId());
-        LuaValue luaEvent = luaCustomEvent.getEvent();
+        assertEquals("custom_event", luaCustomEvent.getEventId());
+        LuaValue luaEvent = luaCustomEvent.getLuaEvent();
         assertEquals("custom_event", luaEvent.get("id").tojstring());
         assertEquals("helloworld", luaEvent.get("data").tojstring());
     }
@@ -92,7 +92,7 @@ class LuaWorkerTest extends LuaBaseTest {
         void postConstruct() {
             coreExecutors.executeInInternalPool(this);
             coreDispatcher.getDispatcher().subscribe(this, LuaCustomEventReceivedEvent.class);
-            coreDispatcher.getDispatcher().subscribe(this, LuaCustomEvent.class);
+            coreDispatcher.getDispatcher().subscribe(this, "custom_topic");
         }
     }
 }

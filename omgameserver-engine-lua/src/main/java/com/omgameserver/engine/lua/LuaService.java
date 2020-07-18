@@ -16,6 +16,9 @@ import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.omgameserver.engine.lua.LuaEvents.TICK_EVENT_ID;
+import static com.omgameserver.engine.lua.LuaTopics.WORKERS_TOPIC;
+
 /**
  * @author Kirill Byvshev (k@byv.sh)
  * @since 1.0.0
@@ -23,7 +26,7 @@ import java.util.Map;
 @Service
 class LuaService extends Bolt implements
         CoreTickEvent.Handler,
-        LuaDirectEvent.Handler, LuaEventConstants {
+        LuaDirectEvent.Handler {
     static private final Logger logger = LoggerFactory.getLogger(LuaService.class);
 
     private final CoreExecutors executors;
@@ -47,7 +50,7 @@ class LuaService extends Bolt implements
         luaEvent.set("id", TICK_EVENT_ID);
         luaEvent.set("tick_number", event.getNumber());
         luaEvent.set("delta_time", event.getDeltaTime());
-        dispatcher.dispatch(new LuaCustomEvent(TICK_EVENT_ID, luaEvent));
+        dispatcher.dispatch(new LuaCustomEvent(TICK_EVENT_ID, luaEvent), WORKERS_TOPIC);
     }
 
     @Override
