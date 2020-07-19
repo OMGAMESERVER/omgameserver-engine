@@ -9,7 +9,7 @@ import org.luaj.vm2.LuaValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.omgameserver.engine.lua.LuaEvents.TICK_EVENT_ID;
+import static com.omgameserver.engine.lua.LuaEvents.CORE_TICK_EVENT_ID;
 import static com.omgameserver.engine.lua.LuaTopics.WORKERS_TOPIC;
 
 /**
@@ -37,7 +37,7 @@ class LuaWorker extends Bolt implements LuaCustomEvent.Handler {
     @Override
     public void handleLuaCustomEvent(LuaCustomEvent event) {
         if (logger.isTraceEnabled()) {
-            if (event.getEventId() != TICK_EVENT_ID) {
+            if (event.getEventId() != CORE_TICK_EVENT_ID) {
                 logger.trace("Handle {}", event);
             }
         }

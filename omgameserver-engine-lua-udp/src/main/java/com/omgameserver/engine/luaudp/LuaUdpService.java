@@ -86,7 +86,7 @@ class LuaUdpService extends Bolt implements
         }
         String eventId = event.getEventId();
         switch (eventId) {
-            case LUA_UDP_SEND_EVENT_ID:
+            case LUA_UDP_SEND_DATA_EVENT_ID:
                 if (!handleUdpSendEvent(event) && logger.isWarnEnabled()) {
                     logger.warn("Hanling of {} failed, check passed arguments", eventId);
                 }

@@ -7,7 +7,7 @@ import com.omgameserver.engine.luaudp.events.LuaUdpIncomingValueEvent;
 import com.omgameserver.engine.msgpack.MsgpackDecoder;
 import com.omgameserver.engine.msgpack.MsgpackException;
 import com.omgameserver.engine.udp.events.UdpIncomingPayloadEvent;
-import org.luaj.vm2.*;
+import org.luaj.vm2.LuaValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

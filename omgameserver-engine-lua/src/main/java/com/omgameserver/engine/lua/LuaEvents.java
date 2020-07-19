@@ -5,5 +5,5 @@ package com.omgameserver.engine.lua;
  * @since 1.0.0
  */
 interface LuaEvents {
-    String TICK_EVENT_ID = "tick";
+    String CORE_TICK_EVENT_ID = "core_tick";
 }

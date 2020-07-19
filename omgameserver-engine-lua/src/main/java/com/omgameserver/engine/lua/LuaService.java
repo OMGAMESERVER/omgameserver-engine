@@ -16,7 +16,7 @@ import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.omgameserver.engine.lua.LuaEvents.TICK_EVENT_ID;
+import static com.omgameserver.engine.lua.LuaEvents.CORE_TICK_EVENT_ID;
 import static com.omgameserver.engine.lua.LuaTopics.WORKERS_TOPIC;
 
 /**
@@ -47,10 +47,10 @@ class LuaService extends Bolt implements
     @Override
     public void handleCoreTick(CoreTickEvent event) throws InterruptedException {
         LuaTable luaEvent = new LuaTable();
-        luaEvent.set("id", TICK_EVENT_ID);
+        luaEvent.set("id", CORE_TICK_EVENT_ID);
         luaEvent.set("tick_number", event.getNumber());
         luaEvent.set("delta_time", event.getDeltaTime());
-        dispatcher.dispatch(new LuaCustomEvent(TICK_EVENT_ID, luaEvent), WORKERS_TOPIC);
+        dispatcher.dispatch(new LuaCustomEvent(CORE_TICK_EVENT_ID, luaEvent), WORKERS_TOPIC);
     }
 
     @Override
