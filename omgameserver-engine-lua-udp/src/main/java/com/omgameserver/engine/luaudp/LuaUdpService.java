@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 
-import static com.omgameserver.engine.luaudp.LuaUdpConstants.*;
+import static com.omgameserver.engine.luaudp.LuaUdpEvents.*;
 import static com.omgameserver.engine.luaudp.LuaUdpTopics.LUA_UDP_TOPIC;
 
 /**

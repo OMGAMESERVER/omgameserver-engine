@@ -22,8 +22,8 @@ import java.util.concurrent.TimeUnit;
  * @author Kirill Byvshev (k@byv.sh)
  * @since 1.0.0
  */
-class UdpInputServiceTestConstants extends BaseServiceTest implements UdpHeaderConstants {
-    static private final Logger logger = LoggerFactory.getLogger(UdpInputServiceTestConstants.class);
+class UdpInputServiceTest extends BaseServiceTest implements UdpHeaderConstants {
+    static private final Logger logger = LoggerFactory.getLogger(UdpInputServiceTest.class);
 
     private UdpInputService inputService;
     private ConsumerStub consumerStub;
