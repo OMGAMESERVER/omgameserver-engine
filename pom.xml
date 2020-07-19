@@ -24,6 +24,7 @@
         <module>omgameserver-engine-udp</module>
         <module>omgameserver-engine-lua</module>
         <module>omgameserver-engine-lua-udp</module>
+        <module>omgameserver-engine-msgpack</module>
     </modules>
 
     <properties>

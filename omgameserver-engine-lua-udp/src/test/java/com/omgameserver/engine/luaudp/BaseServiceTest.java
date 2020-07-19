@@ -3,6 +3,7 @@ package com.omgameserver.engine.luaudp;
 import com.omgameserver.engine.core.CoreDispatcher;
 import com.omgameserver.engine.core.CoreExecutors;
 import com.omgameserver.engine.core.CoreProperties;
+import com.omgameserver.engine.msgpack.MsgpackDecoder;
 import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,7 @@ class BaseServiceTest extends Assertions {
     protected CoreProperties coreProperties;
     protected CoreDispatcher coreDispatcher;
     protected CoreExecutors coreExecutors;
+    protected MsgpackDecoder msgpackDecoder;
     protected LuaUdpProperties luaUdpProperties;
 
     protected void createComponents() {
@@ -36,6 +38,7 @@ class BaseServiceTest extends Assertions {
                 CORE_TICK_INTERVAL);
         coreDispatcher = new CoreDispatcher();
         coreExecutors = new CoreExecutors(coreProperties);
+        msgpackDecoder = new MsgpackDecoder();
         luaUdpProperties = new LuaUdpProperties(LUA_UDP_QUEUE_SIZE, LUA_UDP_PAYLOAD_SIZE);
     }
 
