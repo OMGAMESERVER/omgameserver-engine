@@ -1,4 +1,4 @@
-package com.omgameserver.engine.luaudp;
+package com.omgameserver.engine.lua.udp;
 
 /**
  * @author Kirill Byvshev (k@byv.sh)

@@ -1,12 +1,12 @@
-package com.omgameserver.engine.luaudp;
+package com.omgameserver.engine.lua.udp;
 
 import com.crionuke.bolts.Bolt;
 import com.omgameserver.engine.core.CoreDispatcher;
 import com.omgameserver.engine.core.CoreExecutors;
 import com.omgameserver.engine.lua.runtime.events.LuaCustomEvent;
 import com.omgameserver.engine.lua.runtime.events.LuaDirectEvent;
-import com.omgameserver.engine.luaudp.events.LuaUdpIncomingValueEvent;
-import com.omgameserver.engine.luaudp.events.LuaUdpOutgoingValueEvent;
+import com.omgameserver.engine.lua.udp.events.LuaUdpOutgoingValueEvent;
+import com.omgameserver.engine.lua.udp.events.LuaUdpIncomingValueEvent;
 import com.omgameserver.engine.udp.events.UdpClientConnectedEvent;
 import com.omgameserver.engine.udp.events.UdpClientDisconnectedEvent;
 import org.luaj.vm2.LuaError;
@@ -17,9 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-
-import static com.omgameserver.engine.luaudp.LuaUdpEvents.*;
-import static com.omgameserver.engine.luaudp.LuaUdpTopics.LUA_UDP_TOPIC;
 
 /**
  * @author Kirill Byvshev (k@byv.sh)
@@ -48,9 +45,9 @@ class LuaUdpService extends Bolt implements
             logger.trace("Handle {}", event);
         }
         LuaTable luaEvent = new LuaTable();
-        luaEvent.set("id", LUA_UDP_CLIENT_CONNECTED_EVENT_ID);
+        luaEvent.set("id", LuaUdpEvents.LUA_UDP_CLIENT_CONNECTED_EVENT_ID);
         luaEvent.set("client_uid", event.getClientUid());
-        dispatcher.dispatch(new LuaCustomEvent(LUA_UDP_CLIENT_CONNECTED_EVENT_ID, luaEvent));
+        dispatcher.dispatch(new LuaCustomEvent(LuaUdpEvents.LUA_UDP_CLIENT_CONNECTED_EVENT_ID, luaEvent));
     }
 
     @Override
@@ -59,9 +56,9 @@ class LuaUdpService extends Bolt implements
             logger.trace("Handle {}", event);
         }
         LuaTable luaEvent = new LuaTable();
-        luaEvent.set("id", LUA_UDP_CLIENT_DISCONNECTED_EVENT_ID);
+        luaEvent.set("id", LuaUdpEvents.LUA_UDP_CLIENT_DISCONNECTED_EVENT_ID);
         luaEvent.set("client_uid", event.getClientUid());
-        dispatcher.dispatch(new LuaCustomEvent(LUA_UDP_CLIENT_DISCONNECTED_EVENT_ID, luaEvent));
+        dispatcher.dispatch(new LuaCustomEvent(LuaUdpEvents.LUA_UDP_CLIENT_DISCONNECTED_EVENT_ID, luaEvent));
     }
 
     @Override
@@ -72,11 +69,11 @@ class LuaUdpService extends Bolt implements
         long clientUid = event.getClientUid();
         LuaValue data = event.getLuaValue();
         LuaTable luaEvent = new LuaTable();
-        luaEvent.set("id", LUA_UDP_DATA_RECEIVED_EVENT_ID);
+        luaEvent.set("id", LuaUdpEvents.LUA_UDP_DATA_RECEIVED_EVENT_ID);
         luaEvent.set("client_uid", clientUid);
         luaEvent.set("data", data);
         dispatcher.dispatch(new LuaDirectEvent(clientUid,
-                new LuaCustomEvent(LUA_UDP_DATA_RECEIVED_EVENT_ID, luaEvent)));
+                new LuaCustomEvent(LuaUdpEvents.LUA_UDP_DATA_RECEIVED_EVENT_ID, luaEvent)));
     }
 
     @Override
@@ -86,7 +83,7 @@ class LuaUdpService extends Bolt implements
         }
         String eventId = event.getEventId();
         switch (eventId) {
-            case LUA_UDP_SEND_DATA_EVENT_ID:
+            case LuaUdpEvents.LUA_UDP_SEND_DATA_EVENT_ID:
                 if (!handleUdpSendEvent(event) && logger.isWarnEnabled()) {
                     logger.warn("Hanling of {} failed, check passed arguments", eventId);
                 }
@@ -105,7 +102,7 @@ class LuaUdpService extends Bolt implements
         dispatcher.getDispatcher().subscribe(this, UdpClientConnectedEvent.class);
         dispatcher.getDispatcher().subscribe(this, UdpClientDisconnectedEvent.class);
         dispatcher.getDispatcher().subscribe(this, LuaUdpIncomingValueEvent.class);
-        dispatcher.getDispatcher().subscribe(this, LUA_UDP_TOPIC);
+        dispatcher.getDispatcher().subscribe(this, LuaUdpTopics.LUA_UDP_TOPIC);
     }
 
     private boolean handleUdpSendEvent(LuaCustomEvent event) throws InterruptedException {

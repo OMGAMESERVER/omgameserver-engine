@@ -1,10 +1,9 @@
-package com.omgameserver.engine.luaudp;
+package com.omgameserver.engine.lua.udp;
 
 import com.crionuke.bolts.Bolt;
-import com.omgameserver.engine.luaudp.events.LuaUdpIncomingValueEvent;
+import com.omgameserver.engine.lua.udp.events.LuaUdpIncomingValueEvent;
 import com.omgameserver.engine.udp.events.UdpIncomingPayloadEvent;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.luaj.vm2.LuaValue;
@@ -57,25 +56,25 @@ public class LuaUdpDecoderServiceTest extends BaseServiceTest {
         LuaUdpIncomingValueEvent luaUdpIncomingValueEvent =
                 luaUdpIncomingValueEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         // Asserts
-        Assertions.assertNotNull(luaUdpIncomingValueEvent);
-        Assertions.assertTrue(luaUdpIncomingValueEvent.getClientUid() == clientUid);
+        assertNotNull(luaUdpIncomingValueEvent);
+        assertTrue(luaUdpIncomingValueEvent.getClientUid() == clientUid);
         LuaValue luaValue = luaUdpIncomingValueEvent.getLuaValue();
-        Assertions.assertNotNull(luaValue.get("positive_fixint"));
-        Assertions.assertTrue(luaValue.get("positive_fixint").checkint() == 64);
-        Assertions.assertNotNull(luaValue.get("unit8"));
-        Assertions.assertTrue(luaValue.get("unit8").checkint() == 160);
-        Assertions.assertNotNull(luaValue.get("unit16"));
-        Assertions.assertTrue(luaValue.get("unit16").checkint() == 1024);
-        Assertions.assertNotNull(luaValue.get("uint32"));
-        Assertions.assertTrue(luaValue.get("uint32").checkint() == 1048575);
-        Assertions.assertNotNull(luaValue.get("negative_fixint"));
-        Assertions.assertTrue(luaValue.get("negative_fixint").checkint() == -16);
-        Assertions.assertNotNull(luaValue.get("int8"));
-        Assertions.assertTrue(luaValue.get("int8").checkint() == -64);
-        Assertions.assertNotNull(luaValue.get("int16"));
-        Assertions.assertTrue(luaValue.get("int16").checkint() == -4095);
-        Assertions.assertNotNull(luaValue.get("int32"));
-        Assertions.assertTrue(luaValue.get("int32").checkint() == -268435455);
+        assertNotNull(luaValue.get("positive_fixint"));
+        assertTrue(luaValue.get("positive_fixint").checkint() == 64);
+        assertNotNull(luaValue.get("unit8"));
+        assertTrue(luaValue.get("unit8").checkint() == 160);
+        assertNotNull(luaValue.get("unit16"));
+        assertTrue(luaValue.get("unit16").checkint() == 1024);
+        assertNotNull(luaValue.get("uint32"));
+        assertTrue(luaValue.get("uint32").checkint() == 1048575);
+        assertNotNull(luaValue.get("negative_fixint"));
+        assertTrue(luaValue.get("negative_fixint").checkint() == -16);
+        assertNotNull(luaValue.get("int8"));
+        assertTrue(luaValue.get("int8").checkint() == -64);
+        assertNotNull(luaValue.get("int16"));
+        assertTrue(luaValue.get("int16").checkint() == -4095);
+        assertNotNull(luaValue.get("int32"));
+        assertTrue(luaValue.get("int32").checkint() == -268435455);
     }
 
     @Test
@@ -88,15 +87,15 @@ public class LuaUdpDecoderServiceTest extends BaseServiceTest {
         LuaUdpIncomingValueEvent luaUdpIncomingValueEvent =
                 luaUdpIncomingValueEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         // Asserts
-        Assertions.assertNotNull(luaUdpIncomingValueEvent);
-        Assertions.assertTrue(luaUdpIncomingValueEvent.getClientUid() == clientUid);
+        assertNotNull(luaUdpIncomingValueEvent);
+        assertTrue(luaUdpIncomingValueEvent.getClientUid() == clientUid);
         LuaValue luaValue = luaUdpIncomingValueEvent.getLuaValue();
-        Assertions.assertNotNull(luaValue.get("uint64"));
+        assertNotNull(luaValue.get("uint64"));
         // uint64 not supported, in client and server replaced by double
-        Assertions.assertTrue(Math.round(luaValue.get("uint64").checkdouble()) == 12345678901L);
-        Assertions.assertNotNull(luaValue.get("int64"));
+        assertTrue(Math.round(luaValue.get("uint64").checkdouble()) == 12345678901L);
+        assertNotNull(luaValue.get("int64"));
         // int64 not supported, in client and server replaced by double
-        Assertions.assertTrue(Math.round(luaValue.get("int64").checkdouble()) == 98765432109L);
+        assertTrue(Math.round(luaValue.get("int64").checkdouble()) == 98765432109L);
     }
 
     @Test
@@ -108,13 +107,13 @@ public class LuaUdpDecoderServiceTest extends BaseServiceTest {
         LuaUdpIncomingValueEvent luaUdpIncomingValueEvent =
                 luaUdpIncomingValueEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         // Asserts
-        Assertions.assertNotNull(luaUdpIncomingValueEvent);
-        Assertions.assertTrue(luaUdpIncomingValueEvent.getClientUid() == clientUid);
+        assertNotNull(luaUdpIncomingValueEvent);
+        assertTrue(luaUdpIncomingValueEvent.getClientUid() == clientUid);
         LuaValue luaValue = luaUdpIncomingValueEvent.getLuaValue();
-        Assertions.assertNotNull(luaValue.get("true"));
-        Assertions.assertTrue(luaValue.get("true").checkboolean());
-        Assertions.assertNotNull(luaValue.get("false"));
-        Assertions.assertTrue(!luaValue.get("false").checkboolean());
+        assertNotNull(luaValue.get("true"));
+        assertTrue(luaValue.get("true").checkboolean());
+        assertNotNull(luaValue.get("false"));
+        assertTrue(!luaValue.get("false").checkboolean());
     }
 
     @Test
@@ -142,20 +141,20 @@ public class LuaUdpDecoderServiceTest extends BaseServiceTest {
         LuaUdpIncomingValueEvent luaUdpIncomingValueEvent =
                 luaUdpIncomingValueEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         // Asserts
-        Assertions.assertNotNull(luaUdpIncomingValueEvent);
-        Assertions.assertTrue(luaUdpIncomingValueEvent.getClientUid() == clientUid);
+        assertNotNull(luaUdpIncomingValueEvent);
+        assertTrue(luaUdpIncomingValueEvent.getClientUid() == clientUid);
         LuaValue luaValue = luaUdpIncomingValueEvent.getLuaValue();
-        Assertions.assertNotNull(luaValue.get("fixstr"));
-        Assertions.assertTrue(luaValue.get("fixstr").checkjstring().equals("Fixstr"));
-        Assertions.assertNotNull(luaValue.get("str8"));
-        Assertions.assertTrue(luaValue.get("str8").checkjstring().equals("Str8str8str8str8str8str8str8str8str8str8"));
-        Assertions.assertNotNull(luaValue.get("str16"));
-        Assertions.assertTrue(luaValue.get("str16").checkjstring().equals("Str16str16str16str16str16str16str16str16str16str16str" +
+        assertNotNull(luaValue.get("fixstr"));
+        assertTrue(luaValue.get("fixstr").checkjstring().equals("Fixstr"));
+        assertNotNull(luaValue.get("str8"));
+        assertTrue(luaValue.get("str8").checkjstring().equals("Str8str8str8str8str8str8str8str8str8str8"));
+        assertNotNull(luaValue.get("str16"));
+        assertTrue(luaValue.get("str16").checkjstring().equals("Str16str16str16str16str16str16str16str16str16str16str" +
                 "16str16str16str16str16str16str16str16str16str16str16str16str16str16str16str16str16str16str16str16str" +
                 "16str16str16str16str16str16str16str16str16str16str16str16str16str16str16str16str16str16str16str16str" +
                 "16str16str16"));
-        Assertions.assertNotNull(luaValue.get("ключ"));
-        Assertions.assertTrue(luaValue.get("ключ").checkjstring().equals("значение"));
+        assertNotNull(luaValue.get("ключ"));
+        assertTrue(luaValue.get("ключ").checkjstring().equals("значение"));
     }
 
     @Test
@@ -169,18 +168,18 @@ public class LuaUdpDecoderServiceTest extends BaseServiceTest {
         LuaUdpIncomingValueEvent luaUdpIncomingValueEvent =
                 luaUdpIncomingValueEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         // Asserts
-        Assertions.assertNotNull(luaUdpIncomingValueEvent);
-        Assertions.assertTrue(luaUdpIncomingValueEvent.getClientUid() == clientUid);
+        assertNotNull(luaUdpIncomingValueEvent);
+        assertTrue(luaUdpIncomingValueEvent.getClientUid() == clientUid);
         LuaValue luaValue = luaUdpIncomingValueEvent.getLuaValue();
         LuaValue fixArray = luaValue.get("fixarray");
-        Assertions.assertNotNull(fixArray);
+        assertNotNull(fixArray);
         for (int i = 1; i <= 9; i++) {
-            Assertions.assertTrue(fixArray.get(i).checkint() == i);
+            assertTrue(fixArray.get(i).checkint() == i);
         }
         LuaValue array16 = luaValue.get("array16");
-        Assertions.assertNotNull(array16);
+        assertNotNull(array16);
         for (int i = 1; i <= 32; i++) {
-            Assertions.assertTrue(array16.get(i).checkint() == i);
+            assertTrue(array16.get(i).checkint() == i);
         }
     }
 
@@ -198,18 +197,18 @@ public class LuaUdpDecoderServiceTest extends BaseServiceTest {
         LuaUdpIncomingValueEvent luaUdpIncomingValueEvent =
                 luaUdpIncomingValueEvents.poll(POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         // Asserts
-        Assertions.assertNotNull(luaUdpIncomingValueEvent);
-        Assertions.assertTrue(luaUdpIncomingValueEvent.getClientUid() == clientUid);
+        assertNotNull(luaUdpIncomingValueEvent);
+        assertTrue(luaUdpIncomingValueEvent.getClientUid() == clientUid);
         LuaValue luaValue = luaUdpIncomingValueEvent.getLuaValue();
         LuaValue fixMap = luaValue.get("fixmap");
-        Assertions.assertNotNull(fixMap);
+        assertNotNull(fixMap);
         for (int i = 1; i <= 8; i *= 2) {
-            Assertions.assertTrue(fixMap.get(String.valueOf(i)).checkint() == i);
+            assertTrue(fixMap.get(String.valueOf(i)).checkint() == i);
         }
         LuaValue map16 = luaValue.get("map16");
-        Assertions.assertNotNull(map16);
+        assertNotNull(map16);
         for (int i = 1; i <= 65536 + 1; i *= 2) {
-            Assertions.assertTrue(map16.get(String.valueOf(i)).checkint() == i);
+            assertTrue(map16.get(String.valueOf(i)).checkint() == i);
         }
     }
 

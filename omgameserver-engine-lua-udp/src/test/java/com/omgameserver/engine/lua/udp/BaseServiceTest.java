@@ -1,4 +1,4 @@
-package com.omgameserver.engine.luaudp;
+package com.omgameserver.engine.lua.udp;
 
 import com.omgameserver.engine.core.CoreDispatcher;
 import com.omgameserver.engine.core.CoreExecutors;

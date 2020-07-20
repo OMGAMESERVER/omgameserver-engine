@@ -1,9 +1,9 @@
-package com.omgameserver.engine.luaudp;
+package com.omgameserver.engine.lua.udp;
 
 import com.crionuke.bolts.Bolt;
 import com.omgameserver.engine.core.CoreDispatcher;
 import com.omgameserver.engine.core.CoreExecutors;
-import com.omgameserver.engine.luaudp.events.LuaUdpIncomingValueEvent;
+import com.omgameserver.engine.lua.udp.events.LuaUdpIncomingValueEvent;
 import com.omgameserver.engine.lua.msgpack.MsgpackDecoder;
 import com.omgameserver.engine.lua.msgpack.MsgpackException;
 import com.omgameserver.engine.udp.events.UdpIncomingPayloadEvent;

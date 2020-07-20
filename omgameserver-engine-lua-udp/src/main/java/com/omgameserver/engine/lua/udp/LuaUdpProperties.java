@@ -1,4 +1,4 @@
-package com.omgameserver.engine.luaudp;
+package com.omgameserver.engine.lua.udp;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
