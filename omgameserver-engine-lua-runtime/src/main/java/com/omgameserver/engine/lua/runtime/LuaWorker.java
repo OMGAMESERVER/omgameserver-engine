@@ -21,7 +21,7 @@ class LuaWorker extends Bolt implements LuaCustomEvent.Handler {
 
     private final CoreExecutors executors;
     private final CoreDispatcher dispatcher;
-    private final LuaEngine luaEngine;
+    private final LuaRuntime luaRuntime;
 
     LuaWorker(CoreExecutors executors, CoreDispatcher dispatcher, LuaProperties properties,
               LuaGlobalsFactory luaGlobalsFactory, String luaScript) {
@@ -29,8 +29,8 @@ class LuaWorker extends Bolt implements LuaCustomEvent.Handler {
         this.executors = executors;
         this.dispatcher = dispatcher;
         Globals globals = luaGlobalsFactory.createGlobals();
-        luaEngine = new LuaEngine(dispatcher, globals);
-        globals.set("engine", luaEngine);
+        luaRuntime = new LuaRuntime(dispatcher, globals);
+        globals.set("runtime", luaRuntime);
         globals.loadfile(luaScript).call();
     }
 
@@ -43,7 +43,7 @@ class LuaWorker extends Bolt implements LuaCustomEvent.Handler {
         }
         String eventId = event.getEventId();
         LuaValue luaEvent = event.getLuaEvent();
-        luaEngine.dispatch(eventId, luaEvent);
+        luaRuntime.dispatch(eventId, luaEvent);
     }
 
     void postConstruct() {

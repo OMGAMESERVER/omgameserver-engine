@@ -7,7 +7,7 @@ import org.luaj.vm2.Globals;
  * @author Kirill Byvshev (k@byv.sh)
  * @since 1.0.0
  */
-class LuaEngine extends LuaEventListener {
+class LuaRuntime extends LuaEventListener {
 
     private final String FUNCTION_LOG_ERROR = "log_error";
     private final String FUNCTION_LOG_WARN = "log_warn";
@@ -17,7 +17,7 @@ class LuaEngine extends LuaEventListener {
 
     private final String FUNCTION_DISPATCH = "dispatch";
 
-    LuaEngine(CoreDispatcher dispatcher, Globals globals) {
+    LuaRuntime(CoreDispatcher dispatcher, Globals globals) {
         super();
         set(FUNCTION_LOG_ERROR, new LuaLogFunction(globals, LuaLogFunction.LEVEL.ERROR));
         set(FUNCTION_LOG_WARN, new LuaLogFunction(globals, LuaLogFunction.LEVEL.WARN));
