@@ -12,8 +12,6 @@
 
     <artifactId>omgameserver-engine-udp</artifactId>
 
-    <name>omgameserver-engine-udp</name>
-
     <dependencies>
         <dependency>
             <groupId>com.omgameserver.engine</groupId>

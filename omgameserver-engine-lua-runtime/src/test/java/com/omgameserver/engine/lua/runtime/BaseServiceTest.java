@@ -1,15 +1,15 @@
-package com.omgameserver.engine.luaudp;
+package com.omgameserver.engine.lua.runtime;
 
 import com.omgameserver.engine.core.CoreDispatcher;
 import com.omgameserver.engine.core.CoreExecutors;
 import com.omgameserver.engine.core.CoreProperties;
-import com.omgameserver.engine.lua.msgpack.MsgpackDecoder;
 import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.net.UnknownHostException;
 
 /**
  * @author Kirill Byvshev (k@byv.sh)
@@ -24,22 +24,20 @@ class BaseServiceTest extends Assertions {
     protected final int CORE_USER_THREAD_POOL_SIZE = 32;
     protected final int CORE_TICK_INTERVAL = 100;
 
-    protected final int LUA_UDP_QUEUE_SIZE = 32;
-    protected final int LUA_UDP_PAYLOAD_SIZE = 1024;
+    protected final int LUA_QUEUE_SIZE = 32;
+    protected final int LUA_PAYLOAD_SIZE = 1024;
 
     protected CoreProperties coreProperties;
     protected CoreDispatcher coreDispatcher;
     protected CoreExecutors coreExecutors;
-    protected MsgpackDecoder msgpackDecoder;
-    protected LuaUdpProperties luaUdpProperties;
+    protected LuaProperties luaProperties;
 
-    protected void createComponents() {
+    protected void createComponents(String mainScript) throws UnknownHostException {
         coreProperties = new CoreProperties(CORE_INTERNAL_THREAD_POOL_SIZE, CORE_USER_THREAD_POOL_SIZE,
                 CORE_TICK_INTERVAL);
         coreDispatcher = new CoreDispatcher();
         coreExecutors = new CoreExecutors(coreProperties);
-        msgpackDecoder = new MsgpackDecoder();
-        luaUdpProperties = new LuaUdpProperties(LUA_UDP_QUEUE_SIZE, LUA_UDP_PAYLOAD_SIZE);
+        luaProperties = new LuaProperties(LUA_QUEUE_SIZE, LUA_PAYLOAD_SIZE, mainScript);
     }
 
     protected SocketAddress generateSocketAddress() {
