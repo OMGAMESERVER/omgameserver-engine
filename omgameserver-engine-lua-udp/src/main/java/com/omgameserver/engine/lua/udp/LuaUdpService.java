@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 
+import static com.omgameserver.engine.lua.runtime.LuaTopics.WORKERS_TOPIC;
+
 /**
  * @author Kirill Byvshev (k@byv.sh)
  * @since 1.0.0
@@ -47,7 +49,8 @@ class LuaUdpService extends Bolt implements
         LuaTable luaEvent = new LuaTable();
         luaEvent.set("id", LuaUdpEvents.LUA_UDP_CLIENT_CONNECTED_EVENT_ID);
         luaEvent.set("client_uid", event.getClientUid());
-        dispatcher.dispatch(new LuaCustomEvent(LuaUdpEvents.LUA_UDP_CLIENT_CONNECTED_EVENT_ID, luaEvent));
+        dispatcher.dispatch(new LuaCustomEvent(LuaUdpEvents.LUA_UDP_CLIENT_CONNECTED_EVENT_ID, luaEvent),
+                WORKERS_TOPIC);
     }
 
     @Override
@@ -58,7 +61,8 @@ class LuaUdpService extends Bolt implements
         LuaTable luaEvent = new LuaTable();
         luaEvent.set("id", LuaUdpEvents.LUA_UDP_CLIENT_DISCONNECTED_EVENT_ID);
         luaEvent.set("client_uid", event.getClientUid());
-        dispatcher.dispatch(new LuaCustomEvent(LuaUdpEvents.LUA_UDP_CLIENT_DISCONNECTED_EVENT_ID, luaEvent));
+        dispatcher.dispatch(new LuaCustomEvent(LuaUdpEvents.LUA_UDP_CLIENT_DISCONNECTED_EVENT_ID, luaEvent),
+                WORKERS_TOPIC);
     }
 
     @Override
