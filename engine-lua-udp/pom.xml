@@ -5,17 +5,32 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.omgameserver.engine</groupId>
         <artifactId>omgameserver-engine</artifactId>
+        <groupId>com.omgameserver.engine</groupId>
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>omgameserver-engine-lua-runtime</artifactId>
+    <artifactId>engine-lua-udp</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>com.omgameserver.engine</groupId>
-            <artifactId>omgameserver-engine-core</artifactId>
+            <artifactId>engine-core</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.omgameserver.engine</groupId>
+            <artifactId>engine-udp</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.omgameserver.engine</groupId>
+            <artifactId>engine-lua-runtime</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.omgameserver.engine</groupId>
+            <artifactId>engine-lua-msgpack</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>

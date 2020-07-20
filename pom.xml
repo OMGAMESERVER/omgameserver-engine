@@ -20,11 +20,11 @@
     <url>https://github.com/OMGAMESERVER/omgameserver-engine</url>
 
     <modules>
-        <module>omgameserver-engine-core</module>
-        <module>omgameserver-engine-udp</module>
-        <module>omgameserver-engine-lua-runtime</module>
-        <module>omgameserver-engine-lua-udp</module>
-        <module>omgameserver-engine-lua-msgpack</module>
+        <module>engine-core</module>
+        <module>engine-udp</module>
+        <module>engine-lua-runtime</module>
+        <module>engine-lua-udp</module>
+        <module>engine-lua-msgpack</module>
     </modules>
 
     <properties>

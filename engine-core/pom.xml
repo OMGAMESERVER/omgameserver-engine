@@ -10,5 +10,5 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>omgameserver-engine-core</artifactId>
+    <artifactId>engine-core</artifactId>
 </project>
