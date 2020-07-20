@@ -57,13 +57,20 @@ class UdpInputClient implements UdpHeaderConstants {
             int ack = datagram.getInt();
             int bit = datagram.getInt();
             int sys = datagram.get();
-            lastActivity = System.currentTimeMillis();
-            dispatcher.dispatch(new UdpIncomingHeaderEvent(socketAddress, clientUid, seq, ack, bit, sys));
-            if (datagram.remaining() > 0) {
-                ByteBuffer payload = ByteBuffer.allocate(datagram.remaining());
-                payload.put(datagram);
-                payload.flip();
-                dispatcher.dispatch(new UdpIncomingPayloadEvent(socketAddress, clientUid, payload));
+            // Loss simulation
+            if (Math.random() < properties.getLossSimulationLevel()) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Package {} was rejected to loss simulation", seq);
+                }
+            } else {
+                lastActivity = System.currentTimeMillis();
+                dispatcher.dispatch(new UdpIncomingHeaderEvent(socketAddress, clientUid, seq, ack, bit, sys));
+                if (datagram.remaining() > 0) {
+                    ByteBuffer payload = ByteBuffer.allocate(datagram.remaining());
+                    payload.put(datagram);
+                    payload.flip();
+                    dispatcher.dispatch(new UdpIncomingPayloadEvent(socketAddress, clientUid, payload));
+                }
             }
             return true;
         }

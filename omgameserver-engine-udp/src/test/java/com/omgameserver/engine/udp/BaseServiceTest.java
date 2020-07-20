@@ -47,7 +47,7 @@ class BaseServiceTest extends Assertions {
         coreUidGenerator = new CoreUidGenerator();
         coreExecutors = new CoreExecutors(coreProperties);
         udpProperties = new UdpProperties(UDP_QUEUE_SIZE, UDP_HOST, UDP_PORT, UDP_DATAGRAM_SIZE,
-                UDP_DISCONNECT_INTERVAL, UDP_PING_INTERVAL);
+                UDP_DISCONNECT_INTERVAL, UDP_PING_INTERVAL, 0);
     }
 
     protected SocketAddress generateSocketAddress() {
