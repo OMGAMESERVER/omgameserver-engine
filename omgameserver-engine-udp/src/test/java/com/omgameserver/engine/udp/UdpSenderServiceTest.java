@@ -20,12 +20,12 @@ class UdpSenderServiceTest extends BaseServiceTest {
     static private final Logger logger = LoggerFactory.getLogger(UdpSenderServiceTest.class);
 
     private UdpSenderService senderService;
-    private UdpChannelConstants serverChannel;
+    private UdpChannel serverChannel;
 
     @BeforeEach
     void beforeEach() throws IOException {
         createComponents();
-        serverChannel = new UdpChannelConstants(udpProperties);
+        serverChannel = new UdpChannel(udpProperties);
         senderService = new UdpSenderService(coreExecutors, coreDispatcher, udpProperties, serverChannel);
         senderService.postConstruct();
     }

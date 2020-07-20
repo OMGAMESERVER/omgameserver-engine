@@ -22,10 +22,10 @@ class UdpSenderService extends Bolt implements UdpOutgoingDatagramEvent.Handler 
     private final UdpProperties properties;
     private final CoreExecutors executors;
     private final CoreDispatcher dispatcher;
-    private final UdpChannelConstants.Sender sender;
+    private final UdpChannel.Sender sender;
 
     UdpSenderService(CoreExecutors executors, CoreDispatcher dispatcher, UdpProperties properties,
-                     UdpChannelConstants udpChannel) {
+                     UdpChannel udpChannel) {
         super("sender", properties.getQueueSize());
         this.properties = properties;
         this.executors = executors;

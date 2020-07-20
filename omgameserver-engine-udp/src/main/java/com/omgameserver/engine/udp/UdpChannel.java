@@ -17,15 +17,15 @@ import java.nio.channels.DatagramChannel;
  * @since 1.0.0
  */
 @Component
-class UdpChannelConstants implements UdpHeaderConstants {
-    static private final Logger logger = LoggerFactory.getLogger(UdpChannelConstants.class);
+class UdpChannel implements UdpHeaderConstants {
+    static private final Logger logger = LoggerFactory.getLogger(UdpChannel.class);
 
     private final UdpProperties properties;
     private final DatagramChannel datagramChannel;
     private final Receiver receiver;
     private final Sender sender;
 
-    UdpChannelConstants(UdpProperties properties) throws IOException {
+    UdpChannel(UdpProperties properties) throws IOException {
         this.properties = properties;
         datagramChannel = DatagramChannel.open();
         datagramChannel.bind(new InetSocketAddress(properties.getHost(), properties.getPort()));

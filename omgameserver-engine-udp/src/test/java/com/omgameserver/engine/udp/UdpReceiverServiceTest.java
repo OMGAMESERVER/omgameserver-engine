@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 class UdpReceiverServiceTest extends BaseServiceTest {
     static private final Logger logger = LoggerFactory.getLogger(UdpReceiverServiceTest.class);
 
-    private UdpChannelConstants serverChannel;
+    private UdpChannel serverChannel;
     private UdpReceiverService receiverService;
     private ConsumerStub consumerStub;
 
@@ -32,7 +32,7 @@ class UdpReceiverServiceTest extends BaseServiceTest {
     @BeforeEach
     void beforeEach() throws IOException {
         createComponents();
-        serverChannel = new UdpChannelConstants(udpProperties);
+        serverChannel = new UdpChannel(udpProperties);
         receiverService = new UdpReceiverService(coreExecutors, coreDispatcher, serverChannel);
         receiverService.postConstruct();
         consumerStub = new ConsumerStub();

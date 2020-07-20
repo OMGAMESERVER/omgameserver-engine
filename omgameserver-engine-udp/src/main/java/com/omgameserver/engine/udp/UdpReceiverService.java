@@ -22,10 +22,10 @@ class UdpReceiverService extends Worker {
 
     private final CoreExecutors executors;
     private final CoreDispatcher dispatcher;
-    private final UdpChannelConstants.Receiver receiver;
+    private final UdpChannel.Receiver receiver;
 
     UdpReceiverService(CoreExecutors executors, CoreDispatcher dispatcher,
-                       UdpChannelConstants udpChannel) {
+                       UdpChannel udpChannel) {
         super();
         this.executors = executors;
         this.dispatcher = dispatcher;
