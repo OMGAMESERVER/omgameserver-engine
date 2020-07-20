@@ -1,4 +1,4 @@
-local MODULE_TOPIC = "udp"
+local UDP_TOPIC = "udp"
 
 local UDP_CLIENT_CONNECTED_EVENT_ID = "udp_client_connected";
 local UDP_CLIENT_DISCONNECTED_EVENT_ID = "udp_client_disconnected";
@@ -30,7 +30,7 @@ local function dispatch_udp_send_data_event(client_uid, data, reliable)
     assert(client_uid, "parameter client_uid not specified")
     assert(data, "parameter data not specified")
     assert(reliable, "parameter reliable not specified")
-    runtime.dispatch(MODULE_TOPIC, UDP_SEND_EVENT_ID, {
+    runtime.dispatch(UDP_TOPIC, UDP_SEND_EVENT_ID, {
         id = UDP_SEND_EVENT_ID, data = data, reliable = reliable
     })
 end
