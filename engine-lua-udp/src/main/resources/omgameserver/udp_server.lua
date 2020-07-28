@@ -29,7 +29,7 @@ end
 local function dispatch_udp_send_data_event(client_uid, data, reliable)
     assert(client_uid, "parameter client_uid not specified")
     assert(data, "parameter data not specified")
-    assert(reliable, "parameter reliable not specified")
+    assert(reliable ~= nil, "parameter reliable not specified")
     runtime.dispatch(UDP_TOPIC, UDP_SEND_EVENT_ID, {
         id = UDP_SEND_EVENT_ID, client_uid = client_uid, data = data, reliable = reliable
     })
